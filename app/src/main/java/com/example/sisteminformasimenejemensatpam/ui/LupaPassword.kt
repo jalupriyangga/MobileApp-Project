@@ -17,6 +17,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,11 +30,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.sisteminformasimenejemensatpam.ViewModel.UserViewModel
+import com.example.sisteminformasimenejemensatpam.ViewModel.UserViewModelFactory
 import com.example.sisteminformasimenejemensatpam.ViewModel.generateOTP
 import com.example.sisteminformasimenejemensatpam.ViewModel.getOTP
 import com.example.sisteminformasimenejemensatpam.ViewModel.saveOTP
+import com.example.sisteminformasimenejemensatpam.data.repository.UserRepository
 import com.example.sisteminformasimenejemensatpam.sendEmail
 import com.example.sisteminformasimenejemensatpam.ui.theme.roboto
 import kotlinx.coroutines.CoroutineScope
@@ -46,6 +51,19 @@ fun HalamanLupaPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
     var email by remember { mutableStateOf("") }
     var inputOTP by remember { mutableStateOf("") }
     val context = LocalContext.current
+
+//    val database = remember { AppDatabase.getDatabase(context) }
+//    val repository = remember { KaryawanRepository(database.karyawanDao()) }
+//    val viewModel: KaryawanViewModel = viewModel(
+//        factory = KaryawanViewModelFactory(repository = repository )
+//    )
+//    val listKaryawan by viewModel.karyawanList.collectAsState()
+
+    val repository = remember { UserRepository() }
+    val viewModel: UserViewModel = viewModel(
+        factory = UserViewModelFactory(repository = repository)
+    )
+    val listUser by viewModel.users.observeAsState(emptyList())
 
     Column(
         Modifier
@@ -102,11 +120,24 @@ fun HalamanLupaPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
 
         Button(
             onClick = {
-                val otp = generateOTP()
-                saveOTP(context, otp, email)
-                CoroutineScope(Dispatchers.IO).launch {
-                    getOTP(context, email)?.let { sendEmail(email, it) }
+                var user = listUser.find { it.email == email }
+                if (user != null) {
+                    if(user.email == email){
+                        val otp = generateOTP()
+                        saveOTP(context, otp, email)
+                        CoroutineScope(Dispatchers.IO).launch {
+                            getOTP(context, email)?.let { sendEmail(email, it) }
+                        }
+                    }else{
+                        Toast.makeText(
+                            context,
+                            "Email belum terdaftar!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
+
+
 
             },
             colors = ButtonDefaults.buttonColors(Color(0xFF2752E7)),
@@ -152,7 +183,7 @@ fun HalamanLupaPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
             onClick = {
                 val otp = getOTP(context = context, email)
                 if (inputOTP == otp) {
-                    navCtrl.navigate("perbarui password")
+                    navCtrl.navigate("perbarui password/$email")
                 } else{
                     Toast.makeText(
                         context,

@@ -1,5 +1,6 @@
 package com.example.sisteminformasimenejemensatpam.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,28 +20,46 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.example.sisteminformasimenejemensatpam.ViewModel.UserViewModel
+import com.example.sisteminformasimenejemensatpam.ViewModel.UserViewModelFactory
+import com.example.sisteminformasimenejemensatpam.data.repository.UserRepository
 import com.example.sisteminformasimenejemensatpam.ui.theme.roboto
 
 @Composable
-fun HalamanPerbaruiPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
+fun HalamanPerbaruiPassword(modifier: Modifier = Modifier, navCtrl: NavController, email: String) {
 
     var newPass by remember { mutableStateOf("") }
     var RepeatNewPass by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
+//    val database = remember { AppDatabase.getDatabase(context) }
+//    val repository = remember { KaryawanRepository(database.karyawanDao()) }
+//    val viewModel: KaryawanViewModel = viewModel(
+//        factory = KaryawanViewModelFactory(repository = repository )
+//    )
+//    val listKaryawan by viewModel.karyawanList.collectAsState()
+
+    val repository = remember { UserRepository() }
+    val viewModel: UserViewModel = viewModel(
+        factory = UserViewModelFactory(repository = repository)
+    )
+    val listUser by viewModel.users.observeAsState(emptyList())
 
     Column(
         Modifier
@@ -147,10 +166,22 @@ fun HalamanPerbaruiPassword(modifier: Modifier = Modifier, navCtrl: NavControlle
 
         Spacer(modifier = Modifier.height(40.dp))
 
+        Text(text = "Email anda adalah $email")
         Button(
             onClick = {
-                if(newPass == RepeatNewPass){
+                val user = listUser.find { it.email == email }  // Cari karyawan
 
+                if (user != null) {
+                    if (newPass == RepeatNewPass) {
+                        user.password = newPass
+                        viewModel.updateUser(user)  // Update di database
+
+                        Toast.makeText(context, "Password berhasil diperbarui!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Pengulangan password salah!", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(context, "Email salah!", Toast.LENGTH_SHORT).show()
                 }
             },
             colors = ButtonDefaults.buttonColors(Color(0xFF2752E7)),
@@ -170,10 +201,10 @@ fun HalamanPerbaruiPassword(modifier: Modifier = Modifier, navCtrl: NavControlle
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun LupaPassPrev() {
-    
-    HalamanPerbaruiPassword(navCtrl = rememberNavController())
-    
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun LupaPassPrev() {
+//
+//    HalamanPerbaruiPassword(navCtrl = rememberNavController(), email = reme)
+//
+//}

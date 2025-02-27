@@ -8,9 +8,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.sisteminformasimenejemensatpam.ui.HalamanLupaPassword
 import com.example.sisteminformasimenejemensatpam.ui.HalamanPerbaruiPassword
 import com.example.sisteminformasimenejemensatpam.ui.HalamanUbahPassword
@@ -27,29 +29,18 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(navController = navController, startDestination = startDestination) {
                     composable("ubah password"){ HalamanUbahPassword(navCtrl = navController) }
-                    composable("perbarui password"){ HalamanPerbaruiPassword(navCtrl = navController) }
                     composable("lupa password"){ HalamanLupaPassword(navCtrl = navController)}
+                    composable(
+                        "perbarui password/{email}",
+                        arguments = listOf(navArgument("email"){type = NavType.StringType})
+                    ) { backStackEntry ->
+                        val email = backStackEntry.arguments?.getString("email")?: ""
+                        HalamanPerbaruiPassword(navCtrl = navController, email = email)
+                    }
                 }
-//                LinkHandling(intent = intent)
             }
+            resetDB(this)
+            InitDB(this)
         }
     }
 }
-
-//@Composable
-//fun LinkHandling(intent: Intent?) {
-//    val navCtrl = rememberNavController()
-//    val startDestination = "ubah password"
-//    val deepLink = intent?.data?.path
-//
-//    NavHost(navController = navCtrl, startDestination = startDestination) {
-//        composable("ubah password"){ HalamanUbahPassword(navCtrl = navCtrl) }
-//        composable("perbarui password"){ HalamanPerbaruiPassword(navCtrl = navCtrl) }
-//        composable("lupa password"){ HalamanLupaPassword(navCtrl = navCtrl)}
-//    }
-//    LaunchedEffect (deepLink) {
-//        if (deepLink == "/reset-password"){
-//            navCtrl.navigate("perbarui password")
-//        }
-//    }
-//}
