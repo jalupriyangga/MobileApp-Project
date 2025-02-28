@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
 
-    private val BASE_URL = "https://app.arunikaprawira.com/api/"
+    private val BASE_URL = "https://app.arunikaprawira.com/api/login/"
 
     val instance: ApiService by lazy {
         Retrofit.Builder()

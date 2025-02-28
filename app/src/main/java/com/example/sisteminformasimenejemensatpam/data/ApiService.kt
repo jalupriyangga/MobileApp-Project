@@ -7,9 +7,9 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiService{
-    @GET("api.php")
+    @GET("login")
     suspend fun getUsers(): List<User>
 
-    @PUT("users/{id}")
+    @PUT("login/{id}")
     suspend fun updateUser(@Path("id") id: Int, @Body user: User): Response<User>
 }
