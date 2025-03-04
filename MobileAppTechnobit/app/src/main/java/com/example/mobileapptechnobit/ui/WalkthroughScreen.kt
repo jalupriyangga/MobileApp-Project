@@ -177,6 +177,6 @@ fun Indicator(isSelected: Boolean) {
             .size(if (isSelected) 8.dp else 8.dp)
             .clip(RoundedCornerShape(50))
             .background(if (isSelected) Color(0xFF2752E7) else Color.LightGray)
-            .padding(horizontal = 4.dp)
+            .padding(horizontal = 5.dp)
     )
 }
