@@ -165,7 +165,7 @@ fun PageIndicator(currentPage: Int, pageCount: Int) {
     ) {
         repeat(pageCount) { index ->
             Indicator(isSelected = index == currentPage)
-            Spacer(modifier = Modifier.width(2.dp))
+            Spacer(modifier = Modifier.width(4.dp))
         }
     }
 }
@@ -174,9 +174,9 @@ fun PageIndicator(currentPage: Int, pageCount: Int) {
 fun Indicator(isSelected: Boolean) {
     Box(
         modifier = Modifier
-            .size(if (isSelected) 8.dp else 8.dp)
+            .size(if (isSelected) 10.dp else 10.dp)
             .clip(RoundedCornerShape(50))
             .background(if (isSelected) Color(0xFF2752E7) else Color.LightGray)
-            .padding(horizontal = 4.dp)
+            .padding(horizontal = 2.dp)
     )
 }
