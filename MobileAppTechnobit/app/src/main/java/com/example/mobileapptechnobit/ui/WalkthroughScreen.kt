@@ -154,18 +154,20 @@ fun WalkthroughPageView(page: WalkthroughPage) {
     }
 }
 
-// Indikator untuk halaman (3 titik di atas)
 @Composable
 fun PageIndicator(currentPage: Int, pageCount: Int) {
     Row(
         horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 22.dp)
     ) {
         repeat(pageCount) { index ->
             Indicator(isSelected = index == currentPage)
-            Spacer(modifier = Modifier.width(5.dp))
+            if (index < pageCount - 1) {
+                Spacer(modifier = Modifier.width(5.dp))
+            }
         }
     }
 }
@@ -174,9 +176,8 @@ fun PageIndicator(currentPage: Int, pageCount: Int) {
 fun Indicator(isSelected: Boolean) {
     Box(
         modifier = Modifier
-            .size(if (isSelected) 9.dp else 9.dp)
+            .size(9.dp)
             .clip(RoundedCornerShape(50))
             .background(if (isSelected) Color(0xFF2752E7) else Color.LightGray)
-            .padding(horizontal = 1.dp)
     )
 }
