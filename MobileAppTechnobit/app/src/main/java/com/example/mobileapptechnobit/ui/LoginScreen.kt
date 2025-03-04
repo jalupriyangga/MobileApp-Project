@@ -1,7 +1,6 @@
 package com.example.mobileapptechnobit.ui
 
-import android.app.Application
-import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,19 +19,32 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mobileapptechnobit.R
 import com.example.mobileapptechnobit.ui.theme.primary100
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
+import com.example.mobileapptechnobit.viewModel.LoginState
 import com.example.mobileapptechnobit.viewModel.LoginViewModel
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
+fun LoginScreen(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel.loginState) {
+        when (viewModel.loginState) {
+            LoginState.SUCCESS -> {
+                Toast.makeText(context, "Login Berhasil", Toast.LENGTH_LONG).show()
+                onLoginSuccess()
+            }
+            LoginState.ERROR -> Toast.makeText(context, "Login Gagal", Toast.LENGTH_LONG).show()
+            LoginState.FORBIDDEN -> Toast.makeText(context, "Akun anda salah", Toast.LENGTH_LONG).show()
+            else -> {}
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -112,7 +124,13 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
-                    onClick = { viewModel.performLogin(email, password) },
+                    onClick = {
+                        if (email.isNotBlank() && password.isNotBlank()) {
+                            viewModel.performLogin(email, password)
+                        } else {
+                            Toast.makeText(context, "Email dan password harus diisi", Toast.LENGTH_LONG).show()
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = primary100),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.fillMaxWidth().height(50.dp).padding(end = 40.dp)
@@ -124,9 +142,8 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel()) {
     }
 }
 
-
 @Preview(showBackground = true, device = "spec:width=412dp, height=915dp, dpi=440")
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen()
+    LoginScreen(onLoginSuccess = {})
 }

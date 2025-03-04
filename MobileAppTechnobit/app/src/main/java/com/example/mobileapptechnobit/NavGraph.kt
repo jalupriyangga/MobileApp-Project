@@ -4,14 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.mobileapptechnobit.ui.LoginScreen
-import com.example.mobileapptechnobit.ui.WalkthroughScreen
+import com.example.mobileapptechnobit.ui.*
+import com.example.mobileapptechnobit.viewModel.LoginViewModel
 
 @Composable
-fun NavGraph(navController: NavHostController) {
+fun NavGraph(navController: NavHostController, loginViewModel: LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Splash.route
+        startDestination = if (loginViewModel.isLoggedIn()) Screen.Home.route else Screen.Splash.route
     ) {
         composable(Screen.Splash.route) {
             SplashScreen(navController)
@@ -20,7 +20,24 @@ fun NavGraph(navController: NavHostController) {
             WalkthroughScreen(navController)
         }
         composable(Screen.Login.route) {
-            LoginScreen()
+            LoginScreen(
+                viewModel = loginViewModel,
+                onLoginSuccess = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Screen.Home.route) {
+            HomeScreen(
+                onLogout = {
+                    loginViewModel.logout()
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }
@@ -28,5 +45,6 @@ fun NavGraph(navController: NavHostController) {
 sealed class Screen(val route: String) {
     object Splash : Screen("splash_screen")
     object Walkthrough : Screen("walkthrough_screen")
-    object Login : Screen("login_screen") // Tambahkan route untuk login
+    object Login : Screen("login_screen")
+    object Home : Screen("home_screen")
 }

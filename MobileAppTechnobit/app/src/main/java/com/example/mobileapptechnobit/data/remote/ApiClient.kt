@@ -1,4 +1,5 @@
 package com.example.mobileapptechnobit.data.remote
+
 import android.content.Context
 import android.util.Log
 import com.android.volley.Request
@@ -28,6 +29,8 @@ object ApiClient {
             e.printStackTrace()
         }
 
+        Log.d("ApiClient", "Request Body: $jsonBody")
+
         val jsonObjectRequest = object : JsonObjectRequest(
             Request.Method.POST, urlLogin, jsonBody,
             Response.Listener { response ->
@@ -39,13 +42,25 @@ object ApiClient {
                 }
             },
             Response.ErrorListener { error ->
-                Log.e("ApiClient", "Error: ${error.message}")
-                onError(error.message ?: "Unknown Error")
+                val response = error.networkResponse
+                if (response != null) {
+                    val responseBody = String(response.data)
+                    Log.e("ApiClient", "Error: ${response.statusCode} - $responseBody")
+                    when (response.statusCode) {
+                        401 -> onError("Email atau password salah")
+                        403 -> onError("Akun anda salah")
+                        else -> onError("Login Gagal")
+                    }
+                } else {
+                    Log.e("ApiClient", "Error: ${error.message}")
+                    onError(error.message ?: "Unknown Error")
+                }
             }
         ) {
             override fun getHeaders(): Map<String, String> {
                 val headers = HashMap<String, String>()
                 headers["Content-Type"] = "application/json"
+                Log.d("ApiClient", "Headers: $headers")
                 return headers
             }
         }
