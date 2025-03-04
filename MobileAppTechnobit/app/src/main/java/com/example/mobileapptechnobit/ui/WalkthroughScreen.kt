@@ -52,24 +52,32 @@ fun WalkthroughScreen(navController: NavController) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // indikator dan tombol Lewati
-        Row(
+
+
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            contentAlignment = Alignment.TopCenter
         ) {
-            Spacer(modifier = Modifier.width(48.dp))
             PageIndicator(currentPage = pagerState.currentPage, pageCount = pages.size)
-            TextButton(onClick = { navController.navigate(Screen.Login.route) }) {
-                Text(
-                    "Lewati",
-                    fontSize = 14.sp,
-                    fontFamily = FontFamily.Default,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black
-                )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp)
+                    .align(Alignment.TopEnd), // Pastikan tombol sejajar di atas kanan
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(onClick = { navController.navigate(Screen.Login.route) }) {
+                    Text(
+                        "Lewati",
+                        fontSize = 14.sp,
+                        fontFamily = FontFamily.Default,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Black
+                    )
+                }
             }
         }
 
@@ -99,7 +107,6 @@ fun WalkthroughScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
-
         ) {
             Text(
                 text = "Berikutnya",
@@ -107,7 +114,6 @@ fun WalkthroughScreen(navController: NavController) {
                 color = Color.White
             )
         }
-
 
         Spacer(modifier = Modifier.height(16.dp))
     }
@@ -153,7 +159,9 @@ fun WalkthroughPageView(page: WalkthroughPage) {
 fun PageIndicator(currentPage: Int, pageCount: Int) {
     Row(
         horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(top = 8.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 22.dp)
     ) {
         repeat(pageCount) { index ->
             Indicator(isSelected = index == currentPage)
@@ -162,12 +170,11 @@ fun PageIndicator(currentPage: Int, pageCount: Int) {
     }
 }
 
-
 @Composable
 fun Indicator(isSelected: Boolean) {
     Box(
         modifier = Modifier
-            .size(if (isSelected) 8.dp else 6.dp)
+            .size(if (isSelected) 8.dp else 8.dp)
             .clip(RoundedCornerShape(50))
             .background(if (isSelected) Color(0xFF2752E7) else Color.LightGray)
             .padding(horizontal = 4.dp)
