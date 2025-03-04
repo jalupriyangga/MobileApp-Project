@@ -165,7 +165,7 @@ fun PageIndicator(currentPage: Int, pageCount: Int) {
     ) {
         repeat(pageCount) { index ->
             Indicator(isSelected = index == currentPage)
-            Spacer(modifier = Modifier.width(6.dp))
+            Spacer(modifier = Modifier.width(4.dp))
         }
     }
 }
