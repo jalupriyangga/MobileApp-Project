@@ -1,47 +1,40 @@
-package com.example.mobileapptechnobit
+package com.example.sisteminformasimenejemensatpam
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.mobileapptechnobit.ui.theme.MobileAppTechnobitTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.sisteminformasimenejemensatpam.data.API.ApiClient
+import com.example.sisteminformasimenejemensatpam.ui.HalamanLupaPassword
+import com.example.sisteminformasimenejemensatpam.ui.HalamanResetPassword
+import com.example.sisteminformasimenejemensatpam.ui.HalamanUbahPassword
+import com.example.sisteminformasimenejemensatpam.ui.theme.SistemInformasiMenejemenSatpamTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        ApiClient.init(this)
+
         setContent {
-            MobileAppTechnobitTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            SistemInformasiMenejemenSatpamTheme {
+                val navController = rememberNavController()
+                val startDestination = "lupa password"
+
+                NavHost(navController = navController, startDestination = startDestination) {
+                    composable("ubah password"){ HalamanUbahPassword(navCtrl = navController) }
+                    composable("lupa password"){ HalamanLupaPassword(navCtrl = navController)}
+                    composable("reset password/{email}"){ backStackEntry ->
+                        HalamanResetPassword(
+                            navCtrl = navController,
+                            email = backStackEntry.arguments?.getString("email") ?: "",
+                        )
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MobileAppTechnobitTheme {
-        Greeting("Android")
     }
 }

@@ -1,4 +1,4 @@
-package com.example.mobileapptechnobit.ui.theme
+package com.example.sisteminformasimenejemensatpam.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
