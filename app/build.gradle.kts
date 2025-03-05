@@ -1,18 +1,15 @@
 plugins {
     alias(libs.plugins.android.application)
-//    alias(libs.plugins.jetbrains.kotlin.android)
-    id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
-    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.jetbrains.kotlin.android)
 }
 
 android {
-    namespace = "com.example.sisteminformasimenejemensatpam"
+    namespace = "com.example.mobileapptechnobit"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.sisteminformasimenejemensatpam"
-        minSdk = 24
+        applicationId = "com.example.mobileapptechnobit"
+        minSdk = 28
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -43,7 +40,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "2.6.0"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
         resources {
@@ -62,17 +59,15 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.material.icons.extended)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.androidx.runtime.livedata)
-
-    implementation(libs.android.mail)
-    implementation(libs.android.activation)
-
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-
+    implementation(libs.androidx.appcompat)
+    implementation("com.android.volley:volley:1.2.1")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation ("androidx.activity:activity-compose:1.5.0")
+    implementation ("androidx.compose.ui:ui:1.1.0")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -80,4 +75,16 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation("androidx.navigation:navigation-compose:2.7.5") // Update ke versi terbaru
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("androidx.compose.material3:material3:1.2.0") // Versi terbaru
+
+    implementation ("androidx.compose.material:material-icons-extended:1.5.1")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.5.1")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+
 }
