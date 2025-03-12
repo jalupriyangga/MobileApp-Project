@@ -53,7 +53,7 @@ fun HalamanUbahPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
     var RepeatNewPass by remember { mutableStateOf("") }
     val context = LocalContext.current
     val repository = AuthRepository()
-    val viewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository = repository))
+    val viewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository = repository, context = context))
     var PassisVisible by remember { mutableStateOf(false) }
     var newPassisVisible by remember { mutableStateOf(false) }
     var repeatNewPassisVisible by remember { mutableStateOf(false) }

@@ -1,5 +1,6 @@
 package com.example.mobileapptechnobit.ViewModel
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,9 +8,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobileapptechnobit.data.repository.AuthRepository
 import kotlinx.coroutines.launch
-import kotlin.math.log
+import org.json.JSONObject
 
-class AuthViewModel(private val repository: AuthRepository): ViewModel(){
+class AuthViewModel(private val repository: AuthRepository, private val context: Context) : ViewModel(){
+
+    private val _loginMessage = MutableLiveData<String>()
+    val loginMessage: LiveData<String> get() = _loginMessage
 
     private val _verifyOtpMessage = MutableLiveData<String>()
     val verifyOtpMessage: LiveData<String> get() = _verifyOtpMessage
@@ -23,26 +27,49 @@ class AuthViewModel(private val repository: AuthRepository): ViewModel(){
     private val _isOtpVerified = MutableLiveData<Boolean>()
     val isOtpVerified: LiveData<Boolean> get() = _isOtpVerified
 
-    private val _loginMessage = MutableLiveData<String>()
-    val loginMessage: LiveData<String> get() = _loginMessage
-
-    fun login(email: String, password:String){
+    fun login(email: String, password: String) {
         viewModelScope.launch {
             try {
                 val response = repository.login(email, password)
-                if(response.isSuccessful){
+                if(response.isSuccessful) {
                     val responseBody = response.body()?.string() ?: "Empty response"
                     Log.d("login", responseBody)
-                    _loginMessage.postValue("Login Berhasil")
-                } else{
-                    val errorBody = response.body()?.string() ?: "Empty response"
+
+                    // Simpan token ke SharedPreferences
+                    val token = extractToken(responseBody)
+                    if (token != null) {
+                        saveToken(token)
+                        _loginMessage.postValue("Login Berhasil")
+                    } else {
+                        _loginMessage.postValue("Login berhasil, tetapi token tidak ditemukan")
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "Empty response"
                     Log.e("login", errorBody)
                     _loginMessage.postValue("Login gagal")
                 }
-            } catch (e: Exception){
-                Log.e("ForgotPassword", "Error: ${e.message}")
-                _requestOtpMessage.postValue("Error: ${e.message}")
+            } catch (e: Exception) {
+                Log.e("login", "Error: ${e.message}")
+                _loginMessage.postValue("Error: ${e.message}")
             }
+        }
+    }
+
+    private fun extractToken(responseBody: String): String? {
+        return try {
+            val json = JSONObject(responseBody)
+            json.getJSONObject("data").optString("token", null)
+        } catch (e: Exception) {
+            Log.e("AuthViewModel", "Error parsing token: ${e.message}")
+            null
+        }
+    }
+
+    private fun saveToken(token: String) {
+        val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putString("AUTH_TOKEN", token)
+            apply()
         }
     }
 

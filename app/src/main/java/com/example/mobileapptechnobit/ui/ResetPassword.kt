@@ -50,7 +50,7 @@ fun HalamanResetPassword(modifier: Modifier = Modifier, navCtrl: NavController, 
     var repeatNewPassIsVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val repository = remember { AuthRepository() }
-    val viewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository = repository))
+    val viewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository = repository, context = context))
     val resetPasswordMessage by viewModel.resetPasswordMessage.observeAsState()
 
     Column(

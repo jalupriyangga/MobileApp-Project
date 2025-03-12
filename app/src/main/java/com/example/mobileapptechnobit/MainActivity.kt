@@ -26,6 +26,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     val loginViewModel: LoginViewModel = viewModel()
 
+                    // Kirim token yang benar ke NavGraph
                     NavGraph(navController = navController, loginViewModel = loginViewModel)
                 }
             }

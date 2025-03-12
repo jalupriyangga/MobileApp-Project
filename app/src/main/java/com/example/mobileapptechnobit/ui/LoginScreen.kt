@@ -24,6 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.R
+import com.example.mobileapptechnobit.Screen
 import com.example.mobileapptechnobit.ViewModel.AuthViewModel
 import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
 import com.example.mobileapptechnobit.data.repository.AuthRepository
@@ -40,20 +41,8 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> U
     val context = LocalContext.current
 
     val repository = remember { AuthRepository() }
-    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository = repository))
+    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository = repository, context = context))
     val loginMessage by authViewModel.loginMessage.observeAsState()
-
-    LaunchedEffect(viewModel.loginState) {
-        when (viewModel.loginState) {
-            LoginState.SUCCESS -> {
-                Toast.makeText(context, "Login Berhasil", Toast.LENGTH_LONG).show()
-                onLoginSuccess()
-            }
-            LoginState.ERROR -> Toast.makeText(context, "Login Gagal", Toast.LENGTH_LONG).show()
-            LoginState.FORBIDDEN -> Toast.makeText(context, "Akun anda salah", Toast.LENGTH_LONG).show()
-            else -> {}
-        }
-    }
 
     Box(
         modifier = Modifier
@@ -134,7 +123,6 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> U
                 Button(
                     onClick = {
                         if (email.isNotBlank() && password.isNotBlank()) {
-//                            viewModel.performLogin(email, password)
                             authViewModel.login(email, password)
                         } else {
                             Toast.makeText(context, "Email dan password harus diisi", Toast.LENGTH_LONG).show()
@@ -145,6 +133,15 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> U
                     modifier = Modifier.fillMaxWidth().height(50.dp).padding(end = 40.dp)
                 ) {
                     Text("Masuk", fontSize = 16.sp, fontFamily = robotoFontFamily, color = Color.White)
+                }
+
+                LaunchedEffect(loginMessage) {
+                    loginMessage?.let {
+                        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                    }
+                    if(loginMessage?.contains("berhasil", ignoreCase = true) == true){
+                        navCtrl.navigate("profile_screen")
+                    }
                 }
             }
         }

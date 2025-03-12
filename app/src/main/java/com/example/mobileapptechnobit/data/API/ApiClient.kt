@@ -6,6 +6,7 @@ import com.example.mobileapptechnobit.data.remote.AuthInterceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import com.google.gson.GsonBuilder
 
 @SuppressLint("StaticFieldLeak")
 
@@ -13,7 +14,7 @@ object ApiClient {
 
     private lateinit var context: Context
 
-    fun init(context: Context){
+    fun init(context: Context) {
         ApiClient.context = context
     }
 
@@ -22,6 +23,11 @@ object ApiClient {
             .addInterceptor(AuthInterceptor(context))
             .build()
     }
+
+    private val gson = GsonBuilder()
+        .setLenient()
+        .create()
+
     private val BASE_URL = "https://app.arunikaprawira.com/api/"
 
     private val LOCAL_URL = "http://10.0.2.2:8000/"
@@ -32,7 +38,7 @@ object ApiClient {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 
