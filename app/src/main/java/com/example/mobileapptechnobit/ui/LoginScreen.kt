@@ -30,16 +30,13 @@ import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
 import com.example.mobileapptechnobit.data.repository.AuthRepository
 import com.example.mobileapptechnobit.ui.theme.primary100
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
-import com.example.mobileapptechnobit.ViewModel.LoginState
-import com.example.mobileapptechnobit.ViewModel.LoginViewModel
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> Unit, navCtrl: NavController) {
+fun LoginScreen(viewModel: AuthViewModel = viewModel(), onLoginSuccess: () -> Unit, navCtrl: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
-
     val repository = remember { AuthRepository() }
     val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository = repository, context = context))
     val loginMessage by authViewModel.loginMessage.observeAsState()
@@ -148,8 +145,9 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> U
     }
 }
 
+
 @Preview(showBackground = true, device = "spec:width=412dp, height=915dp, dpi=440")
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(onLoginSuccess = {}, navCtrl = rememberNavController())
+    LoginScreen(viewModel = viewModel(), onLoginSuccess = {}, navCtrl = rememberNavController())
 }

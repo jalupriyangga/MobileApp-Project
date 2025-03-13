@@ -134,4 +134,20 @@ class AuthViewModel(private val repository: AuthRepository, private val context:
             }
         }
     }
+
+    fun logout() {
+        viewModelScope.launch {
+            try {
+                // Hapus token dari SharedPreferences
+                val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                with(sharedPref.edit()) {
+                    remove("AUTH_TOKEN")
+                    apply()
+                }
+                Log.d("logout", "Logout successful")
+            } catch (e: Exception) {
+                Log.e("logout", "Error: ${e.message}")
+            }
+        }
+    }
 }

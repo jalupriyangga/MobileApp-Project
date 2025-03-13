@@ -8,6 +8,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.PUT
 
 interface ApiService{
 
@@ -26,4 +27,7 @@ interface ApiService{
 
     @GET("v1/profile/employee")
     suspend fun fetchEmployeeProfile(@Header("Authorization") authorization: String): Response<EmployeeResponse>
+
+    @PUT("v1/profile/employee")
+    suspend fun updateEmployeeProfile(@Header("Authorization") authorization: String, @Body request: Map<String, String>): Response<Unit>
 }

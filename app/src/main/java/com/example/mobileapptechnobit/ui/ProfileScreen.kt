@@ -30,8 +30,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.R
 import com.example.mobileapptechnobit.Screen
+import com.example.mobileapptechnobit.ViewModel.AuthViewModel
+import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
 import com.example.mobileapptechnobit.ViewModel.ProfileViewModel
 import com.example.mobileapptechnobit.ViewModel.ProfileViewModelFactory
+import com.example.mobileapptechnobit.data.repository.AuthRepository
 import com.example.mobileapptechnobit.data.repository.ProfileRepository
 
 @Composable
@@ -39,6 +42,10 @@ fun ProfileScreen(navController: NavController, token: String) {
     val context = LocalContext.current
     val repository = ProfileRepository(context)
     val viewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(repository))
+    val authRepository = AuthRepository()
+    val authViewModel: AuthViewModel = viewModel(
+        factory = AuthViewModelFactory(authRepository, context)
+    )
     val profileState = viewModel.employeesProfile.collectAsState()
     val profile = profileState.value
     val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
@@ -295,7 +302,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 10.dp)
-                            .clickable { /* Aksi lihat profil */ },
+                            .clickable { navController.navigate("info_perusahaan_screen") },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -320,7 +327,13 @@ fun ProfileScreen(navController: NavController, token: String) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 50.dp, end = 20.dp),
+                    .padding(top = 50.dp, end = 20.dp)
+                    .clickable {
+                        navController.navigate(Screen.forgotPassword.route) {
+                            popUpTo(Screen.Profile.route) { inclusive = true }
+                        }
+                        authViewModel.logout()
+                    },
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(4.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
@@ -328,8 +341,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 10.dp, horizontal = 16.dp)
-                        .clickable { /* Aksi ubah password */ },
+                        .padding(vertical = 10.dp, horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -358,7 +370,13 @@ fun ProfileScreen(navController: NavController, token: String) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 15.dp, end = 20.dp),
+                    .padding(top = 15.dp, end = 20.dp)
+                    .clickable {
+                        authViewModel.logout()
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Profile.route) { inclusive = true }
+                        }
+                    },
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(4.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
@@ -366,8 +384,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 10.dp, horizontal = 16.dp)
-                        .clickable { /* Aksi logout */ },
+                        .padding(vertical = 10.dp, horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {

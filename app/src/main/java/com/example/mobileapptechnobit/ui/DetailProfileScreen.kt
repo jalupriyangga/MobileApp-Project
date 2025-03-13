@@ -2,17 +2,22 @@ package com.example.mobileapptechnobit.ui
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.mobileapptechnobit.R
 import com.example.mobileapptechnobit.ViewModel.ProfileViewModel
 import com.example.mobileapptechnobit.ViewModel.ProfileViewModelFactory
 import com.example.mobileapptechnobit.data.repository.ProfileRepository
@@ -44,32 +50,32 @@ fun DetailProfileScreen(navController: NavController, token: String) {
         topBar = {
             TopAppBar(
                 title = {
-                    Box(
+                    Row(
                         modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(
-                            text = "Lihat Profile",
-                            color = Color.White,
-                            textAlign = TextAlign.Center,
-                            fontSize = 20.sp
-                        )
-                    }
-                },
-                navigationIcon = {
-                    Box(
-                        modifier = Modifier.fillMaxHeight(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Box(modifier = Modifier.weight(1f)) {
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                            }
+                        }
+                        Box(modifier = Modifier.weight(6f), contentAlignment = Alignment.Center) {
+                            Text(
+                                text = "Profil Anda",
+                                color = Color.White,
+                                textAlign = TextAlign.Center,
+                                fontSize = 22.sp
+                            )
+                        }
+                        Box(modifier = Modifier.weight(1f)) {
                         }
                     }
                 },
                 colors = TopAppBarDefaults.smallTopAppBarColors(
                     containerColor = Color(0xFF2752E7)
                 ),
-                modifier = Modifier.height(100.dp),
+                modifier = Modifier.height(120.dp),
             )
         }
     ) { paddingValues ->
@@ -103,12 +109,55 @@ fun DetailProfileScreen(navController: NavController, token: String) {
                         val (label, value) = item
                         ProfileAttributeCard(label, value)
                     }
+
+                    // Kartu Edit Profil di bagian bawah
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .clickable { navController.navigate("edit_profile_screen") },
+                            shape = RoundedCornerShape(16.dp),
+                            elevation = CardDefaults.cardElevation(4.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 10.dp, horizontal = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.edt_profile),
+                                        contentDescription = "edit",
+                                        modifier = Modifier.size(40.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        fontSize = 14.sp,
+                                        text = "Edit Profil",
+                                        color = Color.Black
+                                    )
+                                }
+                                Icon(
+                                    imageVector = Icons.Default.ArrowForward,
+                                    contentDescription = "Arrow",
+                                    tint = Color.Blue,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                        }
+                    }
                 }
             } ?: run {
-                Box(
+                Column (
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
                     CircularProgressIndicator()
                 }
             }

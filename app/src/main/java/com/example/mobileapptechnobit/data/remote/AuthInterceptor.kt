@@ -12,7 +12,6 @@ class AuthInterceptor(private val context: Context) : Interceptor {
 
         Log.d("AuthInterceptor", "Token Retrieved: $token")
 
-        // Cek apakah Authorization header sudah ada di request
         val originalRequest = chain.request()
         val requestBuilder = originalRequest.newBuilder()
 
