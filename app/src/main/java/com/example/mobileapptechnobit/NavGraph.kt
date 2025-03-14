@@ -72,6 +72,9 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) { /
         composable(Screen.EditProfile.route) {
             EditProfile(navController, token = token ?: "")
         }
+        composable(Screen.EditSukses.route) {
+            EditSuksesScreen(navController, token = token ?: "")
+        }
         composable(Screen.InfoPerusahaan.route) {
             DetailProfileScreen(navController = navController, token = token ?: "")
         }
@@ -88,5 +91,6 @@ sealed class Screen(val route: String) {
     object Profile : Screen("profile_screen")
     object DetailProfile : Screen("detailprofile_screen")
     object EditProfile : Screen("edit_profile_screen")
+    object EditSukses : Screen("edit_sukses_screen")
     object InfoPerusahaan : Screen("info_perusahaan_screen")
 }

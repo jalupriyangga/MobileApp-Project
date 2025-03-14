@@ -2,6 +2,13 @@ package com.example.mobileapptechnobit.data.remote
 
 import com.google.gson.annotations.SerializedName
 
+data class EmployeeResponse(
+    val status: Int,
+    val success: Boolean,
+    val message: String,
+    val data: Employees
+)
+
 data class Employees (
     val id: Int,
     @SerializedName("user_id") val userId: Int,

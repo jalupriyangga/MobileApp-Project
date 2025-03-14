@@ -2,6 +2,7 @@ package com.example.mobileapptechnobit.ui
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,12 +12,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberImagePainter
 import com.example.mobileapptechnobit.R
 import com.example.mobileapptechnobit.Screen
 import com.example.mobileapptechnobit.ViewModel.AuthViewModel
@@ -36,6 +37,10 @@ import com.example.mobileapptechnobit.ViewModel.ProfileViewModel
 import com.example.mobileapptechnobit.ViewModel.ProfileViewModelFactory
 import com.example.mobileapptechnobit.data.repository.AuthRepository
 import com.example.mobileapptechnobit.data.repository.ProfileRepository
+import com.example.mobileapptechnobit.data.API.UserProfileResponse
+import com.example.mobileapptechnobit.ui.theme.black20
+import com.example.mobileapptechnobit.ui.theme.primary100
+import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 
 @Composable
 fun ProfileScreen(navController: NavController, token: String) {
@@ -43,17 +48,94 @@ fun ProfileScreen(navController: NavController, token: String) {
     val repository = ProfileRepository(context)
     val viewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(repository))
     val authRepository = AuthRepository()
-    val authViewModel: AuthViewModel = viewModel(
-        factory = AuthViewModelFactory(authRepository, context)
-    )
+    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(authRepository, context))
     val profileState = viewModel.employeesProfile.collectAsState()
     val profile = profileState.value
     val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     val token = sharedPref.getString("AUTH_TOKEN", null) ?: ""
 
+    var showLogoutDialog by remember { mutableStateOf(false) }
+    var userProfile by remember { mutableStateOf<UserProfileResponse?>(null) }
+
     LaunchedEffect(token) {
         viewModel.fetchEmployeesProfile(token)
         Log.d("PS", "Token yang diterima: $token")
+        userProfile = repository.getUserProfile(token)
+    }
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = {
+                Text(
+                    text = "Keluar Aplikasi?",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = robotoFontFamily
+                )
+            },
+            text = {
+                Text(
+                    text = "Apakah Anda yakin ingin keluar?",
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    fontFamily = robotoFontFamily
+                )
+            },
+            confirmButton = {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Button(
+                            onClick = {
+                                authViewModel.logout()
+                                navController.navigate(Screen.Login.route) {
+                                    popUpTo(Screen.Profile.route) { inclusive = true }
+                                }
+                                showLogoutDialog = false
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = primary100),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .weight(1f)
+                        ) {
+                            Text(
+                                text = "Keluar",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.White,
+                                fontFamily = robotoFontFamily
+                            )
+                        }
+                        OutlinedButton(
+                            onClick = { showLogoutDialog = false },
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black),
+                            shape = RoundedCornerShape(8.dp),
+                            border = BorderStroke(1.dp, Color.Gray),
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .weight(1f)
+                        ) {
+                            Text(
+                                text = "Batal",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                fontFamily = robotoFontFamily
+                            )
+                        }
+                    }
+                }
+            },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.background(Color.Transparent)
+        )
     }
 
     Box(
@@ -73,9 +155,9 @@ fun ProfileScreen(navController: NavController, token: String) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 145.dp, start = 20.dp, end = 20.dp, bottom = 30.dp),
+                .padding(top = 145.dp, start = 20.dp, end = 20.dp, bottom = 30.dp)
+                .shadow(16.dp, RoundedCornerShape(16.dp), clip = true),
             shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(4.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
             Row(
@@ -85,14 +167,16 @@ fun ProfileScreen(navController: NavController, token: String) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(CircleShape)
-                        .background(Color.LightGray)
-                )
+                userProfile?.data?.photo?.let { photoUrl ->
+                    Image(
+                        painter = rememberImagePainter(data = photoUrl),
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape)
+                            .background(Color.LightGray)
+                    )
+                }
 
                 Column(
                     modifier = Modifier
@@ -101,10 +185,12 @@ fun ProfileScreen(navController: NavController, token: String) {
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = profile?.fullname ?: "NAMA",
-                        fontSize = 20.sp,
+                        text = profile?.fullname ?: "",
+                        fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = Color.Black,
+                        fontFamily = robotoFontFamily
+
                     )
                     Spacer(modifier = Modifier.height(2.dp))
 
@@ -118,7 +204,8 @@ fun ProfileScreen(navController: NavController, token: String) {
                             text = "Lihat profil",
                             fontSize = 14.sp,
                             color = Color.Blue,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = robotoFontFamily
                         )
                         Icon(
                             imageVector = Icons.Default.ArrowForward,
@@ -137,13 +224,12 @@ fun ProfileScreen(navController: NavController, token: String) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.line1_profile),
-                    contentDescription = null,
+                Divider(
                     modifier = Modifier
+                        .height(1.dp)
                         .fillMaxWidth()
-                        .height(4.dp)
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = 16.dp),
+                    color = black20,
                 )
                 Row(
                     modifier = Modifier
@@ -167,13 +253,16 @@ fun ProfileScreen(navController: NavController, token: String) {
                             Text(
                                 text = "Departemen",
                                 fontSize = 14.sp,
-                                color = Color.Gray
+                                color = Color.Gray,
+                                fontWeight = FontWeight.Normal,
+                                fontFamily = robotoFontFamily
                             )
                             Text(
-                                text = profile?.department ?: "Keamanan",
+                                text = profile?.department ?: "",
                                 fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.Black,
+                                fontFamily = robotoFontFamily
                             )
                         }
                     }
@@ -182,7 +271,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                         modifier = Modifier
                             .height(40.dp)
                             .width(1.dp),
-                        color = Color.LightGray
+                        color = black20
                     )
 
                     Row(
@@ -200,13 +289,16 @@ fun ProfileScreen(navController: NavController, token: String) {
                             Text(
                                 text = "Jabatan",
                                 fontSize = 14.sp,
-                                color = Color.Gray
+                                color = Color.Gray,
+                                fontWeight = FontWeight.Normal,
+                                fontFamily = robotoFontFamily
                             )
                             Text(
-                                text = profile?.position ?: "Staff",
+                                text = profile?.position ?: "",
                                 fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.Black,
+                                fontFamily = robotoFontFamily
                             )
                         }
                     }
@@ -221,14 +313,16 @@ fun ProfileScreen(navController: NavController, token: String) {
         ) {
             Text(
                 text = "Informasi Perusahaan",
-                fontSize = 22.sp
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = robotoFontFamily
             )
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 10.dp, end = 20.dp, bottom = 30.dp),
+                    .padding(top = 10.dp, end = 20.dp, bottom = 30.dp)
+                    .shadow(20.dp, RoundedCornerShape(16.dp), clip = true),
                 shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(4.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(
@@ -248,13 +342,17 @@ fun ProfileScreen(navController: NavController, token: String) {
                             Text(
                                 text = "No. WA",
                                 fontSize = 14.sp,
-                                color = Color.Gray
+                                color = Color.Gray,
+                                fontWeight = FontWeight.Normal,
+                                fontFamily = robotoFontFamily
                             )
                             Text(
-                                text = profile?.phone ?: "0895363734078",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black
+                                text = "0895363734078",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.Black,
+                                fontFamily = robotoFontFamily
+
                             )
                         }
                     }
@@ -263,7 +361,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                         modifier = Modifier
                             .height(1.dp)
                             .fillMaxWidth(),
-                        color = Color.LightGray,
+                        color = black20,
                     )
 
                     Row(
@@ -280,13 +378,16 @@ fun ProfileScreen(navController: NavController, token: String) {
                             Text(
                                 text = "Email",
                                 fontSize = 14.sp,
-                                color = Color.Gray
+                                color = Color.Gray,
+                                fontWeight = FontWeight.Normal,
+                                fontFamily = robotoFontFamily
                             )
                             Text(
                                 text = "iniemail.com",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.Black,
+                                fontFamily = robotoFontFamily
                             )
                         }
                     }
@@ -295,7 +396,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                         modifier = Modifier
                             .height(1.dp)
                             .fillMaxWidth(),
-                        color = Color.LightGray,
+                        color = black20,
                     )
 
                     Row(
@@ -308,14 +409,15 @@ fun ProfileScreen(navController: NavController, token: String) {
                     ) {
                         Text(
                             text = "Lihat Selengkapnya",
-                            fontSize = 14.sp,
-                            color = Color.LightGray,
-                            fontWeight = FontWeight.Medium
+                            fontSize = 10.sp,
+                            color = Color.Gray,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = robotoFontFamily
                         )
                         Icon(
                             imageVector = Icons.Default.ArrowForward,
                             contentDescription = "Arrow",
-                            tint = Color.LightGray,
+                            tint = Color.Gray,
                             modifier = Modifier
                                 .size(22.dp)
                                 .padding(start = 7.dp)
@@ -333,9 +435,9 @@ fun ProfileScreen(navController: NavController, token: String) {
                             popUpTo(Screen.Profile.route) { inclusive = true }
                         }
                         authViewModel.logout()
-                    },
+                    }
+                    .shadow(12.dp, RoundedCornerShape(16.dp), clip = true),
                 shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(4.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Row(
@@ -355,7 +457,9 @@ fun ProfileScreen(navController: NavController, token: String) {
                         Text(
                             fontSize = 14.sp,
                             text = "Ubah Password",
-                            color = Color.Black
+                            color = Color.Black,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = robotoFontFamily
                         )
                     }
                     Icon(
@@ -372,13 +476,10 @@ fun ProfileScreen(navController: NavController, token: String) {
                     .fillMaxWidth()
                     .padding(top = 15.dp, end = 20.dp)
                     .clickable {
-                        authViewModel.logout()
-                        navController.navigate(Screen.Login.route) {
-                            popUpTo(Screen.Profile.route) { inclusive = true }
-                        }
-                    },
+                        showLogoutDialog = true
+                    }
+                    .shadow(12.dp, RoundedCornerShape(16.dp), clip = true),
                 shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(4.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Row(
@@ -398,7 +499,9 @@ fun ProfileScreen(navController: NavController, token: String) {
                         Text(
                             fontSize = 14.sp,
                             text = "Keluar Aplikasi",
-                            color = Color.Black
+                            color = Color.Black,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = robotoFontFamily
                         )
                     }
                     Icon(

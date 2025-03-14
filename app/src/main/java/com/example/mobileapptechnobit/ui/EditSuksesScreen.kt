@@ -31,7 +31,7 @@ import com.example.mobileapptechnobit.ui.theme.primary100
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 
 @Composable
-fun EditSuksesScreen(navController: NavController) {
+fun EditSuksesScreen(navController: NavController, token: String) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -55,7 +55,8 @@ fun EditSuksesScreen(navController: NavController) {
                 text = "Selesai!",
                 fontSize = 22.sp,
                 fontFamily = robotoFontFamily,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = Color.Black
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -69,20 +70,20 @@ fun EditSuksesScreen(navController: NavController) {
         }
 
         Button(
-            onClick = { navController.navigate("profile_screen") },
+            onClick = { navController.navigate("detailprofile_screen") },
             colors = ButtonDefaults.buttonColors(containerColor = primary100),
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(58.dp)
+                .height(75.dp)
                 .padding(bottom = 16.dp)
         ) {
             Text(
                 text = "Kembali",
                 fontSize = 16.sp,
                 fontFamily = robotoFontFamily,
-                fontWeight = FontWeight.Normal,
+                fontWeight = FontWeight.Medium,
                 color = Color.White
             )
         }
@@ -92,5 +93,5 @@ fun EditSuksesScreen(navController: NavController) {
 @Preview(showBackground = true, device = "spec:width=412dp, height=915dp, dpi=440")
 @Composable
 fun EditSuksesScreenPreview() {
-    EditSuksesScreen(navController = rememberNavController())
+    EditSuksesScreen(navController = rememberNavController(), token = "dummy_token")
 }

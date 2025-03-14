@@ -30,4 +30,7 @@ interface ApiService{
 
     @PUT("v1/profile/employee")
     suspend fun updateEmployeeProfile(@Header("Authorization") authorization: String, @Body request: Map<String, String>): Response<Unit>
+
+    @GET("v1/profile/user")
+    suspend fun getUserProfile(@Header("Authorization") token: String): Response<UserProfileResponse>
 }
