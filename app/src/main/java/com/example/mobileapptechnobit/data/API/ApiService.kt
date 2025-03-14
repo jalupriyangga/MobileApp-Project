@@ -9,15 +9,16 @@ import retrofit2.http.POST
 interface ApiService{
 
     @Headers("Accept: application/json", "Content-Type: application/json", "Authorization: Bearer YOUR_ACCESS_TOKEN")
-    @POST("login")
+    @POST("v1/login")
     suspend fun login(@Body request: HashMap<String, String>): Response<ResponseBody>
 
-    @POST("android/request-otp")
+    @POST("v1/android/request-otp")
     suspend fun requestOtp(@Body email: HashMap<String, String>): Response<ResponseBody>
 
-    @POST("android/reset-password")
+    @POST("v1/android/verify-otp")
+    suspend fun verifyOtp(@Body request: HashMap<String, String>): Response<ResponseBody>
+
+    @POST("v1/android/reset-password")
     suspend fun resetPassword(@Body request: HashMap<String, String>): Response<ResponseBody>
 
-    @POST("android/verify-otp")
-    suspend fun verifyOtp(@Body request: HashMap<String, String>): Response<ResponseBody>
 }

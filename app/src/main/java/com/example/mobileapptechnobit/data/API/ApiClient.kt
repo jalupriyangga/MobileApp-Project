@@ -24,6 +24,8 @@ object ApiClient {
     }
     private val BASE_URL = "https://app.arunikaprawira.com/api/"
 
+    private val ALTERNATE_URL = "https://103.82.240.20/api/"
+
     private val LOCAL_URL = "http://10.0.2.2:8000/"
 
     private val LOCAL_URL2 = "http://192.168.100.114:8000/api/"

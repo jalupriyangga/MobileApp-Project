@@ -26,6 +26,9 @@ class AuthViewModel(private val repository: AuthRepository): ViewModel(){
     private val _loginMessage = MutableLiveData<String>()
     val loginMessage: LiveData<String> get() = _loginMessage
 
+    private val _isSuccess = MutableLiveData<Boolean>()
+    val isSuccess: LiveData<Boolean> get() = _isSuccess
+
     fun login(email: String, password:String){
         viewModelScope.launch {
             try {
@@ -40,8 +43,8 @@ class AuthViewModel(private val repository: AuthRepository): ViewModel(){
                     _loginMessage.postValue("Login gagal")
                 }
             } catch (e: Exception){
-                Log.e("ForgotPassword", "Error: ${e.message}")
-                _requestOtpMessage.postValue("Error: ${e.message}")
+                Log.e("login", "Error: ${e.message}")
+                _loginMessage.postValue("Error: ${e.message}")
             }
         }
     }
@@ -96,6 +99,7 @@ class AuthViewModel(private val repository: AuthRepository): ViewModel(){
                     val responseBody = response.body()?.string() ?: "Empty response"
                     Log.d("ResetPassword", "Response: $responseBody")
                     _resetPasswordMessage.value = ("Password berhasil diperbarui!")
+                    _isSuccess.value = true
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "Unknown error"
                     Log.e("ResetPassword", "Failed: ${response.code()}, Error: $errorBody")

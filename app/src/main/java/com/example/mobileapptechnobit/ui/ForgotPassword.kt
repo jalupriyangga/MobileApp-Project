@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -28,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,7 +43,7 @@ import com.example.mobileapptechnobit.data.repository.AuthRepository
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 
 @Composable
-fun HalamanLupaPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
+fun ForgotPasswordScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
     var email by remember { mutableStateOf("") }
     val context = LocalContext.current
     var inputOTP by remember { mutableStateOf("") }
@@ -55,14 +57,16 @@ fun HalamanLupaPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
         Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        IconButton(onClick = { navCtrl.navigate("login_screen") }, modifier = Modifier.align(Alignment.Start).padding(top = 20.dp, start = 20.dp)) {
+        IconButton(
+            onClick = { navCtrl.navigate("login_screen") },
+            modifier = Modifier.align(Alignment.Start).padding(top = 20.dp, start = 20.dp)) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = null,
             )
         }
 
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(30.dp))
         Text(
             text = "Lupa Password",
             fontFamily = robotoFontFamily,
@@ -74,28 +78,25 @@ fun HalamanLupaPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
         Text(
             text = "Silakan masukkan email anda",
             fontFamily = robotoFontFamily,
-            fontWeight = FontWeight(500),
+            fontWeight = FontWeight(400),
+            fontSize = 16.sp
         )
 
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         Text(
             text = "Email",
             textAlign = TextAlign.Left,
             fontFamily = robotoFontFamily,
             fontWeight = FontWeight(500),
-            fontSize = 17.sp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .padding(bottom = 8.dp)
+            fontSize = 16.sp,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp).padding(bottom = 8.dp)
         )
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
             placeholder = { Text(text = "Masukkan email anda", color = Color.Gray) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -106,35 +107,26 @@ fun HalamanLupaPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
                     return@Button
                 }
                 viewModel.requestOtp(email)
-                forgotPasswordMessage?.let {
-                    Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-                }
             },
             colors = ButtonDefaults.buttonColors(Color(0xFF2752E7)),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .height(50.dp),
-            shape = RoundedCornerShape(5.dp)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp).height(50.dp),
+            shape = RoundedCornerShape(5.dp),
         ) {
             Text(
                 text = "Kirim Kode OTP",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight(500),
-                fontSize = 17.sp,
+                fontSize = 16.sp,
             )
         }
         LaunchedEffect (isVerified){
+            forgotPasswordMessage?.let {
+                Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            }
             if(isVerified == true){
                 navCtrl.navigate("reset_password_screen/$email")
             }
         }
-//        forgotPasswordMessage?.let {
-//            Text(text = it)
-//        }
-//        verifyOtpMessage?.let {
-//            Text(text = it)
-//        }
 
         Spacer(modifier = Modifier.height(40.dp))
         Text(
@@ -142,19 +134,16 @@ fun HalamanLupaPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
             textAlign = TextAlign.Left,
             fontFamily = robotoFontFamily,
             fontWeight = FontWeight(500),
-            fontSize = 17.sp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .padding(bottom = 8.dp)
+            fontSize = 16.sp,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp).padding(bottom = 8.dp)
         )
         OutlinedTextField(
             value = inputOTP,
             onValueChange = { inputOTP = it},
             placeholder = { Text(text = "Masukkan Kode OTP", color = Color.Gray)},
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+
         )
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -170,17 +159,14 @@ fun HalamanLupaPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
                 }
             },
             colors = ButtonDefaults.buttonColors(Color(0xFF2752E7)),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .height(50.dp),
-            shape = RoundedCornerShape(5.dp)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp).height(50.dp),
+            shape = RoundedCornerShape(5.dp),
         ) {
             Text(
                 text = "Lanjut",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight(500),
-                fontSize = 17.sp,
+                fontSize = 16.sp,
             )
         }
     }
@@ -189,5 +175,5 @@ fun HalamanLupaPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
 @Preview(showBackground = true)
 @Composable
 private fun LupaPassPrev() {
-    HalamanLupaPassword(navCtrl = rememberNavController())
+    ForgotPasswordScreen(navCtrl = rememberNavController())
 }

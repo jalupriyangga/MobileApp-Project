@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -14,8 +15,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -69,15 +72,15 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> U
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Masuk", fontSize = 22.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(13.dp))
+                Text("Masuk", fontSize = 25.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(5.dp))
                 Text("Masuk ke akun anda selanjutnya", fontSize = 16.sp, fontFamily = robotoFontFamily)
             }
 
             Column(
                 modifier = Modifier.padding(top = 40.dp, start = 40.dp)
             ) {
-                Text("Email", fontSize = 16.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight.Medium)
+                Text("Email", fontSize = 16.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight.Medium, modifier = Modifier.padding(bottom = 8.dp))
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
@@ -87,12 +90,14 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> U
                         focusedBorderColor = Color.Gray,
                         unfocusedBorderColor = Color.Gray,
                         cursorColor = Color.Black
-                    )
+                    ),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+
                 )
 
                 Spacer(modifier = Modifier.height(15.dp))
 
-                Text("Password", fontSize = 16.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight.Medium)
+                Text("Password", fontSize = 16.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight.Medium, modifier = Modifier.padding(bottom = 8.dp))
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
@@ -112,24 +117,27 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> U
                         focusedBorderColor = Color.Gray,
                         unfocusedBorderColor = Color.Gray,
                         cursorColor = Color.Black
+                    ),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                )
+
+                Spacer(modifier = Modifier.height(40.dp))
+                Column (Modifier.fillMaxWidth().padding(horizontal = 40.dp), horizontalAlignment = Alignment.End) {
+                    Text(
+                        text = "Ubah Password",
+                        textDecoration = TextDecoration.Underline,
+                        color = primary100,
+                        fontFamily = robotoFontFamily,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier
+                            .clickable {
+                                navCtrl.navigate("forgot_password_screen")
+                            }
                     )
-                )
+                }
 
-                Text(
-                    text = "Ubah Password",
-                    textDecoration = TextDecoration.Underline,
-                    color = primary100,
-                    fontFamily = robotoFontFamily,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier
-                        .clickable {
-                            navCtrl.navigate("forgot_password_screen")
-                        }
-                        .align(Alignment.End)
-                        .padding(40.dp)
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(64.dp))
 
                 Button(
                     onClick = {
@@ -145,6 +153,14 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> U
                     modifier = Modifier.fillMaxWidth().height(50.dp).padding(end = 40.dp)
                 ) {
                     Text("Masuk", fontSize = 16.sp, fontFamily = robotoFontFamily, color = Color.White)
+                }
+                LaunchedEffect(loginMessage) {
+                    loginMessage?.let {
+                        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                    }
+                    if(loginMessage?.contains("berhasil", ignoreCase = true) == true){
+                        navCtrl.navigate("home_screen")
+                    }
                 }
             }
         }
