@@ -27,36 +27,22 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.R
+import com.example.mobileapptechnobit.Screen
 import com.example.mobileapptechnobit.ViewModel.AuthViewModel
 import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
 import com.example.mobileapptechnobit.data.repository.AuthRepository
 import com.example.mobileapptechnobit.ui.theme.primary100
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
-import com.example.mobileapptechnobit.ViewModel.LoginState
-import com.example.mobileapptechnobit.ViewModel.LoginViewModel
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> Unit, navCtrl: NavController) {
+fun LoginScreen(viewModel: AuthViewModel = viewModel(), onLoginSuccess: () -> Unit, navCtrl: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
-
     val repository = remember { AuthRepository() }
-    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository = repository))
+    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository = repository, context = context))
     val loginMessage by authViewModel.loginMessage.observeAsState()
-
-    LaunchedEffect(viewModel.loginState) {
-        when (viewModel.loginState) {
-            LoginState.SUCCESS -> {
-                Toast.makeText(context, "Login Berhasil", Toast.LENGTH_LONG).show()
-                onLoginSuccess()
-            }
-            LoginState.ERROR -> Toast.makeText(context, "Login Gagal", Toast.LENGTH_LONG).show()
-            LoginState.FORBIDDEN -> Toast.makeText(context, "Akun anda salah", Toast.LENGTH_LONG).show()
-            else -> {}
-        }
-    }
 
     Box(
         modifier = Modifier
@@ -142,7 +128,6 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> U
                 Button(
                     onClick = {
                         if (email.isNotBlank() && password.isNotBlank()) {
-//                            viewModel.performLogin(email, password)
                             authViewModel.login(email, password)
                         } else {
                             Toast.makeText(context, "Email dan password harus diisi", Toast.LENGTH_LONG).show()
@@ -167,8 +152,9 @@ fun LoginScreen(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> U
     }
 }
 
+
 @Preview(showBackground = true, device = "spec:width=412dp, height=915dp, dpi=440")
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(onLoginSuccess = {}, navCtrl = rememberNavController())
+    LoginScreen(viewModel = viewModel(), onLoginSuccess = {}, navCtrl = rememberNavController())
 }

@@ -10,7 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.data.API.ApiClient
-import com.example.mobileapptechnobit.ViewModel.LoginViewModel
+import com.example.mobileapptechnobit.ViewModel.AuthViewModel
+import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
+import com.example.mobileapptechnobit.data.repository.AuthRepository
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,9 +26,14 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    val loginViewModel: LoginViewModel = viewModel()
+                    val context = this
+                    val authRepository = AuthRepository()
+                    val authViewModel: AuthViewModel = viewModel(
+                        factory = AuthViewModelFactory(authRepository, context)
+                    )
 
-                    NavGraph(navController = navController, loginViewModel = loginViewModel)
+                    // Kirim AuthViewModel ke NavGraph
+                    NavGraph(navController = navController, authViewModel = authViewModel)
                 }
             }
         }

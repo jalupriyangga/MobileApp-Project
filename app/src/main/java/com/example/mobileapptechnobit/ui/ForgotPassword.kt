@@ -48,7 +48,7 @@ fun ForgotPasswordScreen(modifier: Modifier = Modifier, navCtrl: NavController) 
     val context = LocalContext.current
     var inputOTP by remember { mutableStateOf("") }
     val repository = remember { AuthRepository() }
-    val viewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository = repository))
+    val viewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository = repository, context = context))
     val forgotPasswordMessage by viewModel.requestOtpMessage.observeAsState()
     val verifyOtpMessage by viewModel.verifyOtpMessage.observeAsState()
     val isVerified by viewModel.isOtpVerified.observeAsState()
