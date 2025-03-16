@@ -20,7 +20,7 @@ class ProfileRepository(private val context: Context) {
                 Log.d("ProfileRepository", "Response Code: ${response.code()}")
                 Log.d("ProfileRepository", "Response Message: ${response.message()}")
                 Log.d("ProfileRepository", "Response Headers: ${response.headers()}")
-                Log.d("ProfileRepository", "Request Headers: ${response.raw().request().headers()}")
+                Log.d("ProfileRepository", "Request Headers: ${response.raw().request.headers}")
 
                 if (response.isSuccessful) {
                     val profileData = response.body()?.data
@@ -51,7 +51,7 @@ class ProfileRepository(private val context: Context) {
                 Log.d("ProfileRepository", "Response Code: ${response.code()}")
                 Log.d("ProfileRepository", "Response Message: ${response.message()}")
                 Log.d("ProfileRepository", "Response Headers: ${response.headers()}")
-                Log.d("ProfileRepository", "Request Headers: ${response.raw().request().headers()}")
+                Log.d("ProfileRepository", "Request Headers: ${response.raw().request.headers}")
 
                 val responseBody = response.body()?.toString()
                 Log.d("ProfileRepository", "Response Body: $responseBody")
@@ -82,7 +82,7 @@ class ProfileRepository(private val context: Context) {
                 Log.d("ProfileRepository", "Response Code: ${response.code()}")
                 Log.d("ProfileRepository", "Response Message: ${response.message()}")
                 Log.d("ProfileRepository", "Response Headers: ${response.headers()}")
-                Log.d("ProfileRepository", "Request Headers: ${response.raw().request().headers()}")
+                Log.d("ProfileRepository", "Request Headers: ${response.raw().request.headers}")
 
                 if (response.isSuccessful) {
                     val profileData = response.body()

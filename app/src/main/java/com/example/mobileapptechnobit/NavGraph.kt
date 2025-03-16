@@ -11,7 +11,6 @@ import androidx.navigation.compose.composable
 import com.example.mobileapptechnobit.ui.*
 import com.example.mobileapptechnobit.ui.ForgotPasswordScreen
 import com.example.mobileapptechnobit.ui.ResetPasswordScreen
-import com.example.mobileapptechnobit.ui.component.SuccessScreen
 import com.example.mobileapptechnobit.ViewModel.AuthViewModel
 import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
 import com.example.mobileapptechnobit.data.repository.AuthRepository
@@ -56,6 +55,15 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) { /
                 email = backStackEntry.arguments?.getString("email") ?: ""
             )
         }
+        composable(Screen.Home.route){
+            com.example.mobileapptechnobit.ui.HomeScreen(navCtrl = navController)
+        }
+        composable(Screen.History.route){
+            HistoryScreen(navCtrl = navController)
+        }
+        composable(Screen.Schedule.route){
+            ScheduleScreen(navCtrl = navController)
+        }
         composable(Screen.Profile.route) {
             ProfileScreen(navController = navController, token = token ?: "")
         }
@@ -79,8 +87,7 @@ sealed class Screen(val route: String) {
     object Walkthrough : Screen("walkthrough_screen")
     object Login : Screen("login_screen")
     object Home : Screen("home_screen")
-    object forgotPassword : Screen("forgot_password_screen")
-    object  ForgotPassword : Screen("forgot_password_screen")
+    object ForgotPassword : Screen("forgot_password_screen")
     object ResetPassword : Screen("reset_password_screen/{email}")
     object Profile : Screen("profile_screen")
     object DetailProfile : Screen("detailprofile_screen")
