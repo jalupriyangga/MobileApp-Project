@@ -1,6 +1,8 @@
 package com.example.mobileapptechnobit.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,20 +31,36 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberImagePainter
 import com.example.mobileapptechnobit.R
+import com.example.mobileapptechnobit.ViewModel.AuthViewModel
+import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
+import com.example.mobileapptechnobit.ViewModel.ProfileViewModel
+import com.example.mobileapptechnobit.ViewModel.ProfileViewModelFactory
+import com.example.mobileapptechnobit.data.API.UserProfileResponse
+import com.example.mobileapptechnobit.data.repository.AuthRepository
+import com.example.mobileapptechnobit.data.repository.ProfileRepository
 import com.example.mobileapptechnobit.ui.component.BottomNavigationBar
 import com.example.mobileapptechnobit.ui.component.TopAppBar
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
@@ -75,24 +93,45 @@ fun HomeScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
 
 @Composable
 fun ProfileSection(modifier: Modifier = Modifier) {
+
+    val context = LocalContext.current
+    val repository = ProfileRepository(context)
+    val viewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(repository))
+    val authRepository = AuthRepository()
+    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(authRepository, context))
+    val profileState = viewModel.employeesProfile.collectAsState()
+    val profile = profileState.value
+    val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    val token = sharedPref.getString("AUTH_TOKEN", null) ?: ""
+
+    var userProfile by remember { mutableStateOf<UserProfileResponse?>(null) }
+
+    LaunchedEffect(token) {
+        viewModel.fetchEmployeesProfile(token)
+        Log.d("PS", "Token yang diterima: $token")
+        userProfile = repository.getUserProfile(token)
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 80.dp, start = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(R.drawable.iconamoon_profile), // Ganti dengan gambar profil
-            contentDescription = "Profile Picture",
-            modifier = Modifier
-                .size(70.dp)
-                .clip(CircleShape)
-                .background(Color.Gray)
-        )
+        userProfile?.data?.photo.let { photo ->
+            Image(
+                painter = rememberImagePainter(data = photo), // Ganti dengan gambar profil
+                contentDescription = "Profile Picture",
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape)
+                    .background(Color.Gray)
+            )
+        }
         Spacer(modifier = Modifier.width(12.dp))
         Column {
-            Text("Daniel Budianto", fontSize = 23.sp, color = Color.White, fontFamily = robotoFontFamily, fontWeight = FontWeight(500))
-            Text("Staff", fontSize = 16.sp, color = Color.White, fontFamily = robotoFontFamily, fontWeight = FontWeight(400))
+            Text(profile?.fullname ?: "", fontSize = 25.sp, color = Color.White, fontFamily = robotoFontFamily, fontWeight = FontWeight(500))
+            Text(profile?.position ?: "", fontSize = 15.sp, color = Color.White, fontFamily = robotoFontFamily, fontWeight = FontWeight(400))
         }
     }
 }
