@@ -77,7 +77,7 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) { /
             EditSuksesScreen(navController, token = token ?: "")
         }
         composable(Screen.InfoPerusahaan.route) {
-            DetailProfileScreen(navController = navController, token = token ?: "")
+            InformasiPerusahaan(navController = navController, token = token ?: "")
         }
     }
 }

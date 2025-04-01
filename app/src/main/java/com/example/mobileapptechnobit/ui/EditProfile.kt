@@ -69,6 +69,20 @@ fun EditProfile(navController: NavController, token: String) {
         Log.d("EditProfile", "Token yang diterima: $authToken")
     }
 
+    LaunchedEffect(profile) {
+        profile?.let {
+            fullname = TextFieldValue(it.fullname)
+            nickname = TextFieldValue(it.nickname)
+            phone = TextFieldValue(it.phone)
+            gender = it.gender
+            birthDate = TextFieldValue(it.birthDate)
+            religion = it.religion
+            bloodType = it.bloodType
+            address = TextFieldValue(it.address)
+            emergencyPhone = TextFieldValue(it.emergencyPhone)
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
