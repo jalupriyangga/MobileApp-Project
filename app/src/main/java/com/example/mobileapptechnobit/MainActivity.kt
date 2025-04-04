@@ -1,20 +1,32 @@
 package com.example.mobileapptechnobit
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.ViewModel.AuthViewModel
 import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
 import com.example.mobileapptechnobit.data.API.ApiClient
 import com.example.mobileapptechnobit.data.repository.AuthRepository
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +46,9 @@ class MainActivity : ComponentActivity() {
                         factory = AuthViewModelFactory(authRepository, context)
                     )
 
+                    // Meminta izin lokasi pada runtime
+                    RequestLocationPermissions()
+
                     LaunchedEffect(Unit) {
                         val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
                         val token = sharedPref.getString("AUTH_TOKEN", null)
@@ -46,6 +61,31 @@ class MainActivity : ComponentActivity() {
                     }
                     NavGraph(navController = navController, authViewModel = authViewModel)
                 }
+            }
+        }
+    }
+
+    @Composable
+    fun RequestLocationPermissions() {
+        val context = LocalContext.current
+        val permissionsLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
+                // Izin lokasi diberikan
+                Toast.makeText(context, "Location permission granted", Toast.LENGTH_SHORT).show()
+            } else {
+                // Izin lokasi ditolak
+                Toast.makeText(context, "Location permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        LaunchedEffect(Unit) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (
+                        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                                ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        )) {
+                permissionsLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
             }
         }
     }

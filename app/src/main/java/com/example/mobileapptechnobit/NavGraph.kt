@@ -4,15 +4,18 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.ui.*
 import com.example.mobileapptechnobit.ui.ForgotPasswordScreen
 import com.example.mobileapptechnobit.ui.ResetPasswordScreen
 import com.example.mobileapptechnobit.ViewModel.AuthViewModel
 import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
+import com.example.mobileapptechnobit.ViewModel.CameraPresViewModel
 import com.example.mobileapptechnobit.data.repository.AuthRepository
 
 @Composable
@@ -24,6 +27,8 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) { /
     val authViewModel: AuthViewModel = viewModel( // Hapus deklarasi ulang ini
         factory = AuthViewModelFactory(authRepository, context)
     )
+    val lifecycleOwner = LocalLifecycleOwner.current
+
 
     NavHost(
         navController = navController,
@@ -79,6 +84,11 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) { /
         composable(Screen.InfoPerusahaan.route) {
             InformasiPerusahaan(navController = navController, token = token ?: "")
         }
+        composable(Screen.CameraPresensi.route) {
+            val cameraPresViewModel: CameraPresViewModel = viewModel()
+            val cameraPresensi = CameraPresensi(context = context)
+            cameraPresensi.CameraScreen(viewModel = cameraPresViewModel, navController = navController)
+        }
     }
 }
 
@@ -97,4 +107,5 @@ sealed class Screen(val route: String) {
     object Success : Screen("success_screen/{message}")
     object Schedule: Screen("schedule_screen")
     object History : Screen("history_screen")
+    object CameraPresensi : Screen("camera_presensi_screen")
 }
