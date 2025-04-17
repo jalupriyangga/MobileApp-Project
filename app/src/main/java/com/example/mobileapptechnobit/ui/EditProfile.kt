@@ -78,15 +78,15 @@ fun EditProfile(navController: NavController, token: String) {
 
     LaunchedEffect(profile) {
         profile?.let {
-            fullname = TextFieldValue(it.fullname)
-            nickname = TextFieldValue(it.nickname)
-            phone = TextFieldValue(it.phone)
+            fullname = it.fullname
+            nickname = it.nickname
+            phone = it.phone
             gender = it.gender
-            birthDate = TextFieldValue(it.birthDate)
+            birthDate = it.birthDate
             religion = it.religion
             bloodType = it.bloodType
-            address = TextFieldValue(it.address)
-            emergencyPhone = TextFieldValue(it.emergencyPhone)
+            address = it.address
+            emergencyPhone = it.emergencyPhone
         }
     }
 
