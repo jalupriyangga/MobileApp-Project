@@ -14,6 +14,7 @@ import com.example.mobileapptechnobit.ui.ResetPasswordScreen
 import com.example.mobileapptechnobit.ViewModel.AuthViewModel
 import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
 import com.example.mobileapptechnobit.data.repository.AuthRepository
+import com.example.mobileapptechnobit.ui.component.SuccessScreen
 
 @Composable
 fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) { // Tambahkan parameter authViewModel
@@ -55,6 +56,16 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) { /
                 email = backStackEntry.arguments?.getString("email") ?: ""
             )
         }
+        composable(Screen.ChangePassword.route){
+            ChangePasswordScreen(navCtrl = navController, token = token ?: "")
+        }
+        composable(Screen.Success.route){ backStackEntry ->
+            SuccessScreen(
+                navCtrl = navController,
+                message = backStackEntry.arguments?.getString("message") ?: ""
+            )
+
+        }
         composable(Screen.Home.route){
             com.example.mobileapptechnobit.ui.HomeScreen(navCtrl = navController)
         }
@@ -89,6 +100,7 @@ sealed class Screen(val route: String) {
     object Home : Screen("home_screen")
     object ForgotPassword : Screen("forgot_password_screen")
     object ResetPassword : Screen("reset_password_screen/{email}")
+    object ChangePassword : Screen("change_password")
     object Profile : Screen("profile_screen")
     object DetailProfile : Screen("detailprofile_screen")
     object EditProfile : Screen("edit_profile_screen")

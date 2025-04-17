@@ -47,15 +47,15 @@ fun EditProfile(navController: NavController, token: String) {
     val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     val authToken = sharedPref.getString("AUTH_TOKEN", null) ?: token
 
-    var fullname by remember { mutableStateOf(TextFieldValue(profile?.fullname ?: "")) }
-    var nickname by remember { mutableStateOf(TextFieldValue(profile?.nickname ?: "")) }
-    var phone by remember { mutableStateOf(TextFieldValue(profile?.phone ?: "")) }
+    var fullname by remember { mutableStateOf(profile?.fullname ?: "") }
+    var nickname by remember { mutableStateOf((profile?.nickname ?: "")) }
+    var phone by remember { mutableStateOf((profile?.phone ?: "")) }
     var gender by remember { mutableStateOf(profile?.gender ?: "") }
-    var birthDate by remember { mutableStateOf(TextFieldValue(profile?.birthDate ?: "")) }
+    var birthDate by remember { mutableStateOf((profile?.birthDate ?: "")) }
     var religion by remember { mutableStateOf(profile?.religion ?: "") }
     var bloodType by remember { mutableStateOf(profile?.bloodType ?: "") }
-    var address by remember { mutableStateOf(TextFieldValue(profile?.address ?: "")) }
-    var emergencyPhone by remember { mutableStateOf(TextFieldValue(profile?.emergencyPhone ?: "")) }
+    var address by remember { mutableStateOf((profile?.address ?: "")) }
+    var emergencyPhone by remember { mutableStateOf((profile?.emergencyPhone ?: "")) }
 
     val genderOptions = listOf("male", "female")
     val religionOptions = listOf("Islam", "Kristen", "Katolik", "Hindu", "Buddha", "Konghucu")
@@ -63,6 +63,13 @@ fun EditProfile(navController: NavController, token: String) {
     var genderExpanded by remember { mutableStateOf(false) }
     var religionExpanded by remember { mutableStateOf(false) }
     var bloodTypeExpanded by remember { mutableStateOf(false) }
+
+    fullname = profile?.fullname ?: ""
+    nickname = profile?.nickname ?: ""
+    phone = profile?.phone ?: ""
+    birthDate = profile?.birthDate ?: ""
+    address = profile?.address ?: ""
+    emergencyPhone = profile?.emergencyPhone ?: ""
 
     LaunchedEffect(authToken) {
         viewModel.fetchEmployeesProfile(authToken)
@@ -436,18 +443,18 @@ fun EditProfile(navController: NavController, token: String) {
                     Spacer(modifier = Modifier.height(25.dp))
                     Button(
                         onClick = {
-                            Log.d("EditProfile", "Updating profile with: FullName=${fullname.text}, Nickname=${nickname.text}, Phone=${phone.text}, Gender=$gender, BirthDate=${birthDate.text}, Religion=$religion, BloodType=$bloodType, Address=${address.text}, Emergency Phone=${emergencyPhone.text}")
+                            Log.d("EditProfile", "Updating profile with: FullName=${fullname}, Nickname=${nickname}, Phone=${phone}, Gender=$gender, BirthDate=${birthDate}, Religion=$religion, BloodType=$bloodType, Address=${address}, Emergency Phone=${emergencyPhone}")
                             viewModel.updateProfile(
                                 authToken,
-                                fullname.text,
-                                nickname.text,
-                                phone.text,
+                                fullname,
+                                nickname,
+                                phone,
                                 gender,
-                                birthDate.text,
+                                birthDate,
                                 religion,
                                 bloodType,
-                                address.text,
-                                emergencyPhone.text
+                                address,
+                                emergencyPhone
                             )
                             navController.navigate("edit_sukses_screen")
                         },

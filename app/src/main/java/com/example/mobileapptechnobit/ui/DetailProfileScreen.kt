@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +35,8 @@ import com.example.mobileapptechnobit.data.repository.ProfileRepository
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 
 fun formatCurrency(value: String): String {
     return try {
@@ -152,6 +155,9 @@ fun DetailProfileScreen(navController: NavController, token: String) {
 
 @Composable
 fun ProfileAttributeCard(label: String, value: String) {
+
+    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -170,13 +176,22 @@ fun ProfileAttributeCard(label: String, value: String) {
                 fontFamily = robotoFontFamily
             )
             Spacer(modifier = Modifier.height(4.dp))
+
             Text(
                 text = value,
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.Black,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                fontFamily = robotoFontFamily
+                fontFamily = robotoFontFamily,
+                modifier = Modifier.then(
+                    if (label.equals("No. Handphone", ignoreCase = true)){
+                        Modifier.clickable { clipboardManager.setText(AnnotatedString(value)) }
+                    }
+                    else{
+                        Modifier
+                    }
+                )
             )
             Spacer(modifier = Modifier.height(4.dp))
             Divider(
@@ -195,7 +210,7 @@ fun ProfileEditCard(navController: NavController) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { navController.navigate("edit_profile_screen") }
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp).padding(bottom = 30.dp)
             .shadow(12.dp, RoundedCornerShape(16.dp), clip = true),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)

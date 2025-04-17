@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mobileapptechnobit.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -29,6 +30,9 @@ class AuthViewModel(private val repository: AuthRepository, private val context:
 
     private val _isSuccess = MutableLiveData<Boolean>()
     val isSuccess: LiveData<Boolean> get() = _isSuccess
+
+    private val _changePasswordMessage = MutableLiveData<String>()
+    val changePasswordMessage: LiveData<String> get() = _changePasswordMessage
 
     fun login(email: String, password:String){
         viewModelScope.launch {
@@ -119,6 +123,7 @@ class AuthViewModel(private val repository: AuthRepository, private val context:
     }
 
     fun resetPassword(email: String, newPassword: String) {
+        _isSuccess.value = false
         viewModelScope.launch {
             try {
                 val response = repository.resetPassword(email, newPassword)
@@ -135,6 +140,32 @@ class AuthViewModel(private val repository: AuthRepository, private val context:
             } catch (e: Exception) {
                 Log.e("ResetPassword", "Exception: ${e.message}")
                 _resetPasswordMessage.postValue("Error: ${e.message}")
+            }
+        }
+    }
+
+    fun changePassword(token: String, currentPassword: String, newPassword: String){
+        _isSuccess.value = false
+
+        val authToken = "Bearer $token"
+        Log.d("ProfileRepository", "Auth Token: $authToken")
+
+        viewModelScope.launch {
+            try {
+                val response = repository.changePassword(authToken, currentPassword, newPassword)
+                if(response.isSuccessful){
+                    val responseBody = response.body()?.string() ?: "Empty response"
+                    Log.d("change password", "Response: $responseBody")
+                    _changePasswordMessage.postValue("Password berhasil diperbarui!")
+                    _isSuccess.value = true
+                } else{
+                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                    Log.e("change password", "Failed: ${response.code()}, Error: $errorBody")
+                    _changePasswordMessage.postValue("Gagal: $errorBody")
+                }
+            } catch (e: Exception){
+                Log.e("change Password", "Exception: ${e.message}")
+                _changePasswordMessage.postValue("Error: ${e.message}")
             }
         }
     }

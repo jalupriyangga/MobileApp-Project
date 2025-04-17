@@ -199,7 +199,7 @@ fun HistoryCard(modifier: Modifier = Modifier, time: String, status: String) {
                 Modifier.padding(horizontal = 25.dp),
                 verticalAlignment = Alignment.CenterVertically
             ){
-                Icon(painter = painterResource(R.drawable.frame_27__1_),
+                Icon(painter = painterResource(R.drawable.frame_27),
                     contentDescription = null,
                     modifier = Modifier.size(40.dp),
                     tint = Color.Unspecified
@@ -219,7 +219,7 @@ fun HistoryCard(modifier: Modifier = Modifier, time: String, status: String) {
                 )
                 Spacer(Modifier.weight(1f))
 
-                Icon(painter = painterResource(R.drawable.frame_28__1_),
+                Icon(painter = painterResource(R.drawable.frame_28),
                     contentDescription = null,
                     modifier = Modifier.size(40.dp),
                     tint = Color.Unspecified

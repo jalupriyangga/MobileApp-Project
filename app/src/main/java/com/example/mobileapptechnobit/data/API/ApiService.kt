@@ -25,6 +25,9 @@ interface ApiService{
     @POST("v1/android/verify-otp")
     suspend fun verifyOtp(@Body request: HashMap<String, String>): Response<ResponseBody>
 
+    @PUT("v1/android/change-password")
+    suspend fun changePassword(@Header("Authorization") authorization: String, @Body request: HashMap<String, String>): Response<ResponseBody>
+
     @GET("v1/profile/employee")
     suspend fun fetchEmployeeProfile(@Header("Authorization") authorization: String): Response<EmployeeResponse>
 

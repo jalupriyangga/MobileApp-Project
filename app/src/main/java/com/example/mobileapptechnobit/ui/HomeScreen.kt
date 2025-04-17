@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsEndWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -170,7 +169,7 @@ fun ScheduleCard(modifier: Modifier = Modifier, navCtrl: NavController) {
                 Modifier.padding(horizontal = 25.dp),
                 verticalAlignment = Alignment.CenterVertically
             ){
-                Icon(painter = painterResource(R.drawable.frame_27__1_),
+                Icon(painter = painterResource(R.drawable.frame_27),
                     contentDescription = null,
                     modifier = Modifier.size(45.dp),
                     tint = Color.Unspecified
@@ -190,7 +189,7 @@ fun ScheduleCard(modifier: Modifier = Modifier, navCtrl: NavController) {
                 )
                 Spacer(Modifier.weight(1f))
 
-                Icon(painter = painterResource(R.drawable.frame_28__1_),
+                Icon(painter = painterResource(R.drawable.frame_28),
                     contentDescription = null,
                     modifier = Modifier.size(45.dp),
                     tint = Color.Unspecified
@@ -218,7 +217,7 @@ fun MainMenu(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             MenuItem(painter = painterResource(R.drawable.presensi), label = "Presensi")
-            MenuItem(painter = painterResource(R.drawable.patroli__1_), label = "Patroli")
+            MenuItem(painter = painterResource(R.drawable.patroli), label = "Patroli")
         }
     }
 }

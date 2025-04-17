@@ -73,7 +73,7 @@ fun ResetPasswordScreen(modifier: Modifier = Modifier, navCtrl: NavController, e
             )
         }
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = "Perbarui Password",
             fontFamily = robotoFontFamily,
