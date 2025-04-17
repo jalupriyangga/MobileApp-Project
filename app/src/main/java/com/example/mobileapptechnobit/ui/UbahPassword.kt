@@ -1,5 +1,6 @@
 package com.example.mobileapptechnobit.ui
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -20,7 +21,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,9 +48,8 @@ import com.example.mobileapptechnobit.data.repository.AuthRepository
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 
 @Composable
-fun HalamanUbahPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
+fun ChangePasswordScreen(modifier: Modifier = Modifier, navCtrl: NavController, token: String) {
 
-    var email by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     var newPass by remember { mutableStateOf("") }
     var RepeatNewPass by remember { mutableStateOf("") }
@@ -57,18 +59,26 @@ fun HalamanUbahPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
     var PassisVisible by remember { mutableStateOf(false) }
     var newPassisVisible by remember { mutableStateOf(false) }
     var repeatNewPassisVisible by remember { mutableStateOf(false) }
+    val isSuccess by viewModel.isSuccess.observeAsState()
+    val changePasswordMessage by viewModel.changePasswordMessage.observeAsState()
+
+    val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    val authToken = sharedPref.getString("AUTH_TOKEN", null) ?: token
 
     Column(
         Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = null,
-            Modifier.align(Alignment.Start).padding(top = 20.dp, start = 20.dp)
-        )
+        IconButton(
+            onClick = { navCtrl.navigate("profile_screen") },
+            modifier = Modifier.align(Alignment.Start).padding(top = 20.dp, start = 20.dp)) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = null,
+            )
+        }
 
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = "Ubah Password",
             fontFamily = robotoFontFamily,
@@ -84,22 +94,6 @@ fun HalamanUbahPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
         )
 
         Spacer(modifier = Modifier.height(50.dp))
-        Text(
-            text = "Email",
-            textAlign = TextAlign.Left,
-            fontFamily = robotoFontFamily,
-            fontWeight = FontWeight(500),
-            fontSize = 17.sp,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 8.dp)
-        )
-        OutlinedTextField(
-            value = email,
-            onValueChange = {email = it},
-            placeholder = { Text(text = "Masukkan email anda", color = Color.Gray)},
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-        )
-
-        Spacer(modifier = Modifier.height(30.dp))
         Text(
             text = "Password Lama",
             textAlign = TextAlign.Left,
@@ -192,21 +186,21 @@ fun HalamanUbahPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
             visualTransformation = if (repeatNewPassisVisible) VisualTransformation.None else PasswordVisualTransformation(),
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = "Lupa Password",
-            color = Color(0xFF2752E7),
-            textAlign = TextAlign.Right,
-            textDecoration = TextDecoration.Underline,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).clickable { navCtrl.navigate("lupa password") }
-        )
+//        Spacer(modifier = Modifier.height(20.dp))
+//        Text(
+//            text = "Lupa Password",
+//            color = Color(0xFF2752E7),
+//            textAlign = TextAlign.Right,
+//            textDecoration = TextDecoration.Underline,
+//            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).clickable { navCtrl.navigate("forgot_password_screen") }
+//        )
 
         Spacer(modifier = Modifier.height(50.dp))
         Button(
             onClick = {
                 if(pass != newPass){
                     if(newPass == RepeatNewPass){
-                        Toast.makeText(context, "Password berhasil diperbarui!", Toast.LENGTH_SHORT).show()
+                        viewModel.changePassword(authToken, pass, newPass)
                     } else{
                         Toast.makeText(context, "Pengulangan password salah!", Toast.LENGTH_SHORT).show()
                     }
@@ -226,11 +220,20 @@ fun HalamanUbahPassword(modifier: Modifier = Modifier, navCtrl: NavController) {
                 color = Color.White
             )
         }
+        LaunchedEffect(isSuccess) {
+            changePasswordMessage?.let {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            }
+            if(isSuccess == true){
+                viewModel.logout()
+                navCtrl.navigate("success_screen/Password anda berhasil diperbarui")
+            }
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun UbahPassPrev() {
-    HalamanUbahPassword( navCtrl = rememberNavController())
+    ChangePasswordScreen( navCtrl = rememberNavController(), token = "")
 }

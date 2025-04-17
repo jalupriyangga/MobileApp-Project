@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsEndWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -86,7 +85,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
     ){ padding ->
             Column (Modifier.padding(padding).fillMaxSize().zIndex(1f))
             {
-                MainMenu(navCtrl = navCtrl)
+                MainMenu()
             }
     }
 }
@@ -170,7 +169,7 @@ fun ScheduleCard(modifier: Modifier = Modifier, navCtrl: NavController) {
                 Modifier.padding(horizontal = 25.dp),
                 verticalAlignment = Alignment.CenterVertically
             ){
-                Icon(painter = painterResource(R.drawable.frame_27__1_),
+                Icon(painter = painterResource(R.drawable.frame_27),
                     contentDescription = null,
                     modifier = Modifier.size(45.dp),
                     tint = Color.Unspecified
@@ -190,7 +189,7 @@ fun ScheduleCard(modifier: Modifier = Modifier, navCtrl: NavController) {
                 )
                 Spacer(Modifier.weight(1f))
 
-                Icon(painter = painterResource(R.drawable.frame_28__1_),
+                Icon(painter = painterResource(R.drawable.frame_28),
                     contentDescription = null,
                     modifier = Modifier.size(45.dp),
                     tint = Color.Unspecified
@@ -207,7 +206,7 @@ fun ScheduleCard(modifier: Modifier = Modifier, navCtrl: NavController) {
 }
 
 @Composable
-fun MainMenu(modifier: Modifier = Modifier, navCtrl: NavController) {
+fun MainMenu(modifier: Modifier = Modifier) {
     Column(
         modifier = Modifier.padding(horizontal = 16.dp).padding(top = 20.dp).padding(bottom = 10.dp)
     ) {
@@ -217,18 +216,18 @@ fun MainMenu(modifier: Modifier = Modifier, navCtrl: NavController) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            MenuItem(painter = painterResource(R.drawable.presensi), label = "Presensi", onClick = { navCtrl.navigate("camera_presensi_screen") })
-            MenuItem(painter = painterResource(R.drawable.patroli__1_), label = "Patroli", onClick = { /* Add navigation for Patroli if needed */ })
+            MenuItem(painter = painterResource(R.drawable.presensi), label = "Presensi")
+            MenuItem(painter = painterResource(R.drawable.patroli), label = "Patroli")
         }
     }
 }
 
 @Composable
-fun MenuItem(modifier: Modifier = Modifier, painter: Painter, label: String, onClick: () -> Unit) {
+fun MenuItem(modifier: Modifier = Modifier, painter: Painter, label: String) {
     Card (
         modifier = Modifier
-            .size(160.dp)
-            .clickable { onClick() },
+        .size(160.dp)
+        .clickable { },
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(Color.White)

@@ -58,7 +58,7 @@ fun ForgotPasswordScreen(modifier: Modifier = Modifier, navCtrl: NavController) 
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         IconButton(
-            onClick = { navCtrl.popBackStack() },
+            onClick = { navCtrl.navigate("login_screen")},
             modifier = Modifier.align(Alignment.Start).padding(top = 20.dp, start = 20.dp)) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -66,7 +66,7 @@ fun ForgotPasswordScreen(modifier: Modifier = Modifier, navCtrl: NavController) 
             )
         }
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = "Lupa Password",
             fontFamily = robotoFontFamily,

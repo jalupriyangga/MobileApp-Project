@@ -345,7 +345,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 10.dp)
-                                    .clickable { navController.navigate("info_perusahaan_screen") },
+                                    .clickable {  },
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
                             ) {
@@ -372,10 +372,10 @@ fun ProfileScreen(navController: NavController, token: String) {
                             .fillMaxWidth()
                             .padding(top = 10.dp, end = 20.dp)
                             .clickable {
-                                navController.navigate(Screen.ForgotPassword.route) {
+                                navController.navigate(Screen.ChangePassword.route) {
                                     popUpTo(Screen.Profile.route) { inclusive = true }
                                 }
-                                authViewModel.logout()
+//                                authViewModel.logout()
                             }
                             .shadow(12.dp, RoundedCornerShape(16.dp), clip = true),
                         shape = RoundedCornerShape(16.dp),

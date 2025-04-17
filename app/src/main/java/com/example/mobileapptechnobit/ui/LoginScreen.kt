@@ -52,7 +52,7 @@ fun LoginScreen(viewModel: AuthViewModel = viewModel(), onLoginSuccess: () -> Un
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 100.dp),
+                .padding(top = 80.dp),
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
