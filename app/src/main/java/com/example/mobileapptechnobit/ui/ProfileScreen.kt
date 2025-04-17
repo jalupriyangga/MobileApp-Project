@@ -123,7 +123,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                                 verticalArrangement = Arrangement.Center
                             ) {
                                 Text(
-                                    text = profile?.fullname ?: "",
+                                    text = profile?.nickname ?: "",
                                     fontSize = 22.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black,

@@ -123,7 +123,7 @@ fun LoginScreen(viewModel: AuthViewModel = viewModel(), onLoginSuccess: () -> Un
                     )
                 }
 
-                Spacer(modifier = Modifier.height(64.dp))
+                Spacer(modifier = Modifier.height(40.dp))
 
                 Button(
                     onClick = {

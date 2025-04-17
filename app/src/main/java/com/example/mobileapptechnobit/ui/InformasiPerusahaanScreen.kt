@@ -30,7 +30,7 @@ import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InformasiPerusahaan(navController: NavController) {
+fun InformasiPerusahaan(navController: NavController, token: String) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -79,5 +79,5 @@ fun InformasiPerusahaan(navController: NavController) {
 @Preview(showBackground = true, device = "spec:width=412dp, height=915dp, dpi=440")
 @Composable
 fun InformasiPerusahaanPreview() {
-    InformasiPerusahaan(navController = rememberNavController())
+    InformasiPerusahaan(navController = rememberNavController(), token = "dummy_token")
 }
