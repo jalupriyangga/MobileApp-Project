@@ -6,13 +6,17 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -143,6 +147,7 @@ fun HistoryTopBar(modifier: Modifier = Modifier, index: (Int) -> Unit) {
                 )
             }
         }
+        HistoryMonthsSelector()
     }
 }
 
@@ -253,6 +258,48 @@ fun HistoryCard(modifier: Modifier = Modifier, time: String, status: String) {
             }
         }
     }
+}
+
+@Composable
+fun HistoryMonthsSelector() {
+    val months = listOf("Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des")
+    androidx.compose.material3.Surface(
+        shadowElevation = 4.dp,
+    ) {
+       LazyRow(
+           modifier = Modifier.fillMaxWidth().height(54.dp),
+           horizontalArrangement = Arrangement.spacedBy(8.dp),
+           contentPadding = PaddingValues(start = 14.dp, end = 14.dp),
+           verticalAlignment = Alignment.CenterVertically,
+       ) {
+           items(months) { item ->
+               Card(
+                   modifier = Modifier
+                       .width(50.dp)
+                       .height(30.dp),
+                   shape = RoundedCornerShape(8.dp),
+                   onClick = {
+                       // Handle click event
+                   }
+               ) {
+                   Column(
+                       modifier = Modifier.fillMaxSize(),
+                       horizontalAlignment = Alignment.CenterHorizontally,
+                       verticalArrangement = Arrangement.Center
+                   ) {
+                       Text(
+                           text = item,
+                           color = Color.Black,
+                           fontSize = 14.sp,
+                           fontFamily = robotoFontFamily,
+                           textAlign = TextAlign.Center,
+                           modifier = Modifier.padding(8.dp)
+                       )
+                   }
+               }
+           }
+       }
+   }
 }
 
 @Preview(showBackground = true)
