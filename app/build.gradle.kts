@@ -96,10 +96,12 @@ dependencies {
     implementation("androidx.camera:camera-core:$cameraxVersion")
     implementation("androidx.camera:camera-camera2:$cameraxVersion")
     implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
-    implementation("androidx.camera:camera-video:$cameraxVersion")
-
     implementation("androidx.camera:camera-view:$cameraxVersion")
     implementation("androidx.camera:camera-extensions:$cameraxVersion")
 
     implementation ("com.google.accompanist:accompanist-permissions:0.20.3")
+
+    implementation ("androidx.compose.ui:ui-graphics:1.3.1")
+
+
 }

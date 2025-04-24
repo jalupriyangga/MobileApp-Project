@@ -53,8 +53,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.example.mobileapptechnobit.R
+import com.example.mobileapptechnobit.Screen
 import com.example.mobileapptechnobit.ViewModel.AuthViewModel
 import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
+import com.example.mobileapptechnobit.ViewModel.CameraPresViewModel
 import com.example.mobileapptechnobit.ViewModel.ProfileViewModel
 import com.example.mobileapptechnobit.ViewModel.ProfileViewModelFactory
 import com.example.mobileapptechnobit.data.API.UserProfileResponse
@@ -83,10 +85,10 @@ fun HomeScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
             BottomNavigationBar(navCtrl = navCtrl, index = 0)
         },
     ){ padding ->
-            Column (Modifier.padding(padding).fillMaxSize().zIndex(1f))
-            {
-                MainMenu()
-            }
+        Column (Modifier.padding(padding).fillMaxSize().zIndex(1f))
+        {
+            MainMenu(navCtrl = navCtrl)
+        }
     }
 }
 
@@ -206,7 +208,8 @@ fun ScheduleCard(modifier: Modifier = Modifier, navCtrl: NavController) {
 }
 
 @Composable
-fun MainMenu(modifier: Modifier = Modifier) {
+fun MainMenu(modifier: Modifier = Modifier, navCtrl: NavController, viewModel: CameraPresViewModel = remember { CameraPresViewModel() }) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier.padding(horizontal = 16.dp).padding(top = 20.dp).padding(bottom = 10.dp)
     ) {
@@ -216,18 +219,35 @@ fun MainMenu(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            MenuItem(painter = painterResource(R.drawable.presensi), label = "Presensi")
-            MenuItem(painter = painterResource(R.drawable.patroli), label = "Patroli")
+            MenuItem(
+                painter = painterResource(R.drawable.presensi),
+                label = "Presensi",
+                onClick = {
+                    // Cek apakah pengguna sudah melakukan Clock In
+                    val clockInTime = viewModel.getClockInTime(context)
+                    if (clockInTime > 0L) {
+                        // Jika sudah Clock In tetapi belum Clock Out, navigasi ke ClockOutScreen
+                        navCtrl.navigate(Screen.ClockOut.route)
+                    } else {
+                        // Jika belum Clock In, navigasi ke CameraPresensiScreen
+                        navCtrl.navigate(Screen.CameraPresensi.route)
+                    }
+                })
+            MenuItem(
+                painter = painterResource(R.drawable.patroli),
+                label = "Patroli",
+                onClick = { }
+            )
         }
     }
 }
 
 @Composable
-fun MenuItem(modifier: Modifier = Modifier, painter: Painter, label: String) {
+fun MenuItem(modifier: Modifier = Modifier, painter: Painter, label: String, onClick: () -> Unit) {
     Card (
         modifier = Modifier
-        .size(160.dp)
-        .clickable { },
+            .size(160.dp)
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(Color.White)

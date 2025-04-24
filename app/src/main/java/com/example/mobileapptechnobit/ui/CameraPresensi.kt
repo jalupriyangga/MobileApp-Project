@@ -14,6 +14,7 @@ import android.graphics.Paint
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
+import android.media.MediaScannerConnection
 import android.os.Build
 import android.os.Environment
 import android.util.Log
@@ -28,27 +29,41 @@ import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.SwitchCamera
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -58,16 +73,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import com.example.mobileapptechnobit.ViewModel.CameraPresViewModel
+import com.example.mobileapptechnobit.ui.theme.black20
+import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -79,9 +100,8 @@ class CameraPresensi(private val context: Context) {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun CameraScreen(viewModel: CameraPresViewModel, navController: NavHostController) {
-        val scope = rememberCoroutineScope()
-        val scaffoldState = rememberBottomSheetScaffoldState()
+    fun CameraScreen(viewModel: CameraPresViewModel, navController: NavHostController, token: String) {
+
         val controller = remember {
             LifecycleCameraController(context).apply {
                 setEnabledUseCases(
@@ -89,10 +109,7 @@ class CameraPresensi(private val context: Context) {
                 )
             }
         }
-
-        val bitmaps by viewModel.bitmaps.collectAsState()
-
-        // Request location and camera permissions
+        val bitmaps by viewModel.capturedBitmap.collectAsState()
         val context = LocalContext.current
         val lifecycleOwner = LocalLifecycleOwner.current
         val permissionsLauncher = rememberLauncherForActivityResult(
@@ -118,78 +135,128 @@ class CameraPresensi(private val context: Context) {
                     Manifest.permission.CAMERA
                 ))
             }
+            controller.bindToLifecycle(lifecycleOwner)
         }
 
-        BottomSheetScaffold(
-            scaffoldState = scaffoldState,
-            sheetPeekHeight = 0.dp,
-            sheetContent = {
-                PhotoBottomSheetContent(bitmaps = bitmaps, modifier = Modifier.fillMaxSize())
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Box(modifier = Modifier.weight(1f)) {
+                                IconButton(onClick = { navController.popBackStack() }) {
+                                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = androidx.compose.ui.graphics.Color.White)
+                                }
+                            }
+                            Box(modifier = Modifier.weight(6f), contentAlignment = Alignment.Center) {
+                                Text(
+                                    text = "Presensi Masuk",
+                                    color = androidx.compose.ui.graphics.Color.White,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    fontFamily = robotoFontFamily
+                                )
+                            }
+                            Box(modifier = Modifier.weight(1f)) {
+                            }
+                        }
+                    },
+                    colors = TopAppBarDefaults.smallTopAppBarColors(
+                        containerColor = colorResource(id = R.color.black100)
+                    ),
+                    modifier = Modifier.height(112.dp)
+                )
             }
-        ) { padding ->
+        ) { innerPadding ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding)
+                    .padding(innerPadding)
             ) {
-                CameraPreview(controller = controller, modifier = Modifier.fillMaxSize())
-
-                IconButton(
+                Column(
                     modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(16.dp),
-                    onClick = {
-                        navController.popBackStack()
-                    }
+                        .fillMaxSize()
+                        .background(color = colorResource(R.color.black100)),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Go Back")
+                    // Camera Preview
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(3f / 4f)
+                    ) {
+                        CameraPreview(controller = controller, modifier = Modifier.fillMaxSize())
+                    }
+
+                    Spacer(modifier = Modifier.weight(1f))
                 }
 
-                IconButton(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(16.dp),
-                    onClick = {
-                        controller.cameraSelector =
-                            if (controller.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
-                                CameraSelector.DEFAULT_FRONT_CAMERA
-                            } else CameraSelector.DEFAULT_BACK_CAMERA
-                    }
-                ) {
-                    Icon(imageVector = Icons.Default.SwitchCamera, contentDescription = "Switch Camera")
-                }
-
-                Row(
+                // Tombol di bawah (kamera tengah + switch kanan)
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter)
-                        .padding(16.dp), horizontalArrangement = Arrangement.SpaceAround
+                        .padding(bottom = 32.dp, start = 32.dp, end = 32.dp)
                 ) {
-                    IconButton(onClick = {
-                        scope.launch { scaffoldState.bottomSheetState.expand() }
-                    }
+                    // Tombol kamera (posisi tengah)
+                    IconButton(
+                        onClick = {
+                            takePhoto(
+                                controller = controller,
+                                context = context, // Pastikan Anda meneruskan context
+                                token = token, // Pastikan token diteruskan
+                                onPhotoTaken = { bitmap ->
+                                    // Simpan bitmap ke ViewModel atau lakukan operasi lainnya
+                                    viewModel.onTakePhoto(bitmap, token)
+                                },
+                                navController = navController // Teruskan navController untuk navigasi
+                            )
+                        },
+                        modifier = Modifier
+                            .size(72.dp)
+                            .align(Alignment.Center)
+                            .background(color = androidx.compose.ui.graphics.Color.White, shape = CircleShape)
                     ) {
-                        Icon(imageVector = Icons.Default.Menu, contentDescription = "Open Gallery")
+                        Image(
+                            painter = painterResource(id = R.drawable.camera), // Ganti `ic_camera` dengan nama resource Anda
+                            contentDescription = "Ambil Foto",
+                            modifier = Modifier.size(36.dp)
+                        )
                     }
 
-                    IconButton(onClick = {
-                        takePhoto(
-                            controller = controller,
-                            context = context,
-                            onPhotoTaken = viewModel::onTakePhoto,
-                            navController = navController
+                    IconButton(
+                        onClick = {
+                            controller.cameraSelector =
+                                if (controller.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
+                                    CameraSelector.DEFAULT_FRONT_CAMERA
+                                } else CameraSelector.DEFAULT_BACK_CAMERA
+                        },
+                        modifier = Modifier
+                            .size(56.dp)
+                            .align(Alignment.CenterEnd)
+                            .background(color = androidx.compose.ui.graphics.Color.White, shape = CircleShape)
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.camera_switch), // Ganti `ic_camera` dengan nama resource Anda
+                            contentDescription = "Ganti Kamera",
+                            modifier = Modifier.size(26.dp)
                         )
-                    }) {
-                        Icon(imageVector = Icons.Default.CheckCircle, contentDescription = "Take Photo")
                     }
                 }
             }
+
         }
     }
 
     private fun takePhoto(
         controller: LifecycleCameraController,
         context: Context,
+        token: String,
         onPhotoTaken: (Bitmap) -> Unit,
         navController: NavHostController
     ) {
@@ -202,15 +269,14 @@ class CameraPresensi(private val context: Context) {
                     val matrix = Matrix().apply {
                         postRotate(image.imageInfo.rotationDegrees.toFloat())
                     }
+
                     val rotatedBitmap = Bitmap.createBitmap(
                         image.toBitmap(), 0, 0, image.width, image.height, matrix, true
                     )
 
-                    // Dapatkan lokasi dan alamat
                     val location = getCurrentLocation()
                     val address = getAddressFromLocation(location)
 
-                    // Tambahkan watermark ke bitmap
                     val bitmapWithWatermark = addWatermark(
                         context = context,
                         bitmap = rotatedBitmap,
@@ -218,20 +284,17 @@ class CameraPresensi(private val context: Context) {
                         address = address
                     )
 
-                    // Simpan bitmap ke file
-                    val photoFile = saveBitmapToExternalFilesDir(context, bitmapWithWatermark)
-                    Toast.makeText(context, "Photo saved at: ${photoFile.absolutePath}", Toast.LENGTH_LONG).show()
-
-                    // Pindai file agar muncul di galeri
-                    scanFile(context, photoFile)
-
                     onPhotoTaken(bitmapWithWatermark)
+
+                    // Navigasi hanya setelah data disimpan
+                    navController.navigate(Screen.CameraPresensiCheck.route)
+
                     image.close()
                 }
 
                 override fun onError(exception: ImageCaptureException) {
                     super.onError(exception)
-                    Log.e("Camera", "Couldn't take photo", exception)
+                    Toast.makeText(context, "Gagal mengambil gambar: ${exception.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         )
@@ -240,20 +303,33 @@ class CameraPresensi(private val context: Context) {
     @SuppressLint("MissingPermission")
     private fun getCurrentLocation(): Location? {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        val providers = locationManager.getProviders(true)
+        var bestLocation: Location? = null
+        for (provider in providers) {
+            val location = locationManager.getLastKnownLocation(provider) ?: continue
+            if (bestLocation == null || location.accuracy < bestLocation.accuracy) {
+                bestLocation = location
+            }
+        }
+        return bestLocation
     }
 
     private fun getAddressFromLocation(location: Location?): String {
         return if (location != null) {
-            val geocoder = Geocoder(context, Locale.getDefault())
-            val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-            if (!addresses.isNullOrEmpty()) {
-                addresses[0].getAddressLine(0)
-            } else {
-                "Unknown location"
+            try {
+                val geocoder = Geocoder(context, Locale.getDefault())
+                val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                if (!addresses.isNullOrEmpty()) {
+                    addresses[0].getAddressLine(0)
+                } else {
+                    "Alamat tidak ditemukan"
+                }
+            } catch (e: Exception) {
+                Log.e("CameraPresensi", "Error getting address: ${e.message}", e)
+                "Error mendapatkan alamat"
             }
         } else {
-            "Unknown location"
+            "Lokasi tidak tersedia"
         }
     }
 
@@ -279,91 +355,17 @@ class CameraPresensi(private val context: Context) {
         return result
     }
 
-    private fun hasRequiredPermissions(): Boolean {
-        return CAMERAX_PERMISSIONS.all {
-            ContextCompat.checkSelfPermission(
-                context, it
-            ) == PackageManager.PERMISSION_GRANTED
-        }
-    }
-
-    companion object {
-        private val CAMERAX_PERMISSIONS = arrayOf(
-            android.Manifest.permission.CAMERA,
-            android.Manifest.permission.ACCESS_FINE_LOCATION,
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            android.Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-
-        fun ImageProxy.toBitmap(): Bitmap {
-            val buffer = planes[0].buffer
-            val bytes = ByteArray(buffer.remaining())
-            buffer.get(bytes)
-            return BitmapFactory.decodeByteArray(bytes, 0, bytes.size, null)
-        }
-
-        fun saveBitmapToExternalFilesDir(context: Context, bitmap: Bitmap): File {
-            val storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-            if (!storageDir.exists()) {
-                storageDir.mkdirs()
-            }
-            val file = File(storageDir, "photo_${System.currentTimeMillis()}.jpg")
-            FileOutputStream(file).use { out ->
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
-            }
-            return file
-        }
-
-        fun scanFile(context: Context, file: File) {
-            val uri = FileProvider.getUriForFile(context, context.applicationContext.packageName + ".provider", file)
-            context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
-        }
-    }
-
     @Composable
-    fun CameraPreview(
-        controller: LifecycleCameraController,
-        modifier: Modifier = Modifier
-    ) {
+    fun CameraPreview(controller: LifecycleCameraController, modifier: Modifier = Modifier) {
         val lifecycleOwner = LocalLifecycleOwner.current
         AndroidView(
-            factory = {
-                PreviewView(it).apply {
+            factory = { context ->
+                PreviewView(context).apply {
                     this.controller = controller
                     controller.bindToLifecycle(lifecycleOwner)
                 }
             },
             modifier = modifier
         )
-    }
-
-    @Composable
-    fun PhotoBottomSheetContent(
-        bitmaps: List<Bitmap>,
-        modifier: Modifier = Modifier
-    ) {
-        if (bitmaps.isEmpty()) {
-            Box(
-                modifier = modifier
-                    .padding(16.dp), contentAlignment = Alignment.Center
-            ) {
-                Text(text = "There are no photos yet")
-            }
-        }
-        LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalItemSpacing = 16.dp,
-            contentPadding = PaddingValues(16.dp),
-            modifier = modifier
-        ) {
-            items(bitmaps) { bitmap ->
-                Image(
-                    bitmap = bitmap.asImageBitmap(),
-                    contentDescription = null,
-                    modifier = Modifier.clip(RoundedCornerShape(10.dp))
-                )
-            }
-        }
     }
 }

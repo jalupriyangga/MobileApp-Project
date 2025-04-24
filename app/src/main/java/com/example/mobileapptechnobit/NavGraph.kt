@@ -29,6 +29,7 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) { /
         factory = AuthViewModelFactory(authRepository, context)
     )
     val lifecycleOwner = LocalLifecycleOwner.current
+    val viewModel: CameraPresViewModel = viewModel() // Inisialisasi ViewModel di tingkat NavGraph
 
 
     NavHost(
@@ -96,9 +97,31 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) { /
             InformasiPerusahaan(navController = navController, token = token ?: "")
         }
         composable(Screen.CameraPresensi.route) {
-            val cameraPresViewModel: CameraPresViewModel = viewModel()
-            val cameraPresensi = CameraPresensi(context = context)
-            cameraPresensi.CameraScreen(viewModel = cameraPresViewModel, navController = navController)
+            val cameraPresensi = CameraPresensi(context)
+            val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+            val token = sharedPref.getString("AUTH_TOKEN", "") ?: "" // Pastikan token tidak null
+
+            cameraPresensi.CameraScreen(viewModel, navController, token)
+        }
+        composable(Screen.CameraPresensiCheck.route) {
+            CameraPresensiCheck(viewModel, navController, context)
+        }
+        composable(Screen.PresensiSukses.route) {
+            PresensiSuksesScreen(navController)
+        }
+        composable(Screen.ClockOut.route) {
+            val context = LocalContext.current
+            val clockInTime = viewModel.getClockInTime(context)
+
+            ClockOutScreen(
+                navController = navController,
+                clockInTime = clockInTime
+            ) {
+                viewModel.clearSessionData(context) // Pembersihan data sesi
+            }
+        }
+        composable(Screen.ClockOutSukses.route) {
+            ClockOutSuksesScreen(navController)
         }
     }
 }
@@ -120,4 +143,9 @@ sealed class Screen(val route: String) {
     object Schedule: Screen("schedule_screen")
     object History : Screen("history_screen")
     object CameraPresensi : Screen("camera_presensi_screen")
+    object CameraPresensiCheck : Screen("camera_check_screen")
+    object PresensiSukses : Screen("presensi_sukses_screen")
+    object ClockOut : Screen("clock_out_screen")
+    object ClockOutSukses : Screen("clock_out_sukses_screen")
+
 }

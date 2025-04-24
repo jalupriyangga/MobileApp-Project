@@ -31,13 +31,27 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.R
+import com.example.mobileapptechnobit.Screen
 import com.example.mobileapptechnobit.ui.theme.primary100
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditSuksesScreen(navController: NavController, token: String) {
+fun ClockOutSuksesScreen(navController: NavController) {
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Presensi Sukses",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = robotoFontFamily
+                    )
+                },
+            )
+        },
         content = { paddingValues ->
             Box(
                 modifier = Modifier
@@ -69,7 +83,7 @@ fun EditSuksesScreen(navController: NavController, token: String) {
 
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Profil anda berhasil diperbarui",
+                        text = "Presensi anda berhasil direkam",
                         fontSize = 14.sp,
                         fontFamily = robotoFontFamily,
                         fontWeight = FontWeight.Normal,
@@ -87,7 +101,7 @@ fun EditSuksesScreen(navController: NavController, token: String) {
                 contentAlignment = Alignment.Center
             ) {
                 Button(
-                    onClick = { navController.navigate("detailprofile_screen") },
+                    onClick = { navController.navigate(Screen.History.route) },
                     colors = ButtonDefaults.buttonColors(containerColor = primary100),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
@@ -109,6 +123,6 @@ fun EditSuksesScreen(navController: NavController, token: String) {
 
 @Preview(showBackground = true, device = "spec:width=412dp, height=915dp, dpi=440")
 @Composable
-fun EditSuksesScreenPreview() {
-    EditSuksesScreen(navController = rememberNavController(), token = "dummy_token")
+fun ClockOutSuksesScreenPreview() {
+    ClockOutSuksesScreen(navController = rememberNavController())
 }
