@@ -1,6 +1,7 @@
 package com.example.mobileapptechnobit.data.API
 
 import com.example.mobileapptechnobit.data.remote.EmployeeResponse
+import com.example.mobileapptechnobit.data.remote.Presensi
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -36,4 +37,7 @@ interface ApiService{
 
     @GET("v1/profile/user")
     suspend fun getUserProfile(@Header("Authorization") token: String): Response<UserProfileResponse>
+
+    @POST("v1/android/presensi")
+    suspend fun sendPresensi(@Header("Authorization") token: String, @Body requestBody: Presensi): Response<Unit>
 }

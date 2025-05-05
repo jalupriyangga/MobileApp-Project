@@ -5,8 +5,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -34,6 +36,7 @@ import com.example.mobileapptechnobit.data.repository.AuthRepository
 import com.example.mobileapptechnobit.ui.theme.primary100
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(viewModel: AuthViewModel = viewModel(), onLoginSuccess: () -> Unit, navCtrl: NavController) {
     var email by remember { mutableStateOf("") }
@@ -44,114 +47,133 @@ fun LoginScreen(viewModel: AuthViewModel = viewModel(), onLoginSuccess: () -> Un
     val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository = repository, context = context))
     val loginMessage by authViewModel.loginMessage.observeAsState()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color.White),
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 80.dp),
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Masuk", fontSize = 25.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(5.dp))
-                Text("Masuk ke akun anda selanjutnya", fontSize = 16.sp, fontFamily = robotoFontFamily)
-            }
+    val scrollState = rememberScrollState()
 
-            Column(
-                modifier = Modifier.padding(top = 40.dp, start = 40.dp)
-            ) {
-                Text("Email", fontSize = 16.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight.Medium, modifier = Modifier.padding(bottom = 8.dp))
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    placeholder = { Text("Masukkan email anda") },
-                    modifier = Modifier.fillMaxWidth().padding(end = 40.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color.Gray,
-                        unfocusedBorderColor = Color.Gray,
-                        cursorColor = Color.Black
-                    ),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
-
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White
                 )
-
-                Spacer(modifier = Modifier.height(15.dp))
-
-                Text("Password", fontSize = 16.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight.Medium, modifier = Modifier.padding(bottom = 8.dp))
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    placeholder = { Text("Masukkan password anda") },
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    trailingIcon = {
-                        Image(
-                            painter = painterResource(id = if (passwordVisible) R.drawable.eyes_closed else R.drawable.eyes_open),
-                            contentDescription = "Toggle Password Visibility",
-                            modifier = Modifier
-                                .size(20.dp)
-                                .clickable { passwordVisible = !passwordVisible }
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth().padding(end = 40.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color.Gray,
-                        unfocusedBorderColor = Color.Gray,
-                        cursorColor = Color.Black
-                    ),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-                )
-
-                Spacer(modifier = Modifier.height(40.dp))
-                Column (Modifier.fillMaxWidth().padding(horizontal = 40.dp), horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = "Ubah Password",
-                        textDecoration = TextDecoration.Underline,
-                        color = primary100,
-                        fontFamily = robotoFontFamily,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier
-                            .clickable {
-                                navCtrl.navigate("forgot_password_screen")
-                            }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(40.dp))
-
-                Button(
-                    onClick = {
-                        if (email.isNotBlank() && password.isNotBlank()) {
-                            authViewModel.login(email, password)
-                        } else {
-                            Toast.makeText(context, "Email dan password harus diisi", Toast.LENGTH_LONG).show()
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = primary100),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth().height(50.dp).padding(end = 40.dp)
+            )
+        },
+        content = { padding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .background(color = Color.White)
+                    .verticalScroll(scrollState)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 30.dp, start = 20.dp, end = 20.dp),
                 ) {
-                    Text("Masuk", fontSize = 16.sp, fontFamily = robotoFontFamily, color = Color.White)
-                }
-                LaunchedEffect(loginMessage) {
-                    loginMessage?.let {
-                        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("Masuk", fontSize = 25.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Text("Masuk ke akun anda selanjutnya", fontSize = 16.sp, fontFamily = robotoFontFamily)
                     }
-                    if(loginMessage?.contains("berhasil", ignoreCase = true) == true){
-                        navCtrl.navigate("home_screen")
+
+                    Spacer(modifier = Modifier.height(40.dp))
+
+                    Column {
+                        Text("Email", fontSize = 16.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight.Medium, modifier = Modifier.padding(bottom = 8.dp))
+                        OutlinedTextField(
+                            value = email,
+                            onValueChange = { email = it },
+                            placeholder = { Text("Masukkan email anda") },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color.Gray,
+                                unfocusedBorderColor = Color.Gray,
+                                cursorColor = Color.Black
+                            ),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                        )
+
+                        Spacer(modifier = Modifier.height(15.dp))
+
+                        Text("Password", fontSize = 16.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight.Medium, modifier = Modifier.padding(bottom = 8.dp))
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            placeholder = { Text("Masukkan password anda") },
+                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            trailingIcon = {
+                                Image(
+                                    painter = painterResource(id = if (passwordVisible) R.drawable.eyes_closed else R.drawable.eyes_open),
+                                    contentDescription = "Toggle Password Visibility",
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .clickable { passwordVisible = !passwordVisible }
+                                )
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color.Gray,
+                                unfocusedBorderColor = Color.Gray,
+                                cursorColor = Color.Black
+                            ),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            Text(
+                                text = "Ubah Password",
+                                textDecoration = TextDecoration.Underline,
+                                color = primary100,
+                                fontFamily = robotoFontFamily,
+                                fontWeight = FontWeight.Normal,
+                                textAlign = TextAlign.End,
+                                modifier = Modifier.clickable {
+                                    navCtrl.navigate("forgot_password_screen")
+                                }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(30.dp))
+
+                        Button(
+                            onClick = {
+                                if (email.isNotBlank() && password.isNotBlank()) {
+                                    authViewModel.login(email, password)
+                                } else {
+                                    Toast.makeText(context, "Email dan password harus diisi", Toast.LENGTH_LONG).show()
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = primary100),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(55.dp)
+                        ) {
+                            Text("Masuk", fontSize = 16.sp, fontFamily = robotoFontFamily, color = Color.White)
+                        }
+
+                        LaunchedEffect(loginMessage) {
+                            loginMessage?.let {
+                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                            }
+                            if (loginMessage?.contains("berhasil", ignoreCase = true) == true) {
+                                navCtrl.navigate("home_screen")
+                            }
+                        }
                     }
                 }
             }
         }
-    }
+    )
 }
-
 
 @Preview(showBackground = true, device = "spec:width=412dp, height=915dp, dpi=440")
 @Composable

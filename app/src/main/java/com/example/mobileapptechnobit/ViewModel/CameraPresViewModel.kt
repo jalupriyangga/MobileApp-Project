@@ -2,12 +2,19 @@ package com.example.mobileapptechnobit.ViewModel
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.mobileapptechnobit.data.API.ApiClient
+import com.example.mobileapptechnobit.data.remote.Presensi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 
 class CameraPresViewModel : ViewModel() {
+
     private val _capturedBitmap = MutableStateFlow<Bitmap?>(null)
     val capturedBitmap: StateFlow<Bitmap?> get() = _capturedBitmap
 
@@ -33,11 +40,146 @@ class CameraPresViewModel : ViewModel() {
 
     fun getClockInTime(context: Context): Long {
         val sharedPrefs = context.getSharedPreferences("PresensiPrefs", Context.MODE_PRIVATE)
-        return sharedPrefs.getLong("clockInTime", 0L)
+        val clockInTime = sharedPrefs.getLong("clockInTime", 0L)
+        Log.d("ClockInTime", "Retrieved ClockInTime: $clockInTime")
+        return clockInTime
     }
 
+    fun clearClockInTime(context: Context) {
+        val sharedPrefs = context.getSharedPreferences("PresensiPrefs", Context.MODE_PRIVATE)
+        Log.d("ClearClockInTime", "Clearing ClockInTime...")
+        sharedPrefs.edit().remove("clockInTime").apply()
+    }
+
+    suspend fun sendPresensiToApi(
+        token: String,
+        photoBase64: String,
+        filename: String,
+        companyPlaceId: Int,
+        note: String?
+    ): Result<Unit> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val requestBody = Presensi(
+                    status = "Present",
+                    photo_data = photoBase64,
+                    filename = filename,
+                    company_place_id = companyPlaceId,
+                    note = note ?: "-"
+                )
+
+                // Log the request body data
+                Log.d("PresensiRequest", """
+                Sending Presensi Data:
+                Status: ${requestBody.status}
+                Photo Data Length: ${requestBody.photo_data.length} characters
+                Filename: ${requestBody.filename}
+                Company Place ID: ${requestBody.company_place_id}
+                Note: ${requestBody.note}
+            """.trimIndent())
+
+                // Log the token being used
+                Log.d("AuthorizationToken", "Using Token: Bearer $token")
+
+                // Sending request to API
+                val response = ApiClient.apiService.sendPresensi("Bearer $token", requestBody)
+
+                // Log the HTTP response
+                if (response.isSuccessful) {
+                    Log.d("PresensiResponse", "Presensi successfully sent. HTTP Code: ${response.code()}")
+                    Result.success(Unit)
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "No error body"
+                    Log.e("PresensiResponse", """
+                    Failed to send Presensi.
+                    HTTP Code: ${response.code()}
+                    Error Body: $errorBody
+                """.trimIndent())
+                    Result.failure(Exception("Failed with HTTP Code: ${response.code()}"))
+                }
+            } catch (e: Exception) {
+                Log.e("PresensiException", "Exception occurred while sending Presensi", e)
+                Result.failure(e)
+            }
+        }
+    }
     fun clearSessionData(context: Context) {
         val sharedPrefs = context.getSharedPreferences("PresensiPrefs", Context.MODE_PRIVATE)
         sharedPrefs.edit().clear().apply()
+        Log.d("CameraPresViewModel", "Session data cleared successfully")
     }
+    suspend fun sendClockInToApi(
+        token: String,
+        photoBase64: String,
+        filename: String
+    ) {
+        withContext(Dispatchers.IO) {
+            try {
+                val requestBody = Presensi(
+                    status = "Present",
+                    photo_data = photoBase64,
+                    filename = filename,
+                    company_place_id = 1,
+                    note = "-"
+                )
+                // Kirim permintaan ke API
+                val response = ApiClient.apiService.sendPresensi("Bearer $token", requestBody)
+
+                // Log respons dari Clock-In API
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    Log.d("ClockInResponse", """
+                    Clock-In berhasil.
+                    HTTP Code: ${response.code()}
+                    Response Body: ${responseBody?.let { it }}
+                """.trimIndent())
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "No error body"
+                    Log.e("ClockInError", """
+                    Gagal melakukan Clock-In.
+                    HTTP Code: ${response.code()}
+                    Error Body: $errorBody
+                """.trimIndent())
+                }
+            } catch (e: Exception) {
+                Log.e("ClockInException", "Exception occurred during Clock-In", e)
+            }
+        }
+    }
+
+    suspend fun sendClockOutToApi(token: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                val requestBody = Presensi(
+                    status = "Present",
+                    photo_data = "", // Tidak perlu mengirim foto ulang untuk Clock-Out
+                    filename = "",
+                    company_place_id = 1,
+                    note = "-"
+                )
+                // Kirim permintaan ke API
+                val response = ApiClient.apiService.sendPresensi("Bearer $token", requestBody)
+
+                // Log respons dari Clock-Out API
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    Log.d("ClockOutResponse", """
+                    Clock-Out berhasil.
+                    HTTP Code: ${response.code()}
+                    Response Body: ${responseBody?.let { it }}
+                """.trimIndent())
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "No error body"
+                    Log.e("ClockOutError", """
+                    Gagal melakukan Clock-Out.
+                    HTTP Code: ${response.code()}
+                    Error Body: $errorBody
+                """.trimIndent())
+                }
+            } catch (e: Exception) {
+                Log.e("ClockOutException", "Exception occurred during Clock-Out", e)
+            }
+        }
+    }
+
 }

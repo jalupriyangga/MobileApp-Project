@@ -1,5 +1,7 @@
 package com.example.mobileapptechnobit.ui
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,19 +26,27 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.R
 import com.example.mobileapptechnobit.Screen
+import com.example.mobileapptechnobit.ViewModel.CameraPresViewModel
 import com.example.mobileapptechnobit.ui.theme.primary100
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClockOutScreen(
     navController: NavHostController,
     clockInTime: Long,
+    token: String,
+    viewModel: CameraPresViewModel, // Tambahkan viewModel sebagai parameter
     onClockOut: () -> Unit
 ) {
     val context = LocalContext.current
     var currentTime by remember { mutableStateOf(System.currentTimeMillis()) }
     var showDialog by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     // Menghitung durasi waktu kerja hanya jika clockInTime valid
     val workDuration = if (clockInTime > 0) currentTime - clockInTime else 0L
@@ -134,11 +144,7 @@ fun ClockOutScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = "Waktu Kerja: %02d:%02d:%02d".format(hours, minutes, seconds),
-                        fontSize = 24.sp,
-                        color = Color.Black
-                    )
+
                     Image(
                         painter = painterResource(id = R.drawable.walkthrough2),
                         contentDescription = "Success Screen",
@@ -160,6 +166,15 @@ fun ClockOutScreen(
                         fontSize = 14.sp,
                         fontFamily = robotoFontFamily,
                         fontWeight = FontWeight.Normal,
+                        color = Color.Gray
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Total jam Kerja: %02d.%02d.%02d".format(hours, minutes, seconds),
+                        fontSize = 14.sp,
+                        fontFamily = robotoFontFamily,
+                        fontWeight = FontWeight.Bold,
                         color = Color.Gray
                     )
                 }
@@ -217,8 +232,21 @@ fun ClockOutScreen(
                         Button(
                             onClick = {
                                 showDialog = false
-                                navController.navigate(Screen.ClockOutSukses.route)
-                                onClockOut()
+                                isLoading = true
+                                coroutineScope.launch(Dispatchers.IO) {
+                                    try {
+                                        // Kirim data Clock-Out ke API
+                                        viewModel.sendClockOutToApi(token)
+                                    } catch (e: Exception) {
+                                        // Log error jika diperlukan
+                                        Log.e("ClockOutScreen", "Error during Clock-Out", e)
+                                    } finally {
+                                        withContext(Dispatchers.Main) {
+                                            isLoading = false
+                                            navController.navigate(Screen.ClockOutSukses.route)
+                                        }
+                                    }
+                                }
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = primary100),
                             shape = RoundedCornerShape(8.dp),
@@ -251,6 +279,8 @@ fun PreviewClockOutScreen() {
     ClockOutScreen(
         navController = navController,
         clockInTime = System.currentTimeMillis() - 3600000, // Simulasi waktu 1 jam yang lalu
+        token = "dummy_token", // Tambahkan nilai dummy untuk token
+        viewModel = CameraPresViewModel(), // Tambahkan instance viewModel
         onClockOut = {}
     )
 }

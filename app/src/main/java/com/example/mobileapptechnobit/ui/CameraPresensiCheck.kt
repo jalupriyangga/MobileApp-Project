@@ -3,6 +3,7 @@ package com.example.mobileapptechnobit
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Environment
+import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
@@ -10,8 +11,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,8 +29,12 @@ import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,6 +49,7 @@ fun CameraPresensiCheck(
 
     // State untuk menampilkan dialog
     var showDialog by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
     Log.d("CameraPresensiCheck", "Bitmap: $bitmap, Token: $token")
 
@@ -70,7 +74,7 @@ fun CameraPresensiCheck(
                         Box(modifier = Modifier.weight(6f), contentAlignment = Alignment.Center) {
                             Text(
                                 text = "Konfirmasi Foto",
-                                color = androidx.compose.ui.graphics.Color.White,
+                                color = Color.White,
                                 textAlign = TextAlign.Center,
                                 fontSize = 22.sp,
                                 fontWeight = FontWeight.Medium,
@@ -107,7 +111,7 @@ fun CameraPresensiCheck(
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
                             .weight(1f)
-                            .height(58.dp) // Menambahkan tinggi tombol
+                            .height(58.dp)
                     ) {
                         Text(
                             text = "Ulangi",
@@ -125,7 +129,7 @@ fun CameraPresensiCheck(
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
                             .weight(1f)
-                            .height(58.dp) // Menambahkan tinggi tombol
+                            .height(58.dp)
                     ) {
                         Text(
                             text = "Kirim",
@@ -145,14 +149,14 @@ fun CameraPresensiCheck(
                     .padding(paddingValues)
                     .background(color = Color.White),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top // Mengatur konten ke bagian atas
+                verticalArrangement = Arrangement.Top
             ) {
                 Image(
                     bitmap = bitmap.asImageBitmap(),
                     contentDescription = "Captured Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp, top = 71.dp) // Menambahkan padding atas
+                        .padding(start = 20.dp, end = 20.dp, top = 71.dp)
                         .aspectRatio(3f / 4f)
                 )
             }
@@ -163,7 +167,7 @@ fun CameraPresensiCheck(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = {
-                showDialog = false // Tutup dialog jika pengguna menekan di luar dialog
+                showDialog = false
             },
             title = {
                 Text(
@@ -208,16 +212,32 @@ fun CameraPresensiCheck(
                         }
                         Button(
                             onClick = {
-                                coroutineScope.launch(Dispatchers.IO) { // Gunakan Dispatchers.IO untuk operasi I/O
-                                    // Simpan gambar ke penyimpanan publik
-                                    saveBitmapToPublicPictures(context, bitmap)
+                                showDialog = false
+                                isLoading = true
+                                coroutineScope.launch(Dispatchers.IO) {
+                                    try {
+                                        val savedFile = saveBitmapToPublicPictures(context, bitmap)
+                                        val photoBase64 = bitmapToBase64(bitmap)
 
-                                    // Simpan waktu Clock In ke SharedPreferences
-                                    viewModel.saveClockInTime(context, System.currentTimeMillis())
+                                        // Kirim data Clock-In ke API
+                                        viewModel.sendClockInToApi(
+                                            token = token,
+                                            photoBase64 = photoBase64,
+                                            filename = savedFile.name
+                                        )
 
-                                    withContext(Dispatchers.Main) { // Kembali ke Main Thread untuk navigasi dan UI
-                                        Toast.makeText(context, "Gambar berhasil disimpan!", Toast.LENGTH_LONG).show()
-                                        navController.navigate(Screen.PresensiSukses.route) // Navigasi ke layar sukses
+                                        // Simpan waktu Clock-In
+                                        viewModel.saveClockInTime(context, System.currentTimeMillis())
+
+                                        withContext(Dispatchers.Main) {
+                                            isLoading = false
+                                            navController.navigate(Screen.PresensiSukses.route)
+                                        }
+                                    } catch (e: Exception) {
+                                        Log.e("CameraPresensiCheck", "Error during Clock-In", e)
+                                        withContext(Dispatchers.Main) {
+                                            isLoading = false
+                                        }
                                     }
                                 }
                             },
@@ -243,16 +263,61 @@ fun CameraPresensiCheck(
             modifier = Modifier.background(Color.Transparent)
         )
     }
+    // Indikator Loading
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    }
 }
 
-// Fungsi untuk menyimpan bitmap ke penyimpanan publik
 fun saveBitmapToPublicPictures(context: Context, bitmap: Bitmap): File {
     val picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
     if (!picturesDir.exists()) picturesDir.mkdirs()
 
-    val photoFile = File(picturesDir, "photo_${System.currentTimeMillis()}.jpg")
+    // Format nama file menjadi "presensi_tanggal_waktu.jpg"
+    val currentTime = System.currentTimeMillis()
+    val dateFormat = SimpleDateFormat("ddMMyyyy_HHmmss", Locale.getDefault())
+    val formattedDate = dateFormat.format(Date(currentTime))
+    val photoFileName = "presensi_$formattedDate.jpg"
+
+    val photoFile = File(picturesDir, photoFileName)
     FileOutputStream(photoFile).use { out ->
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
     }
     return photoFile
+}
+
+// Fungsi untuk mengonversi Bitmap ke Base64
+fun bitmapToBase64(bitmap: Bitmap): String {
+    // Resize gambar untuk mengurangi ukuran
+    val resizedBitmap = resizeBitmap(bitmap, maxWidth = 400, maxHeight = 400)
+
+    // Kompres gambar dengan kualitas lebih rendah
+    val outputStream = ByteArrayOutputStream()
+    resizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream) // Kualitas 50 (0-100)
+
+    val byteArray = outputStream.toByteArray()
+
+    // Konversi byte array ke Base64
+    return Base64.encodeToString(byteArray, Base64.NO_WRAP)
+}
+
+fun resizeBitmap(bitmap: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
+    val width = bitmap.width
+    val height = bitmap.height
+    val aspectRatio = width.toFloat() / height.toFloat()
+
+    val newWidth: Int
+    val newHeight: Int
+
+    if (width > height) {
+        newWidth = maxWidth
+        newHeight = (newWidth / aspectRatio).toInt()
+    } else {
+        newHeight = maxHeight
+        newWidth = (newHeight * aspectRatio).toInt()
+    }
+
+    return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
 }

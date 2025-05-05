@@ -43,6 +43,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -185,12 +186,42 @@ class CameraPresensi(private val context: Context) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     // Camera Preview
+                    // Camera Preview dengan frame dan arahan
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .aspectRatio(3f / 4f)
+                            .aspectRatio(3f / 4f),
+                        contentAlignment = Alignment.Center // Untuk memastikan elemen di tengah
                     ) {
                         CameraPreview(controller = controller, modifier = Modifier.fillMaxSize())
+
+                        // Tambahkan frame kamera dari drawable
+                        Image(
+                            painter = painterResource(id = R.drawable.camera_frame), // Frame kamera
+                            contentDescription = "Camera Frame",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(24.dp)
+                        )
+
+                        // Arahan untuk pengguna
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter) // Posisi text berada di dalam frame
+                                .offset(y = (-56).dp) // Geser ke atas dengan offset negatif
+                                .background(colorResource(id = R.color.black100).copy(alpha = 0.5f))
+                                .padding(4.dp), // Padding untuk teks
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Pastikan wajah terlihat dengan jelas",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Medium,
+                                fontFamily = robotoFontFamily,
+                                color = androidx.compose.ui.graphics.Color.White,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.weight(1f))

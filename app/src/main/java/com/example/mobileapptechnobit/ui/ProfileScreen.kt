@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.AlertDialog
@@ -85,6 +87,8 @@ fun ProfileScreen(navController: NavController, token: String) {
 
     var showLogoutDialog by remember { mutableStateOf(false) }
     var userProfile by remember { mutableStateOf<UserProfileResponse?>(null) }
+
+    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
@@ -252,6 +256,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                         .fillMaxWidth()
                         .padding(padding)
                         .padding(start = 20.dp)
+                        .verticalScroll(scrollState)
                 ) {
                     Text(
                         text = "Informasi Perusahaan",

@@ -1,6 +1,7 @@
 package com.example.mobileapptechnobit
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -18,6 +19,10 @@ import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
 import com.example.mobileapptechnobit.ViewModel.CameraPresViewModel
 import com.example.mobileapptechnobit.data.repository.AuthRepository
 import com.example.mobileapptechnobit.ui.component.SuccessScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) { // Tambahkan parameter authViewModel
@@ -97,11 +102,19 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) { /
             InformasiPerusahaan(navController = navController, token = token ?: "")
         }
         composable(Screen.CameraPresensi.route) {
-            val cameraPresensi = CameraPresensi(context)
-            val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-            val token = sharedPref.getString("AUTH_TOKEN", "") ?: "" // Pastikan token tidak null
+            val clockInTime = viewModel.getClockInTime(context)
 
-            cameraPresensi.CameraScreen(viewModel, navController, token)
+            if (clockInTime > 0) {
+                // Masih dalam sesi Clock-In, arahkan ke ClockOutScreen
+                navController.navigate(Screen.ClockOut.route) {
+                    popUpTo(Screen.CameraPresensi.route) { inclusive = true }
+                }
+            } else {
+                // Tidak ada sesi Clock-In, arahkan ke CameraPresensi
+                val cameraPresensi = CameraPresensi(context)
+                val token = sharedPref.getString("AUTH_TOKEN", "") ?: ""
+                cameraPresensi.CameraScreen(viewModel, navController, token)
+            }
         }
         composable(Screen.CameraPresensiCheck.route) {
             CameraPresensiCheck(viewModel, navController, context)
@@ -110,18 +123,39 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) { /
             PresensiSuksesScreen(navController)
         }
         composable(Screen.ClockOut.route) {
-            val context = LocalContext.current
             val clockInTime = viewModel.getClockInTime(context)
+            val token = sharedPref.getString("AUTH_TOKEN", "") ?: ""
 
             ClockOutScreen(
                 navController = navController,
-                clockInTime = clockInTime
+                clockInTime = clockInTime,
+                token = token,
+                viewModel = viewModel
             ) {
-                viewModel.clearSessionData(context) // Pembersihan data sesi
+                // Gunakan CoroutineScope untuk memanggil suspend function
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        // Kirim Clock-Out ke API
+                        viewModel.sendClockOutToApi(token)
+
+                        // Hapus ClockInTime setelah berhasil Clock-Out
+                        viewModel.clearClockInTime(context)
+                        viewModel.clearSessionData(context)
+
+                        // Navigasi ke layar sukses Clock-Out
+                        withContext(Dispatchers.Main) {
+                            navController.navigate(Screen.ClockOutSukses.route) {
+                                popUpTo(Screen.ClockOut.route) { inclusive = true }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e("ClockOut", "Error during Clock-Out", e)
+                    }
+                }
             }
         }
         composable(Screen.ClockOutSukses.route) {
-            ClockOutSuksesScreen(navController)
+            ClockOutSuksesScreen(navController, viewModel = viewModel, context = context)
         }
     }
 }

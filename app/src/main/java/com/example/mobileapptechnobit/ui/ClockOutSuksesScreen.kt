@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,12 +33,17 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.R
 import com.example.mobileapptechnobit.Screen
+import com.example.mobileapptechnobit.ViewModel.CameraPresViewModel
 import com.example.mobileapptechnobit.ui.theme.primary100
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ClockOutSuksesScreen(navController: NavController) {
+fun ClockOutSuksesScreen(navController: NavController, viewModel: CameraPresViewModel, context: android.content.Context) {
+    // Reset sesi presensi
+    LaunchedEffect(Unit) {
+        viewModel.clearSessionData(context) // Pastikan semua data sesi dihapus
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -124,5 +130,10 @@ fun ClockOutSuksesScreen(navController: NavController) {
 @Preview(showBackground = true, device = "spec:width=412dp, height=915dp, dpi=440")
 @Composable
 fun ClockOutSuksesScreenPreview() {
-    ClockOutSuksesScreen(navController = rememberNavController())
+    // Dummy NavController and ViewModel for preview purposes
+    val navController = rememberNavController()
+    val dummyViewModel = CameraPresViewModel()
+    val dummyContext = androidx.compose.ui.platform.LocalContext.current
+
+    ClockOutSuksesScreen(navController = navController, viewModel = dummyViewModel, context = dummyContext)
 }
