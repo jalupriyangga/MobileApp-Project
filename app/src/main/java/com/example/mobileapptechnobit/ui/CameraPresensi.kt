@@ -185,32 +185,29 @@ class CameraPresensi(private val context: Context) {
                         .background(color = colorResource(R.color.black100)),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Camera Preview
-                    // Camera Preview dengan frame dan arahan
+
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(3f / 4f),
-                        contentAlignment = Alignment.Center // Untuk memastikan elemen di tengah
+                        contentAlignment = Alignment.Center
                     ) {
                         CameraPreview(controller = controller, modifier = Modifier.fillMaxSize())
 
-                        // Tambahkan frame kamera dari drawable
                         Image(
-                            painter = painterResource(id = R.drawable.camera_frame), // Frame kamera
+                            painter = painterResource(id = R.drawable.camera_frame),
                             contentDescription = "Camera Frame",
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(24.dp)
                         )
 
-                        // Arahan untuk pengguna
                         Box(
                             modifier = Modifier
-                                .align(Alignment.BottomCenter) // Posisi text berada di dalam frame
-                                .offset(y = (-56).dp) // Geser ke atas dengan offset negatif
+                                .align(Alignment.BottomCenter)
+                                .offset(y = (-56).dp)
                                 .background(colorResource(id = R.color.black100).copy(alpha = 0.5f))
-                                .padding(4.dp), // Padding untuk teks
+                                .padding(4.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -227,25 +224,22 @@ class CameraPresensi(private val context: Context) {
                     Spacer(modifier = Modifier.weight(1f))
                 }
 
-                // Tombol di bawah (kamera tengah + switch kanan)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 32.dp, start = 32.dp, end = 32.dp)
                 ) {
-                    // Tombol kamera (posisi tengah)
                     IconButton(
                         onClick = {
                             takePhoto(
                                 controller = controller,
-                                context = context, // Pastikan Anda meneruskan context
-                                token = token, // Pastikan token diteruskan
+                                context = context,
+                                token = token,
                                 onPhotoTaken = { bitmap ->
-                                    // Simpan bitmap ke ViewModel atau lakukan operasi lainnya
                                     viewModel.onTakePhoto(bitmap, token)
                                 },
-                                navController = navController // Teruskan navController untuk navigasi
+                                navController = navController
                             )
                         },
                         modifier = Modifier
@@ -254,7 +248,7 @@ class CameraPresensi(private val context: Context) {
                             .background(color = androidx.compose.ui.graphics.Color.White, shape = CircleShape)
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.camera), // Ganti `ic_camera` dengan nama resource Anda
+                            painter = painterResource(id = R.drawable.camera),
                             contentDescription = "Ambil Foto",
                             modifier = Modifier.size(36.dp)
                         )
@@ -273,7 +267,7 @@ class CameraPresensi(private val context: Context) {
                             .background(color = androidx.compose.ui.graphics.Color.White, shape = CircleShape)
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.camera_switch), // Ganti `ic_camera` dengan nama resource Anda
+                            painter = painterResource(id = R.drawable.camera_switch),
                             contentDescription = "Ganti Kamera",
                             modifier = Modifier.size(26.dp)
                         )
@@ -314,12 +308,8 @@ class CameraPresensi(private val context: Context) {
                         location = location,
                         address = address
                     )
-
                     onPhotoTaken(bitmapWithWatermark)
-
-                    // Navigasi hanya setelah data disimpan
                     navController.navigate(Screen.CameraPresensiCheck.route)
-
                     image.close()
                 }
 

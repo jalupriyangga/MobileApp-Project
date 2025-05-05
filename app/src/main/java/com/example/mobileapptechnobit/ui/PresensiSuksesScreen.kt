@@ -44,7 +44,7 @@ fun PresensiSuksesScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(16.dp) // Padding tambahan untuk layar
+                    .padding(16.dp)
             ) {
                 Column(
                     modifier = Modifier

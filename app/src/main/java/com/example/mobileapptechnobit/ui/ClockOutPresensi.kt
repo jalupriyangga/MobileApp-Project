@@ -39,7 +39,7 @@ fun ClockOutScreen(
     navController: NavHostController,
     clockInTime: Long,
     token: String,
-    viewModel: CameraPresViewModel, // Tambahkan viewModel sebagai parameter
+    viewModel: CameraPresViewModel,
     onClockOut: () -> Unit
 ) {
     val context = LocalContext.current
@@ -47,14 +47,11 @@ fun ClockOutScreen(
     var showDialog by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
-
-    // Menghitung durasi waktu kerja hanya jika clockInTime valid
     val workDuration = if (clockInTime > 0) currentTime - clockInTime else 0L
     val hours = (workDuration / (1000 * 60 * 60)).toInt()
     val minutes = ((workDuration / (1000 * 60)) % 60).toInt()
     val seconds = ((workDuration / 1000) % 60).toInt()
 
-    // Perbarui waktu setiap detik
     LaunchedEffect(Unit) {
         while (true) {
             currentTime = System.currentTimeMillis()
@@ -135,7 +132,7 @@ fun ClockOutScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(16.dp) // Padding tambahan untuk layar
+                    .padding(16.dp)
             ) {
                 Column(
                     modifier = Modifier
@@ -182,11 +179,10 @@ fun ClockOutScreen(
         }
     )
 
-    // Dialog Konfirmasi Clock Out
     if (showDialog) {
         AlertDialog(
             onDismissRequest = {
-                showDialog = false // Tutup dialog jika pengguna menekan di luar dialog
+                showDialog = false
             },
             title = {
                 Text(
@@ -278,9 +274,9 @@ fun PreviewClockOutScreen() {
     val navController = rememberNavController()
     ClockOutScreen(
         navController = navController,
-        clockInTime = System.currentTimeMillis() - 3600000, // Simulasi waktu 1 jam yang lalu
-        token = "dummy_token", // Tambahkan nilai dummy untuk token
-        viewModel = CameraPresViewModel(), // Tambahkan instance viewModel
+        clockInTime = System.currentTimeMillis() - 3600000,
+        token = "dummy_token",
+        viewModel = CameraPresViewModel(),
         onClockOut = {}
     )
 }

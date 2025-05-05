@@ -46,7 +46,6 @@ class MainActivity : ComponentActivity() {
                         factory = AuthViewModelFactory(authRepository, context)
                     )
 
-                    // Meminta izin lokasi pada runtime
                     RequestLocationPermissions()
 
                     LaunchedEffect(Unit) {
@@ -72,10 +71,8 @@ class MainActivity : ComponentActivity() {
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
             if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
-                // Izin lokasi diberikan
                 Toast.makeText(context, "Location permission granted", Toast.LENGTH_SHORT).show()
             } else {
-                // Izin lokasi ditolak
                 Toast.makeText(context, "Location permission denied", Toast.LENGTH_SHORT).show()
             }
         }

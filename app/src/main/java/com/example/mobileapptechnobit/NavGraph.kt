@@ -25,16 +25,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) { // Tambahkan parameter authViewModel
+fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
     val context = LocalContext.current
     val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     val token = remember { sharedPref.getString("AUTH_TOKEN", null) }
     val authRepository = AuthRepository()
-    val authViewModel: AuthViewModel = viewModel( // Hapus deklarasi ulang ini
+    val authViewModel: AuthViewModel = viewModel(
         factory = AuthViewModelFactory(authRepository, context)
     )
     val lifecycleOwner = LocalLifecycleOwner.current
-    val viewModel: CameraPresViewModel = viewModel() // Inisialisasi ViewModel di tingkat NavGraph
+    val viewModel: CameraPresViewModel = viewModel()
 
 
     NavHost(
@@ -105,12 +105,10 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) { /
             val clockInTime = viewModel.getClockInTime(context)
 
             if (clockInTime > 0) {
-                // Masih dalam sesi Clock-In, arahkan ke ClockOutScreen
                 navController.navigate(Screen.ClockOut.route) {
                     popUpTo(Screen.CameraPresensi.route) { inclusive = true }
                 }
             } else {
-                // Tidak ada sesi Clock-In, arahkan ke CameraPresensi
                 val cameraPresensi = CameraPresensi(context)
                 val token = sharedPref.getString("AUTH_TOKEN", "") ?: ""
                 cameraPresensi.CameraScreen(viewModel, navController, token)
@@ -132,17 +130,13 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) { /
                 token = token,
                 viewModel = viewModel
             ) {
-                // Gunakan CoroutineScope untuk memanggil suspend function
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        // Kirim Clock-Out ke API
                         viewModel.sendClockOutToApi(token)
 
-                        // Hapus ClockInTime setelah berhasil Clock-Out
                         viewModel.clearClockInTime(context)
                         viewModel.clearSessionData(context)
 
-                        // Navigasi ke layar sukses Clock-Out
                         withContext(Dispatchers.Main) {
                             navController.navigate(Screen.ClockOutSukses.route) {
                                 popUpTo(Screen.ClockOut.route) { inclusive = true }

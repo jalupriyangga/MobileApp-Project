@@ -46,14 +46,11 @@ fun CameraPresensiCheck(
     val bitmap = viewModel.capturedBitmap.collectAsState().value
     val token = viewModel.token.collectAsState().value
     val coroutineScope = rememberCoroutineScope()
-
-    // State untuk menampilkan dialog
     var showDialog by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
     Log.d("CameraPresensiCheck", "Bitmap: $bitmap, Token: $token")
 
-    // Validasi jika bitmap atau token null
     if (bitmap == null || token == null) {
         Log.d("CameraPresensiCheck", "Bitmap or token is null. Navigating back.")
         LaunchedEffect(Unit) {
@@ -163,7 +160,6 @@ fun CameraPresensiCheck(
         }
     )
 
-    // Dialog Konfirmasi Kirim atau Batal
     if (showDialog) {
         AlertDialog(
             onDismissRequest = {
@@ -219,14 +215,12 @@ fun CameraPresensiCheck(
                                         val savedFile = saveBitmapToPublicPictures(context, bitmap)
                                         val photoBase64 = bitmapToBase64(bitmap)
 
-                                        // Kirim data Clock-In ke API
                                         viewModel.sendClockInToApi(
                                             token = token,
                                             photoBase64 = photoBase64,
                                             filename = savedFile.name
                                         )
 
-                                        // Simpan waktu Clock-In
                                         viewModel.saveClockInTime(context, System.currentTimeMillis())
 
                                         withContext(Dispatchers.Main) {
@@ -263,7 +257,6 @@ fun CameraPresensiCheck(
             modifier = Modifier.background(Color.Transparent)
         )
     }
-    // Indikator Loading
     if (isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
@@ -275,7 +268,6 @@ fun saveBitmapToPublicPictures(context: Context, bitmap: Bitmap): File {
     val picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
     if (!picturesDir.exists()) picturesDir.mkdirs()
 
-    // Format nama file menjadi "presensi_tanggal_waktu.jpg"
     val currentTime = System.currentTimeMillis()
     val dateFormat = SimpleDateFormat("ddMMyyyy_HHmmss", Locale.getDefault())
     val formattedDate = dateFormat.format(Date(currentTime))
@@ -288,18 +280,12 @@ fun saveBitmapToPublicPictures(context: Context, bitmap: Bitmap): File {
     return photoFile
 }
 
-// Fungsi untuk mengonversi Bitmap ke Base64
 fun bitmapToBase64(bitmap: Bitmap): String {
-    // Resize gambar untuk mengurangi ukuran
     val resizedBitmap = resizeBitmap(bitmap, maxWidth = 400, maxHeight = 400)
-
-    // Kompres gambar dengan kualitas lebih rendah
     val outputStream = ByteArrayOutputStream()
-    resizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream) // Kualitas 50 (0-100)
+    resizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
 
     val byteArray = outputStream.toByteArray()
-
-    // Konversi byte array ke Base64
     return Base64.encodeToString(byteArray, Base64.NO_WRAP)
 }
 
@@ -307,7 +293,6 @@ fun resizeBitmap(bitmap: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
     val width = bitmap.width
     val height = bitmap.height
     val aspectRatio = width.toFloat() / height.toFloat()
-
     val newWidth: Int
     val newHeight: Int
 
