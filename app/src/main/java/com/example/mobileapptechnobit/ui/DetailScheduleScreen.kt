@@ -46,6 +46,7 @@ fun DetailScheduleScreen(
             Box {
                 TopAppBar()
                 ScheduleTitle(navCtrl = navCtrl)
+
             }
         }
     ) { paddingValues ->
@@ -120,12 +121,12 @@ fun ScheduleCardFromApi(schedule: PatrolScheduleResponse, navCtrl: NavController
                             },
                             shape = RoundedCornerShape(4.dp)
                         )
-                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
                 ) {
                     Text(
                         text = schedule.waktu.replaceFirstChar { it.uppercase() },
                         fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp
+                        fontSize = 16.sp
                     )
                 }
 
