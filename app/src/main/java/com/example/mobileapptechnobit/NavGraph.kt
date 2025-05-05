@@ -3,6 +3,7 @@ package com.example.mobileapptechnobit
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import com.example.mobileapptechnobit.ui.DetailScheduleScreen
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -72,8 +73,8 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) { /
         composable(Screen.History.route){
             HistoryScreen(navCtrl = navController)
         }
-        composable(Screen.Schedule.route){
-            ScheduleScreen(navCtrl = navController)
+        composable(Screen.Schedule.route) {
+            DetailScheduleScreen(navCtrl = navController, token = token ?: "")
         }
         composable(Screen.Profile.route) {
             ProfileScreen(navController = navController, token = token ?: "")

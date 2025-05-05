@@ -1,6 +1,7 @@
 package com.example.mobileapptechnobit.data.API
 
 import com.example.mobileapptechnobit.data.remote.EmployeeResponse
+import com.example.mobileapptechnobit.data.remote.PatrolScheduleResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -9,6 +10,7 @@ import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Query
 
 interface ApiService{
 
@@ -36,4 +38,12 @@ interface ApiService{
 
     @GET("v1/profile/user")
     suspend fun getUserProfile(@Header("Authorization") token: String): Response<UserProfileResponse>
+
+    @GET("v1/android/jadwal-patroli")
+    suspend fun getPatrolSchedules(
+        @Header("Authorization") token: String,
+        @Query("date") date: String? = null,
+        @Query("company_id") companyId: Int? = null
+    ): Response<List<PatrolScheduleResponse>>
+
 }

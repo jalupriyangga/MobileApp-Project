@@ -28,6 +28,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import com.example.mobileapptechnobit.ViewModel.ScheduleViewModel
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -58,6 +59,7 @@ import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
 import com.example.mobileapptechnobit.ViewModel.ProfileViewModel
 import com.example.mobileapptechnobit.ViewModel.ProfileViewModelFactory
 import com.example.mobileapptechnobit.data.API.UserProfileResponse
+import com.example.mobileapptechnobit.data.remote.PatrolScheduleResponse
 import com.example.mobileapptechnobit.data.repository.AuthRepository
 import com.example.mobileapptechnobit.data.repository.ProfileRepository
 import com.example.mobileapptechnobit.ui.component.BottomNavigationBar
@@ -67,6 +69,19 @@ import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
+    val context = LocalContext.current
+    val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    val token = sharedPref.getString("AUTH_TOKEN", null) ?: ""
+
+    val viewModel: ScheduleViewModel = viewModel()
+    val schedules = viewModel.scheduleList
+    val isLoading = viewModel.isLoading
+    val error = viewModel.errorMessage
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchSchedules(token = token)
+    }
+
     Scaffold(
         topBar = {
             Box(
@@ -75,7 +90,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
                 TopAppBar()
                 Column {
                     ProfileSection()
-                    ScheduleCard(navCtrl = navCtrl)
+                    ScheduleCard(navCtrl = navCtrl, schedules = schedules, isLoading = isLoading, error = error)
                 }
             }
         },
@@ -83,10 +98,10 @@ fun HomeScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
             BottomNavigationBar(navCtrl = navCtrl, index = 0)
         },
     ){ padding ->
-            Column (Modifier.padding(padding).fillMaxSize().zIndex(1f))
-            {
-                MainMenu()
-            }
+        Column (Modifier.padding(padding).fillMaxSize().zIndex(1f))
+        {
+            MainMenu()
+        }
     }
 }
 
@@ -97,6 +112,7 @@ fun ProfileSection(modifier: Modifier = Modifier) {
     val repository = ProfileRepository(context)
     val viewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(repository))
     val authRepository = AuthRepository()
+
     val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(authRepository, context))
     val profileState = viewModel.employeesProfile.collectAsState()
     val profile = profileState.value
@@ -136,7 +152,13 @@ fun ProfileSection(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ScheduleCard(modifier: Modifier = Modifier, navCtrl: NavController) {
+fun ScheduleCard(
+    modifier: Modifier = Modifier,
+    navCtrl: NavController,
+    schedules: List<PatrolScheduleResponse>?,
+    isLoading: Boolean,
+    error: String?
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -148,62 +170,76 @@ fun ScheduleCard(modifier: Modifier = Modifier, navCtrl: NavController) {
         colors = CardDefaults.cardColors(Color.White)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Selasa 04 Maret 2025", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
-                Spacer(Modifier.weight(1f))
-                Text("Lihat Jadwal", color = Color.Gray, fontSize = 14.sp, modifier = Modifier.clickable{navCtrl.navigate("schedule_screen")})
-                Spacer(Modifier.padding(start = 10.dp))
-                Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, Modifier.size(20.dp).clickable{navCtrl.navigate("schedule_screen")})
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            HorizontalDivider(
-                thickness = 1.dp,
-                color = Color.LightGray
-            )
+            if (isLoading) {
+                Text("Loading...", fontSize = 14.sp)
+            } else if (error != null) {
+                Text("Error: $error", color = Color.Red, fontSize = 14.sp)
+            } else {
+                schedules?.forEach { schedule ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(schedule.tanggal, fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
+                        Spacer(Modifier.weight(1f))
+                        Text("Lihat Jadwal", color = Color.Gray, fontSize = 14.sp, modifier = Modifier.clickable {
+                            navCtrl.navigate("schedule_screen")
+                        })
+                        Spacer(Modifier.padding(start = 10.dp))
+                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, Modifier.size(20.dp).clickable {
+                            navCtrl.navigate("schedule_screen")
+                        })
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = Color.LightGray
+                    )
 
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(
-                Modifier.padding(horizontal = 25.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Icon(painter = painterResource(R.drawable.frame_27),
-                    contentDescription = null,
-                    modifier = Modifier.size(45.dp),
-                    tint = Color.Unspecified
-                )
-                Column (
-                    Modifier.padding(start = 8.dp)
-                ){
-                    Text(text = "Mulai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
-                    Text(text = "08.00 WIB", fontFamily = robotoFontFamily)
-                }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        Modifier.padding(horizontal = 25.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Icon(painter = painterResource(R.drawable.frame_27),
+                            contentDescription = null,
+                            modifier = Modifier.size(45.dp),
+                            tint = Color.Unspecified
+                        )
+                        Column (
+                            Modifier.padding(start = 8.dp)
+                        ){
+                            Text(text = "Mulai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
+                            Text(text = schedule.jam_mulai, fontFamily = robotoFontFamily)
+                        }
 
-                Spacer(Modifier.weight(1f))
-                VerticalDivider(
-                    thickness = 1.dp,
-                    color = Color.LightGray,
-                    modifier = Modifier.height(50.dp)
-                )
-                Spacer(Modifier.weight(1f))
+                        Spacer(Modifier.weight(1f))
+                        VerticalDivider(
+                            thickness = 1.dp,
+                            color = Color.LightGray,
+                            modifier = Modifier.height(50.dp)
+                        )
+                        Spacer(Modifier.weight(1f))
 
-                Icon(painter = painterResource(R.drawable.frame_28),
-                    contentDescription = null,
-                    modifier = Modifier.size(45.dp),
-                    tint = Color.Unspecified
-                )
-                Column (
-                    Modifier.padding(start = 8.dp)
-                ){
-                    Text(text = "Selesai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
-                    Text(text = "16.00 WIB", fontFamily = robotoFontFamily)
+                        Icon(painter = painterResource(R.drawable.frame_28),
+                            contentDescription = null,
+                            modifier = Modifier.size(45.dp),
+                            tint = Color.Unspecified
+                        )
+                        Column (
+                            Modifier.padding(start = 8.dp)
+                        ){
+                            Text(text = "Selesai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
+                            Text(text = schedule.jam_selesai, fontFamily = robotoFontFamily)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
     }
 }
+
 
 @Composable
 fun MainMenu(modifier: Modifier = Modifier) {
