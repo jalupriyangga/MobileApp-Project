@@ -31,7 +31,7 @@ import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 fun DetailScheduleScreen(
     navCtrl: NavController,
     token: String,
-    viewModel: ScheduleViewModel = viewModel() // ✅ FIXED!
+    viewModel: ScheduleViewModel = viewModel()
 ) {
     val schedules = viewModel.scheduleList
     val isLoading = viewModel.isLoading
@@ -45,28 +45,39 @@ fun DetailScheduleScreen(
         topBar = {
             Box {
                 TopAppBar()
-                ScheduleTitle(navCtrl = navCtrl)
-
-            }
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .background(Color.White)
-        ) {
-            when {
-                isLoading -> Text("Loading...", modifier = Modifier.padding(16.dp))
-                error != null -> Text("Error: $error", modifier = Modifier.padding(16.dp), color = Color.Red)
-                else -> {
-                    schedules.forEach { schedule ->
-                        ScheduleCardFromApi(schedule = schedule, navCtrl = navCtrl)
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                ) {
+                    ScheduleTitle(navCtrl = navCtrl)
+                    Column(Modifier.background(Color.White)) {
+                        Spacer(Modifier.height(40.dp))
+                        when {
+                            isLoading -> Text(
+                                "Loading...",
+                                modifier = Modifier.padding(16.dp)
+                            )
+                            error != null -> Text(
+                                "Error: $error",
+                                modifier = Modifier.padding(16.dp),
+                                color = Color.Red
+                            )
+                            else -> {
+                                schedules.forEach { schedule ->
+                                    ScheduleCardFromApi(schedule = schedule, navCtrl = navCtrl)
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
+    ) { paddingValues ->
+
+        Box(modifier = Modifier.padding(paddingValues))
     }
 }
+
 
 
 

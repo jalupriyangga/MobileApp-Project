@@ -10,7 +10,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aab0fd82-f8f8-4a37-bc6f-48cf6fa4ffca" name="Changes" comment="sync profile &amp; navigation">
-      <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/DetailScheduleScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/DetailScheduleScreen.kt" afterDir="false" />
     </list>
@@ -82,7 +81,7 @@
     "com.google.services.firebase.aqiPopupShown": "true",
     "git-widget-placeholder": "detailschedule",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/HIRO/PROJECTS/Internship Technobit Indonesia/MobileApp-Project4",
+    "last_opened_file_path": "C:/Users/Sandro/AndroidStudioProjects/GitHub/Technobit-Project/MobileApp-Project/app/src/main/res/drawable",
     "memory.settings.postsync.last.time.stamp": "1741942697228",
     "project.structure.last.edited": "Dependencies",
     "project.structure.proportion": "0.17",
@@ -91,6 +90,9 @@
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Sandro\AndroidStudioProjects\GitHub\Technobit-Project\MobileApp-Project\app\src\main\res\drawable" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\theoraditya\OneDrive\Documents\Perkuliahan\MBKM\MobileAppTechnobit\MobileApp-Project\app\src\main\res\drawable" />
       <recent name="C:\Users\theoraditya\OneDrive\Documents\Perkuliahan\MBKM\MobileAppTechnobit\MobileApp-Project\app\src\main\java\com\example\mobileapptechnobit\ui" />
@@ -322,12 +324,12 @@
       <map>
         <entry key="com.example.mobileapptechnobit">
           <value>
-            <CheckInfo lastCheckTimestamp="1742389578746" />
+            <CheckInfo lastCheckTimestamp="1746496707709" />
           </value>
         </entry>
         <entry key="com.example.mobileapptechnobit.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1742389578746" />
+            <CheckInfo lastCheckTimestamp="1746496707655" />
           </value>
         </entry>
       </map>
