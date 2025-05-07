@@ -6,7 +6,9 @@ import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.mobileapptechnobit.data.API.ApiClient
+import com.example.mobileapptechnobit.data.remote.ClockOutRequest
 import com.example.mobileapptechnobit.data.remote.Presensi
+import com.example.mobileapptechnobit.data.remote.PresensiResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +22,12 @@ class CameraPresViewModel : ViewModel() {
 
     private val _token = MutableStateFlow<String?>(null)
     val token: StateFlow<String?> get() = _token
+
+    private val _clockInData = MutableStateFlow<Presensi?>(null)
+    val clockInData: StateFlow<Presensi?> get() = _clockInData
+
+    private val _clockInResponse = MutableStateFlow<PresensiResponse?>(null)
+    val clockInResponse: StateFlow<PresensiResponse?> get() = _clockInResponse
 
     fun onTakePhoto(bitmap: Bitmap, token: String) {
         Log.d("CameraPresViewModel", "Setting Bitmap and Token: $bitmap, $token")
@@ -74,22 +82,14 @@ class CameraPresViewModel : ViewModel() {
                 val response = ApiClient.apiService.sendPresensi("Bearer $token", requestBody)
 
                 if (response.isSuccessful) {
-                    val responseBody = response.body()
-                    Log.d("ClockInResponse", """
-                    Clock-In berhasil.
-                    HTTP Code: ${response.code()}
-                    Response Body: ${responseBody?.let { it }}
-                """.trimIndent())
+                    _clockInResponse.value = response.body()
+                    Log.d("ClockInResponse", "Clock-In berhasil: ${response.body()}")
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "No error body"
-                    Log.e("ClockInError", """
-                    Gagal melakukan Clock-In.
-                    HTTP Code: ${response.code()}
-                    Error Body: $errorBody
-                """.trimIndent())
+                    Log.e("ClockInError", "Gagal Clock-In: $errorBody")
                 }
             } catch (e: Exception) {
-                Log.e("ClockInException", "Exception occurred during Clock-In", e)
+                Log.e("ClockInException", "Exception during Clock-In", e)
             }
         }
     }
@@ -97,34 +97,31 @@ class CameraPresViewModel : ViewModel() {
     suspend fun sendClockOutToApi(token: String) {
         withContext(Dispatchers.IO) {
             try {
-                val requestBody = Presensi(
-                    status = "Present",
-                    photo_data = "",
-                    filename = "",
-                    company_place_id = 1,
-                    note = "-"
-                )
-                val response = ApiClient.apiService.sendPresensi("Bearer $token", requestBody)
+                val clockInData = _clockInResponse.value?.data
+                if (clockInData != null) {
+                    val filename = clockInData.photo_path.substringAfterLast('/')
 
-                if (response.isSuccessful) {
-                    val responseBody = response.body()
-                    Log.d("ClockOutResponse", """
-                    Clock-Out berhasil.
-                    HTTP Code: ${response.code()}
-                    Response Body: ${responseBody?.let { it }}
-                """.trimIndent())
+                    val requestBody = ClockOutRequest(
+                        status = "Leave Early",
+                        filename = filename,
+                        company_place_id = clockInData.company_place_id,
+                        note = "-"
+                    )
+
+                    val response = ApiClient.apiService.sendClockOutPresensi("Bearer $token", requestBody)
+
+                    if (response.isSuccessful) {
+                        Log.d("ClockOutResponse", "Clock-Out berhasil: ${response.body()}")
+                    } else {
+                        val errorBody = response.errorBody()?.string() ?: "No error body"
+                        Log.e("ClockOutError", "Gagal Clock-Out: $errorBody")
+                    }
                 } else {
-                    val errorBody = response.errorBody()?.string() ?: "No error body"
-                    Log.e("ClockOutError", """
-                    Gagal melakukan Clock-Out.
-                    HTTP Code: ${response.code()}
-                    Error Body: $errorBody
-                """.trimIndent())
+                    Log.e("ClockOutError", "Clock-In data is missing")
                 }
             } catch (e: Exception) {
-                Log.e("ClockOutException", "Exception occurred during Clock-Out", e)
+                Log.e("ClockOutException", "Exception during Clock-Out", e)
             }
         }
     }
-
 }

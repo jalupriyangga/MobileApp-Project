@@ -119,7 +119,7 @@ fun CameraPresensiCheck(
                     }
                     Button(
                         onClick = {
-                            showDialog = true // Tampilkan dialog
+                            showDialog = true
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = primary100),
                         shape = RoundedCornerShape(8.dp),
@@ -214,6 +214,8 @@ fun CameraPresensiCheck(
                                     try {
                                         val savedFile = saveBitmapToPublicPictures(context, bitmap)
                                         val photoBase64 = bitmapToBase64(bitmap)
+                                        Log.d("PhotoBase64Validation", "Base64 Length: ${photoBase64.length}, Sample: ${photoBase64.take(50)}")
+
 
                                         viewModel.sendClockInToApi(
                                             token = token,
@@ -281,9 +283,9 @@ fun saveBitmapToPublicPictures(context: Context, bitmap: Bitmap): File {
 }
 
 fun bitmapToBase64(bitmap: Bitmap): String {
-    val resizedBitmap = resizeBitmap(bitmap, maxWidth = 400, maxHeight = 400)
+    val resizedBitmap = resizeBitmap(bitmap, maxWidth = 800, maxHeight = 800)
     val outputStream = ByteArrayOutputStream()
-    resizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+    resizedBitmap.compress(Bitmap.CompressFormat.PNG, 50, outputStream)
 
     val byteArray = outputStream.toByteArray()
     return Base64.encodeToString(byteArray, Base64.NO_WRAP)

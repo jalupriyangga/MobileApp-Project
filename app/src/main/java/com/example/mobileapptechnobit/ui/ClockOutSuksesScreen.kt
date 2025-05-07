@@ -40,9 +40,8 @@ import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClockOutSuksesScreen(navController: NavController, viewModel: CameraPresViewModel, context: android.content.Context) {
-    // Reset sesi presensi
     LaunchedEffect(Unit) {
-        viewModel.clearSessionData(context) // Pastikan semua data sesi dihapus
+        viewModel.clearSessionData(context)
     }
     Scaffold(
         topBar = {
@@ -63,7 +62,7 @@ fun ClockOutSuksesScreen(navController: NavController, viewModel: CameraPresView
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(16.dp) // Padding tambahan untuk layar
+                    .padding(16.dp)
             ) {
                 Column(
                     modifier = Modifier
@@ -130,7 +129,6 @@ fun ClockOutSuksesScreen(navController: NavController, viewModel: CameraPresView
 @Preview(showBackground = true, device = "spec:width=412dp, height=915dp, dpi=440")
 @Composable
 fun ClockOutSuksesScreenPreview() {
-    // Dummy NavController and ViewModel for preview purposes
     val navController = rememberNavController()
     val dummyViewModel = CameraPresViewModel()
     val dummyContext = androidx.compose.ui.platform.LocalContext.current

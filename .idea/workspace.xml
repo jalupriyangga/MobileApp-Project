@@ -10,14 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aab0fd82-f8f8-4a37-bc6f-48cf6fa4ffca" name="Changes" comment="sync profile &amp; navigation">
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/NavGraph.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/NavGraph.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ViewModel/CameraPresViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ViewModel/CameraPresViewModel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/CameraPresensi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/CameraPresensi.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/API/ApiService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/API/ApiService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/remote/Presensi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/remote/Presensi.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/CameraPresensiCheck.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/CameraPresensiCheck.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/ClockOutPresensi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/ClockOutPresensi.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/EditSuksesScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/EditSuksesScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/PresensiSuksesScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/PresensiSuksesScreen.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

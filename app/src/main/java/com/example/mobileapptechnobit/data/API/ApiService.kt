@@ -1,7 +1,9 @@
 package com.example.mobileapptechnobit.data.API
 
+import com.example.mobileapptechnobit.data.remote.ClockOutRequest
 import com.example.mobileapptechnobit.data.remote.EmployeeResponse
 import com.example.mobileapptechnobit.data.remote.Presensi
+import com.example.mobileapptechnobit.data.remote.PresensiResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -39,5 +41,8 @@ interface ApiService{
     suspend fun getUserProfile(@Header("Authorization") token: String): Response<UserProfileResponse>
 
     @POST("v1/android/presensi")
-    suspend fun sendPresensi(@Header("Authorization") token: String, @Body requestBody: Presensi): Response<Unit>
-}
+    suspend fun sendPresensi(@Header("Authorization") token: String, @Body requestBody: Presensi): Response<PresensiResponse> // Untuk Clock In
+
+    @POST("v1/android/presensi")
+    suspend fun sendClockOutPresensi(@Header("Authorization") token: String, @Body requestBody: ClockOutRequest): Response<String>
+    }

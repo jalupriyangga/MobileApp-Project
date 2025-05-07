@@ -107,7 +107,7 @@ fun ClockOutScreen(
                 ) {
                     Button(
                         onClick = {
-                            showDialog = true // Tampilkan dialog konfirmasi Clock Out
+                            showDialog = true
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = primary100),
                         shape = RoundedCornerShape(8.dp),
@@ -231,10 +231,8 @@ fun ClockOutScreen(
                                 isLoading = true
                                 coroutineScope.launch(Dispatchers.IO) {
                                     try {
-                                        // Kirim data Clock-Out ke API
                                         viewModel.sendClockOutToApi(token)
                                     } catch (e: Exception) {
-                                        // Log error jika diperlukan
                                         Log.e("ClockOutScreen", "Error during Clock-Out", e)
                                     } finally {
                                         withContext(Dispatchers.Main) {
