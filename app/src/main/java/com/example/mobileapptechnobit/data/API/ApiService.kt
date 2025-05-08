@@ -5,6 +5,8 @@ import com.example.mobileapptechnobit.data.remote.EmployeeResponse
 import com.example.mobileapptechnobit.data.remote.Presensi
 import com.example.mobileapptechnobit.data.remote.PresensiResponse
 import com.example.mobileapptechnobit.data.remote.Permission
+import com.example.mobileapptechnobit.data.remote.HistoryResponse
+import com.example.mobileapptechnobit.data.remote.HistoryResponseItem
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -56,4 +58,9 @@ interface ApiService{
 
     @DELETE("")
     suspend fun deletePermission(@Header("Authorization") authorization: String): Response<Permission>
+
+    @GET("v1/android/history-presensi")
+    suspend fun getHistoryPresensi(
+        @Header("Authorization") token: String
+    ): Response<List<HistoryResponseItem>>
 }

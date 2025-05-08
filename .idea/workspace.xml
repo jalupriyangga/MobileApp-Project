@@ -4,12 +4,38 @@
     <shared>
       <config />
     </shared>
+    <layouts>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/xml/file_paths.xml">
+        <config>
+          <theme>@style/Theme.MobileAppTechnobit</theme>
+        </config>
+      </layout>
+    </layouts>
   </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5e17692f-240d-4de1-91c7-199d6b01dc3e" name="Changes" comment="merge permission1 &amp; presensi" />
+    <list default="true" id="34488824-9f27-462e-9ddc-265ec436b0fc" name="Changes" comment="merge permission1 &amp; presensi">
+      <change afterPath="$PROJECT_DIR$/.idea/appInsightsSettings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/DetailPresenceActivity.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ViewModel/HistoryViewModel.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/remote/HistoryResponse.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/repository/HistoryRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/DetailPresenceScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/NavGraph.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/NavGraph.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/API/ApiService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/API/ApiService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/HistoryScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/HistoryScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/xml/file_paths.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/xml/file_paths.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -29,7 +55,9 @@
       <list>
         <option value="Class" />
         <option value="Kotlin Data Class" />
+        <option value="Kotlin Data Class" />
         <option value="Kotlin File" />
+        <option value="resourceFile" />
         <option value="Kotlin Class" />
         <option value="Kotlin File" />
         <option value="Kotlin Data Class" />
@@ -39,6 +67,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
+        <entry key="$PROJECT_DIR$" value="Sprint2" />
         <entry key="$PROJECT_DIR$" value="fcc40f4978a267f26820a8d4fbf2cbb4caf279ed" />
       </map>
     </option>
@@ -53,7 +82,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/Technobit2025/MobileApp-Project.git&quot;,
-    &quot;accountId&quot;: &quot;cb77743d-d039-476c-8df3-5ba1960edcf3&quot;
+    &quot;accountId&quot;: &quot;69a5ff5c-38f5-4a28-bc7e-00dee5325789&quot;
   }
 }</component>
   <component name="ProblemsViewState">
@@ -70,8 +99,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Android App.app.executor": "Run",
-    "git-widget-placeholder": "Sprint3"
+    "git-widget-placeholder": "Merging Sprint3"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -187,13 +215,13 @@
       <option name="project" value="LOCAL" />
       <updated>1742110440177</updated>
     </task>
-    <task id="LOCAL-00004" summary="sync profile &amp; navigation">
+    <task id="LOCAL-00004" summary="feat: slicing history by month selector">
       <option name="closed" value="true" />
-      <created>1742219483817</created>
+      <created>1745476371843</created>
       <option name="number" value="00004" />
       <option name="presentableId" value="LOCAL-00004" />
       <option name="project" value="LOCAL" />
-      <updated>1742219483817</updated>
+      <updated>1745476371843</updated>
     </task>
     <task id="LOCAL-00005" summary="sync profile &amp; navigation">
       <option name="closed" value="true" />
@@ -219,7 +247,7 @@
       <option name="project" value="LOCAL" />
       <updated>1746714085804</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -240,7 +268,8 @@
     <MESSAGE value="present menu dialog" />
     <MESSAGE value="revision completed" />
     <MESSAGE value="merge permission1 &amp; presensi" />
-    <option name="LAST_COMMIT_MESSAGE" value="merge permission1 &amp; presensi" />
+    <MESSAGE value="feat: slicing history by month selector" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: slicing history by month selector" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
@@ -248,11 +277,13 @@
         <entry key="com.example.mobileapptechnobit">
           <value>
             <CheckInfo lastCheckTimestamp="1746437799501" />
+            <CheckInfo lastCheckTimestamp="1746455489453" />
           </value>
         </entry>
         <entry key="com.example.mobileapptechnobit.test">
           <value>
             <CheckInfo lastCheckTimestamp="1746437799502" />
+            <CheckInfo lastCheckTimestamp="1746455489509" />
           </value>
         </entry>
       </map>

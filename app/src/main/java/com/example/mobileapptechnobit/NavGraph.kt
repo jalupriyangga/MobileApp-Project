@@ -82,7 +82,10 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             com.example.mobileapptechnobit.ui.HomeScreen(navCtrl = navController)
         }
         composable(Screen.History.route){
-            HistoryScreen(navCtrl = navController)
+            HistoryScreen(navCtrl = navController, token = token ?: "")
+        }
+        composable(Screen.DetailHistory.route){
+            DetailPresenceScreen(navCtrl = navController)
         }
         composable(Screen.Schedule.route){
             ScheduleScreen(navCtrl = navController)
@@ -180,6 +183,7 @@ sealed class Screen(val route: String) {
     object Success : Screen("success_screen/{message}/{route}")
     object Schedule: Screen("schedule_screen")
     object History : Screen("history_screen")
+    object DetailHistory : Screen("detail_history_screen")
     object CameraPresensi : Screen("camera_presensi_screen")
     object CameraPresensiCheck : Screen("camera_check_screen")
     object PresensiSukses : Screen("presensi_sukses_screen")

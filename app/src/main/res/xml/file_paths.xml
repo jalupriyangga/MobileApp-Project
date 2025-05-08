@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
     <external-path name="external_files" path="." />
+    <!-- Untuk akses ke context.getExternalFilesDir(null) dan sub-folder -->
+    <external-files-path name="external_files" path="." />
 </paths>
