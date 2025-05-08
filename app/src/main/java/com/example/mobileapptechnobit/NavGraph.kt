@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import com.example.mobileapptechnobit.ui.DetailScheduleScreen
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -87,8 +88,8 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
         composable(Screen.DetailHistory.route){
             DetailPresenceScreen(navCtrl = navController)
         }
-        composable(Screen.Schedule.route){
-            ScheduleScreen(navCtrl = navController)
+        composable(Screen.Schedule.route) {
+            DetailScheduleScreen(navCtrl = navController, token = token ?: "")
         }
         composable(Screen.Profile.route) {
             ProfileScreen(navController = navController, token = token ?: "")

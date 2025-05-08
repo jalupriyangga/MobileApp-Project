@@ -79,21 +79,21 @@ fun DetailPermitTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
 
 @Composable
 fun DetailPermitBody(modifier: Modifier = Modifier) {
-    Column (Modifier.padding(horizontal = 30.dp)){
-        Text(text = "Pegawai Pengganti", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
-        Spacer(Modifier.padding(3.dp))
-        Text(text = "Andi", fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 15.sp)
-
-        Spacer(Modifier.padding(10.dp))
-        Text(text = "Jadwal Lama", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
-        Spacer(Modifier.padding(5.dp))
-        ScheduleCard(time = "pagi", offset = 0)
-
-        Spacer(Modifier.padding(10.dp))
-        Text(text = "Jadwal Baru", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
-        Spacer(Modifier.padding(5.dp))
-        ScheduleCard(time = "pagi", offset = 0)
-    }
+//    Column (Modifier.padding(horizontal = 30.dp)){
+//        Text(text = "Pegawai Pengganti", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
+//        Spacer(Modifier.padding(3.dp))
+//        Text(text = "Andi", fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 15.sp)
+//
+//        Spacer(Modifier.padding(10.dp))
+//        Text(text = "Jadwal Lama", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
+//        Spacer(Modifier.padding(5.dp))
+//        ScheduleCard(time = "pagi", offset = 0)
+//
+//        Spacer(Modifier.padding(10.dp))
+//        Text(text = "Jadwal Baru", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
+//        Spacer(Modifier.padding(5.dp))
+//        ScheduleCard(time = "pagi", offset = 0)
+//    }
 }
 
 @Composable

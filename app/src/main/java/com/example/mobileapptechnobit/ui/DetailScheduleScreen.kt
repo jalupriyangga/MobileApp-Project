@@ -2,31 +2,13 @@ package com.example.mobileapptechnobit.ui
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,36 +19,68 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.R
+import com.example.mobileapptechnobit.ViewModel.ScheduleViewModel
+import com.example.mobileapptechnobit.data.remote.PatrolScheduleResponse
 import com.example.mobileapptechnobit.ui.component.TopAppBar
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ScheduleScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
-    Scaffold (
+fun DetailScheduleScreen(
+    navCtrl: NavController,
+    token: String,
+    viewModel: ScheduleViewModel = viewModel()
+) {
+    val schedules = viewModel.scheduleList
+    val isLoading = viewModel.isLoading
+    val error = viewModel.errorMessage
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchSchedules(token = token)
+    }
+
+    Scaffold(
         topBar = {
-            Box(){
+            Box {
                 TopAppBar()
-                Column (
-                    Modifier.fillMaxWidth()
+                Column(
+                    Modifier
+                        .fillMaxWidth()
                 ) {
                     ScheduleTitle(navCtrl = navCtrl)
-                    Column (Modifier.background(Color.White)){
+                    Column(Modifier.background(Color.White)) {
                         Spacer(Modifier.height(40.dp))
-                        ScheduleCard(time = "Pagi", offset = -(20))
-                        ScheduleCard(time = "Siang", offset = -(20))
-                        ScheduleCard(time = "Malam", offset = -(20))
+                        when {
+                            isLoading -> Text(
+                                "Loading...",
+                                modifier = Modifier.padding(16.dp)
+                            )
+                            error != null -> Text(
+                                "Error: $error",
+                                modifier = Modifier.padding(16.dp),
+                                color = Color.Red
+                            )
+                            else -> {
+                                schedules.forEach { schedule ->
+                                    ScheduleCardFromApi(schedule = schedule, navCtrl = navCtrl)
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
-    ){ padding ->
-        Column (Modifier.padding(padding)) {}
+    ) { paddingValues ->
+
+        Box(modifier = Modifier.padding(paddingValues))
     }
 }
+
+
+
 
 @Composable
 fun ScheduleTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
@@ -82,7 +96,7 @@ fun ScheduleTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
                 contentDescription = "back button",
                 tint = Color.White,
                 modifier = Modifier.size(28.dp)
-                )
+            )
         }
         Text(
             text = "Jadwal Patroli",
@@ -95,97 +109,142 @@ fun ScheduleTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
     }
 }
 @Composable
-fun ScheduleCard(modifier: Modifier = Modifier, time: String, offset: Int) {
-
-    val time by remember { mutableStateOf(time) }
-
+fun ScheduleCardFromApi(schedule: PatrolScheduleResponse, navCtrl: NavController? = null) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-//            .padding(horizontal = 16.dp)
-            .padding(bottom = 20.dp)
-            .offset(y = offset.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(Color.White)
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
-        Column(modifier = Modifier.padding(20.dp))
-        {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = time,
-                    fontFamily = robotoFontFamily,
-                    fontWeight = FontWeight(500),
-                    fontSize = 15.sp,
-                    textAlign = TextAlign.Center,
+        Column(modifier = Modifier.padding(16.dp)) {
+
+            // Shift dan Tanggal
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
                     modifier = Modifier
                         .background(
-                            color = if (time.equals("pagi", ignoreCase = true)) Color(0xffFFF700)
-                            else if (time.equals("siang", ignoreCase = true)) Color(0xffFFB834)
-                            else Color(0xff89CDFF),
-                            shape = RoundedCornerShape(5.dp)
+                            color = when (schedule.waktu.lowercase()) {
+                                "pagi" -> Color(0xFFFFFF00)
+                                "siang" -> Color(0xFFFFB800)
+                                "malam" -> Color(0xFF7EC8E3)
+                                else -> Color.Gray
+                            },
+                            shape = RoundedCornerShape(4.dp)
                         )
-                        .padding(vertical = 5.dp).width(70.dp),
-                )
-                Spacer(Modifier.padding(horizontal = 5.dp))
-                Icon(painter = painterResource(R.drawable.tabler_clock), contentDescription = null, Modifier.size(20.dp))
-                Spacer(Modifier.padding(horizontal = 5.dp))
-                Text("Selasa 04 Maret 2025", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            HorizontalDivider(
-                thickness = 1.dp,
-                color = Color.LightGray
-            )
-            Text("Lokasi Patroli", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp, modifier = Modifier.padding(top = 8.dp))
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(
-                Modifier.padding(horizontal = 25.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Icon(painter = painterResource(R.drawable.frame_27),
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = schedule.waktu.replaceFirstChar { it.uppercase() },
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Icon(
+                    imageVector = Icons.Default.AccessTime,
                     contentDescription = null,
-                    modifier = Modifier.size(40.dp),
+                    tint = Color.Gray,
+                    modifier = Modifier.size(22.dp)
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Text(
+                    text = schedule.tanggal,
+                    fontSize = 16.sp,
+                    color = Color.Black
+                )
+            }
+            Divider(
+                color = Color.LightGray,
+                thickness = 1.dp,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(2.dp))
+
+            // Lokasi patrol
+            Text(
+                text = "Lokasi: ${schedule.lokasi}",
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 18.sp
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+
+
+            // Baris Jam Mulai - Selesai
+            Row(
+                Modifier.padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.frame_27),
+                    contentDescription = null,
+                    modifier = Modifier.size(45.dp),
                     tint = Color.Unspecified
                 )
-                Column (
-                    Modifier.padding(start = 8.dp)
-                ){
-                    Text(text = "Mulai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
-                    Text(text = "08.00 WIB", fontFamily = robotoFontFamily)
+                Column(modifier = Modifier.padding(start = 8.dp)) {
+                    Text(
+                        text = "Mulai",
+                        fontFamily = robotoFontFamily,
+                        fontWeight = FontWeight(500),
+                        fontSize = 16.sp
+                    )
+                    Text(text = schedule.jam_mulai, fontFamily = robotoFontFamily)
                 }
 
                 Spacer(Modifier.weight(1f))
+
                 VerticalDivider(
                     thickness = 1.dp,
                     color = Color.LightGray,
                     modifier = Modifier.height(50.dp)
                 )
+
                 Spacer(Modifier.weight(1f))
 
-                Icon(painter = painterResource(R.drawable.frame_28),
+                Icon(
+                    painter = painterResource(R.drawable.frame_28),
                     contentDescription = null,
-                    modifier = Modifier.size(40.dp),
+                    modifier = Modifier.size(45.dp),
                     tint = Color.Unspecified
                 )
-                Column (
-                    Modifier.padding(start = 8.dp)
-                ){
-                    Text(text = "Selesai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
-                    Text(text = "16.00 WIB", fontFamily = robotoFontFamily)
+                Column(modifier = Modifier.padding(start = 8.dp)) {
+                    Text(
+                        text = "Selesai",
+                        fontFamily = robotoFontFamily,
+                        fontWeight = FontWeight(500),
+                        fontSize = 16.sp
+                    )
+                    Text(text = schedule.jam_selesai, fontFamily = robotoFontFamily)
                 }
             }
-            Spacer(Modifier.height(10.dp))
-            Text("Rekan tugas: ", fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 10.sp)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Info lokasi & rekan
+
+            Text(
+                "Rekan tugas: ${schedule.rekan_tugas.joinToString(", ")}",
+                fontSize = 14.sp,
+                fontFamily = robotoFontFamily
+            )
         }
     }
 }
 
+
+
+
 @Preview(showBackground = true)
 @Composable
-private fun ScheduleScreenPrev() {
-    ScheduleScreen(navCtrl = rememberNavController())
+private fun DetailScheduleScreenPrev() {
+    DetailScheduleScreen(navCtrl = rememberNavController(), token = "dummy_token")
 }
+
