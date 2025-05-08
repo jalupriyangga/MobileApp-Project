@@ -1,6 +1,8 @@
 package com.example.mobileapptechnobit.data.API
 
 import com.example.mobileapptechnobit.data.remote.EmployeeResponse
+import com.example.mobileapptechnobit.data.remote.HistoryResponse
+import com.example.mobileapptechnobit.data.remote.HistoryResponseItem
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -33,4 +35,9 @@ interface ApiService{
 
     @GET("v1/profile/user")
     suspend fun getUserProfile(@Header("Authorization") token: String): Response<UserProfileResponse>
+
+    @GET("v1/android/history-presensi")
+    suspend fun getHistoryPresensi(
+        @Header("Authorization") token: String
+    ): Response<List<HistoryResponseItem>>
 }
