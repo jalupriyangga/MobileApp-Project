@@ -73,7 +73,8 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
         composable(Screen.Success.route){ backStackEntry ->
             SuccessScreen(
                 navCtrl = navController,
-                message = backStackEntry.arguments?.getString("message") ?: ""
+                message = backStackEntry.arguments?.getString("message") ?: "",
+                route = backStackEntry.arguments?.getString("route") ?: ""
             )
 
         }
@@ -151,6 +152,15 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
         composable(Screen.ClockOutSukses.route) {
             ClockOutSuksesScreen(navController, viewModel = viewModel, context = context)
         }
+        composable(Screen.Permission.route){
+            PermissionScreen(navCtrl = navController)
+        }
+        composable(Screen.PermissionForm.route){
+            PermitFormScreen(navCtrl = navController)
+        }
+        composable(Screen.DetailPermission.route){
+            DetailPermitScreen(navCtrl = navController)
+        }
     }
 }
 
@@ -167,7 +177,7 @@ sealed class Screen(val route: String) {
     object EditProfile : Screen("edit_profile_screen")
     object EditSukses : Screen("edit_sukses_screen")
     object InfoPerusahaan : Screen("info_perusahaan_screen")
-    object Success : Screen("success_screen/{message}")
+    object Success : Screen("success_screen/{message}/{route}")
     object Schedule: Screen("schedule_screen")
     object History : Screen("history_screen")
     object CameraPresensi : Screen("camera_presensi_screen")
@@ -176,4 +186,7 @@ sealed class Screen(val route: String) {
     object ClockOut : Screen("clock_out_screen")
     object ClockOutSukses : Screen("clock_out_sukses_screen")
 
+    object Permission : Screen("permission_screen")
+    object PermissionForm : Screen("permission_form_screen")
+    object DetailPermission: Screen("detail_permission_screen")
 }

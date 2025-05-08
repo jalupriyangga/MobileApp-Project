@@ -27,7 +27,7 @@ import com.example.mobileapptechnobit.R
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 
 @Composable
-fun SuccessScreen(modifier: Modifier = Modifier, navCtrl: NavController, message: String ) {
+fun SuccessScreen(modifier: Modifier = Modifier, navCtrl: NavController, message: String, route: String) {
     Column (
         Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -54,7 +54,7 @@ fun SuccessScreen(modifier: Modifier = Modifier, navCtrl: NavController, message
     ) {
         Button(
             onClick = {
-                navCtrl.navigate("login_screen")
+                navCtrl.navigate(route)
             },
             colors = ButtonDefaults.buttonColors(Color(0xFF2752E7)),
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).height(50.dp),
@@ -75,5 +75,5 @@ fun SuccessScreen(modifier: Modifier = Modifier, navCtrl: NavController, message
 @Preview(showBackground = true)
 @Composable
 private fun SuccessPrev() {
-    SuccessScreen(navCtrl = rememberNavController(), message = "Password anda berhasil diperbarui")
+    SuccessScreen(navCtrl = rememberNavController(), message = "Password anda berhasil diperbarui", route = "")
 }

@@ -9,7 +9,25 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aab0fd82-f8f8-4a37-bc6f-48cf6fa4ffca" name="Changes" comment="present menu dialog" />
+    <list default="true" id="5e17692f-240d-4de1-91c7-199d6b01dc3e" name="Changes" comment="present menu dialog">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ViewModel/PermissionViewModel.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/remote/Permission.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/repository/PermissionRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/DetailPermitScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/PermissionScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/PermitFormScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/hugeicons_date_time.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/uiw_date.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/NavGraph.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/NavGraph.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/API/ApiService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/API/ApiService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/DetailScheduleScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/DetailScheduleScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/HomeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/HomeScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/ResetPassword.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/ResetPassword.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/UbahPassword.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/UbahPassword.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/component/SuccessScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/component/SuccessScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/component/TopBar.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/component/TopBar.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -27,6 +45,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Class" />
+        <option value="Kotlin Data Class" />
+        <option value="Kotlin File" />
         <option value="Kotlin Class" />
         <option value="Kotlin File" />
         <option value="Kotlin Data Class" />
@@ -68,24 +89,12 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Android App.app.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "com.google.services.firebase.aqiPopupShown": "true",
-    "git-widget-placeholder": "Sprint3",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/HIRO/PROJECTS/Internship Technobit Indonesia/MobileApp-Project4",
-    "memory.settings.postsync.last.time.stamp": "1745990073027",
-    "project.structure.last.edited": "Dependencies",
-    "project.structure.proportion": "0.17",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "project.propDebugger"
+    "git-widget-placeholder": "Merging Sprint3"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\HIRO\PROJECTS\Internship Technobit Indonesia\MobileApp-Project4\app\src\main\java\com\example\mobileapptechnobit\ui" />
       <recent name="C:\Users\theoraditya\OneDrive\Documents\Perkuliahan\MBKM\MobileAppTechnobit\MobileApp-Project\app\src\main\res\drawable" />
       <recent name="C:\Users\theoraditya\OneDrive\Documents\Perkuliahan\MBKM\MobileAppTechnobit\MobileApp-Project\app\src\main\java\com\example\mobileapptechnobit\ui" />
     </key>
@@ -212,13 +221,13 @@
       <option name="project" value="LOCAL" />
       <updated>1742221201203</updated>
     </task>
-    <task id="LOCAL-00006" summary="present menu dialog">
+    <task id="LOCAL-00006" summary="revision completed">
       <option name="closed" value="true" />
-      <created>1746713010487</created>
+      <created>1744852975580</created>
       <option name="number" value="00006" />
       <option name="presentableId" value="LOCAL-00006" />
       <option name="project" value="LOCAL" />
-      <updated>1746713010487</updated>
+      <updated>1744852975580</updated>
     </task>
     <option name="localTasksCounter" value="7" />
     <servers />
@@ -239,7 +248,8 @@
     <MESSAGE value="merge profile &amp; navigation" />
     <MESSAGE value="sync profile &amp; navigation" />
     <MESSAGE value="present menu dialog" />
-    <option name="LAST_COMMIT_MESSAGE" value="present menu dialog" />
+    <MESSAGE value="revision completed" />
+    <option name="LAST_COMMIT_MESSAGE" value="revision completed" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">

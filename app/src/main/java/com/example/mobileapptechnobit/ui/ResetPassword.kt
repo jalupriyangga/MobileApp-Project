@@ -184,7 +184,7 @@ fun ResetPasswordScreen(modifier: Modifier = Modifier, navCtrl: NavController, e
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             }
             if(isSuccess == true){
-                navCtrl.navigate("success_screen/Password anda berhasil diperbarui")
+                navCtrl.navigate("success_screen/Password anda berhasil diperbarui/login_screen")
             }
         }
     }

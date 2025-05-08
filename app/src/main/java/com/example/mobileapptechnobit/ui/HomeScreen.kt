@@ -43,7 +43,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
@@ -341,7 +340,15 @@ fun PresentMenuDialog(modifier: Modifier = Modifier, showDialog: Boolean, navCtr
                             }
                         }
                         Spacer(Modifier.padding(5.dp))
-                        Column (Modifier.border(width = 1.dp, shape = RoundedCornerShape(1.dp), color = Color.LightGray).fillMaxWidth()){
+                        Column (
+                            Modifier
+                                .border(width = 1.dp, shape = RoundedCornerShape(1.dp), color = Color.LightGray)
+                                .fillMaxWidth()
+                                .clickable {
+                                    navCtrl.navigate("permission_screen")
+                                }
+                        )
+                        {
                             Row (verticalAlignment = Alignment.CenterVertically,horizontalArrangement = Arrangement.Start, modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)) {
                                 Image(painter = painterResource(R.drawable.kuning), contentDescription = null, Modifier.size(40.dp))
                                 Spacer(Modifier.padding(horizontal = 5.dp))

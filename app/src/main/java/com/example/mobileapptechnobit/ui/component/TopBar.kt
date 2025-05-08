@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,9 +30,9 @@ fun TopAppBar(modifier: Modifier = Modifier) {
         modifier = Modifier
 //            .fillMaxSize().offset(y = -290.dp)
             .fillMaxWidth()
-            .height(screenHeight / screenRatio * 0.713f)
+            .height(screenHeight / screenRatio * 0.713f),
+        contentScale = ContentScale.Crop
     )
-
 }
 
 @Preview(showBackground = true)

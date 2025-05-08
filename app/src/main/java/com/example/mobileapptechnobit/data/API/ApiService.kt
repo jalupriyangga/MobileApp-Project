@@ -4,9 +4,11 @@ import com.example.mobileapptechnobit.data.remote.ClockOutRequest
 import com.example.mobileapptechnobit.data.remote.EmployeeResponse
 import com.example.mobileapptechnobit.data.remote.Presensi
 import com.example.mobileapptechnobit.data.remote.PresensiResponse
+import com.example.mobileapptechnobit.data.remote.Permission
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
@@ -45,4 +47,13 @@ interface ApiService{
 
     @POST("v1/android/presensi")
     suspend fun sendClockOutPresensi(@Header("Authorization") token: String, @Body requestBody: ClockOutRequest): Response<String>
-    }
+
+    @GET("")
+    suspend fun fetchPermission(@Header("Authorization") authorization: String): Response<Permission>
+
+    @GET("")
+    suspend fun getPermission(@Header("Authorization") authorization: String): Response<Permission>
+
+    @DELETE("")
+    suspend fun deletePermission(@Header("Authorization") authorization: String): Response<Permission>
+}
