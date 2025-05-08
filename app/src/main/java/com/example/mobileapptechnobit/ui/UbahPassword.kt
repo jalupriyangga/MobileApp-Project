@@ -226,7 +226,7 @@ fun ChangePasswordScreen(modifier: Modifier = Modifier, navCtrl: NavController, 
             }
             if(isSuccess == true){
                 viewModel.logout()
-                navCtrl.navigate("success_screen/Password anda berhasil diperbarui")
+                navCtrl.navigate("success_screen/Password anda berhasil diperbarui/login_screen")
             }
         }
     }

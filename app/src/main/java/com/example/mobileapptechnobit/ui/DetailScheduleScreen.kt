@@ -34,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -55,9 +56,9 @@ fun ScheduleScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
                     ScheduleTitle(navCtrl = navCtrl)
                     Column (Modifier.background(Color.White)){
                         Spacer(Modifier.height(40.dp))
-                        ScheduleCard(time = "Pagi")
-                        ScheduleCard(time = "Siang")
-                        ScheduleCard(time = "Malam")
+                        ScheduleCard(time = "Pagi", offset = -(20))
+                        ScheduleCard(time = "Siang", offset = -(20))
+                        ScheduleCard(time = "Malam", offset = -(20))
                     }
                 }
             }
@@ -94,16 +95,16 @@ fun ScheduleTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
     }
 }
 @Composable
-fun ScheduleCard(modifier: Modifier = Modifier, time: String) {
+fun ScheduleCard(modifier: Modifier = Modifier, time: String, offset: Int) {
 
     val time by remember { mutableStateOf(time) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+//            .padding(horizontal = 16.dp)
             .padding(bottom = 20.dp)
-            .offset(y = (-20).dp),
+            .offset(y = offset.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(Color.White)

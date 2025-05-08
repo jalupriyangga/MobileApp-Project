@@ -85,7 +85,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
     ){ padding ->
             Column (Modifier.padding(padding).fillMaxSize().zIndex(1f))
             {
-                MainMenu()
+                MainMenu(navCtrl = navCtrl)
             }
     }
 }
@@ -206,7 +206,7 @@ fun ScheduleCard(modifier: Modifier = Modifier, navCtrl: NavController) {
 }
 
 @Composable
-fun MainMenu(modifier: Modifier = Modifier) {
+fun MainMenu(modifier: Modifier = Modifier, navCtrl: NavController) {
     Column(
         modifier = Modifier.padding(horizontal = 16.dp).padding(top = 20.dp).padding(bottom = 10.dp)
     ) {
@@ -216,18 +216,18 @@ fun MainMenu(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            MenuItem(painter = painterResource(R.drawable.presensi), label = "Presensi")
-            MenuItem(painter = painterResource(R.drawable.patroli), label = "Patroli")
+            MenuItem(painter = painterResource(R.drawable.presensi), label = "Presensi", navCtrl = navCtrl, route = "permission_screen")
+            MenuItem(painter = painterResource(R.drawable.patroli), label = "Patroli", navCtrl = navCtrl, route = "")
         }
     }
 }
 
 @Composable
-fun MenuItem(modifier: Modifier = Modifier, painter: Painter, label: String) {
+fun MenuItem(modifier: Modifier = Modifier, painter: Painter, label: String, navCtrl: NavController, route: String) {
     Card (
         modifier = Modifier
         .size(160.dp)
-        .clickable { },
+        .clickable { navCtrl.navigate(route)},
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(Color.White)
