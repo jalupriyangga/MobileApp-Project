@@ -102,9 +102,9 @@ fun ScheduleTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
             text = "Jadwal Patroli",
             textAlign = TextAlign.Center,
             fontFamily = robotoFontFamily,
-            fontWeight = FontWeight(500),
+            fontWeight = FontWeight.Medium,
             color = Color.White,
-            fontSize = 25.sp,
+            fontSize = 22.sp,
             modifier = Modifier.fillMaxWidth().align(Alignment.Center))
     }
 }

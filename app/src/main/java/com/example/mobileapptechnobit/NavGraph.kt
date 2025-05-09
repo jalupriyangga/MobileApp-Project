@@ -162,6 +162,9 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
         composable(Screen.PermissionForm.route){
             PermitFormScreen(navCtrl = navController)
         }
+        composable("detail_gaji") {
+            DetailGajiScreen(navCtrl = navController)
+        }
         composable(Screen.DetailPermission.route){
             DetailPermitScreen(navCtrl = navController)
         }
