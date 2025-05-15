@@ -18,7 +18,7 @@ data class PresensiData(
     val employee_id: Int,
     val company_place_id: Int,
     val checked_in_at: String,
-    val checked_out_at: String?, // Nullable karena mungkin null saat Clock In
+    val checked_out_at: String?,
     val status: String,
     val note: String,
     val photo_path: String,

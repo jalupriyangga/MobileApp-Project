@@ -92,17 +92,16 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.1.0")
 
-    val cameraxVersion = "1.3.0-rc01"
-
-    implementation("androidx.camera:camera-core:$cameraxVersion")
-    implementation("androidx.camera:camera-camera2:$cameraxVersion")
-    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
-    implementation("androidx.camera:camera-view:$cameraxVersion")
-    implementation("androidx.camera:camera-extensions:$cameraxVersion")
+    implementation("androidx.camera:camera-core:1.3.0-rc01")
+    implementation("androidx.camera:camera-camera2:1.3.0-rc01")
+    implementation("androidx.camera:camera-lifecycle:1.3.0-rc01")
+    implementation("androidx.camera:camera-view:1.3.0-rc01")
+    implementation("androidx.camera:camera-extensions:1.3.0-rc01")
 
     implementation ("com.google.accompanist:accompanist-permissions:0.20.3")
 
     implementation ("androidx.compose.ui:ui-graphics:1.3.1")
 
+    implementation ("com.google.mlkit:barcode-scanning:17.0.3")
 
 }

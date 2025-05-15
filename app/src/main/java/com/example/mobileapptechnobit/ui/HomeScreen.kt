@@ -305,7 +305,7 @@ fun MainMenu(modifier: Modifier = Modifier, navCtrl: NavController, viewModel: C
             MenuItem(
                 painter = painterResource(R.drawable.patroli),
                 label = "Patroli",
-                onClick = { }
+                onClick = { navCtrl.navigate(Screen.Patroli.route) }
             )
         }
     }

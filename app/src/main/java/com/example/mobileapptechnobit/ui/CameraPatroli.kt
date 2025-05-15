@@ -1,4 +1,4 @@
-package com.example.mobileapptechnobit
+package com.example.mobileapptechnobit.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -13,12 +13,14 @@ import android.graphics.Paint
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.util.Base64
 import android.util.Log
+import android.util.Size
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,41 +33,12 @@ import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
@@ -79,57 +52,51 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import com.example.mobileapptechnobit.ViewModel.CameraPresViewModel
-import com.example.mobileapptechnobit.ui.CameraPatTitle
-import com.example.mobileapptechnobit.ui.RequestLocationPermissions
-import com.example.mobileapptechnobit.ui.theme.black20
+import com.example.mobileapptechnobit.R
+import com.example.mobileapptechnobit.Screen
+import com.example.mobileapptechnobit.ViewModel.PatroliViewModel
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CameraPresensi(viewModel: CameraPresViewModel, navController: NavHostController, token: String) {
-
+fun CameraPatroli(
+    navCtrl: NavController,
+    token: String,
+    qrToken: String,
+    viewModel: PatroliViewModel
+) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val controller = remember {
+
+    val cameraController = remember {
         LifecycleCameraController(context).apply {
-            setEnabledUseCases(
-                CameraController.IMAGE_CAPTURE
-            )
+            setEnabledUseCases(CameraController.IMAGE_CAPTURE)
         }
     }
-    val bitmaps by viewModel.capturedBitmap.collectAsState()
-    val permissionsLauncher = rememberLauncherForActivityResult(
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true &&
-            permissions[Manifest.permission.CAMERA] == true) {
-            Toast.makeText(context, "Permissions granted", Toast.LENGTH_SHORT).show()
+        if (permissions[Manifest.permission.CAMERA] == true) {
+            Toast.makeText(context, "Camera permission granted", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(context, "Permissions denied", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
         }
     }
 
     LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (
-                    ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-                    )) {
-            permissionsLauncher.launch(arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
+        if (ContextCompat.checkSelfPermission(
+                context,
                 Manifest.permission.CAMERA
-            ))
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            cameraPermissionLauncher.launch(arrayOf(Manifest.permission.CAMERA))
+        } else {
+            cameraController.bindToLifecycle(lifecycleOwner)
         }
-        controller.bindToLifecycle(lifecycleOwner)
     }
 
     RequestLocationPermissions()
@@ -148,7 +115,7 @@ fun CameraPresensi(viewModel: CameraPresViewModel, navController: NavHostControl
                     Modifier
                         .fillMaxWidth()
                 ) {
-                    CameraPresTitle(navCtrl = navController)
+                    CameraPatTitle(navCtrl = navCtrl)
                 }
             }
         }
@@ -171,7 +138,7 @@ fun CameraPresensi(viewModel: CameraPresViewModel, navController: NavHostControl
                         .aspectRatio(3f / 4f),
                     contentAlignment = Alignment.Center
                 ) {
-                    CameraPreview(controller = controller, modifier = Modifier.fillMaxSize())
+                    CameraPreview(controller = cameraController, modifier = Modifier.fillMaxSize())
 
                     Image(
                         painter = painterResource(id = R.drawable.camera_frame),
@@ -213,13 +180,18 @@ fun CameraPresensi(viewModel: CameraPresViewModel, navController: NavHostControl
                     onClick = {
                         triggerVibration(context)
                         takePhoto(
-                            controller = controller,
+                            controller = cameraController,
                             context = context,
                             token = token,
                             onPhotoTaken = { bitmap ->
                                 viewModel.onTakePhoto(bitmap, token)
+                                val newQrToken = "ini qrToken"
+                                val encodedNewQrToken = Uri.encode(newQrToken)
+                                Log.d("CameraPatroli", "Navigating to FormPatroli with QR Token: $qrToken")
+                                navCtrl.navigate(Screen.FormPatroli.route.replace("{qrToken}", encodedNewQrToken))
                             },
-                            navController = navController
+                            navController = navCtrl
+
                         )
                     },
                     modifier = Modifier
@@ -236,15 +208,18 @@ fun CameraPresensi(viewModel: CameraPresViewModel, navController: NavHostControl
 
                 IconButton(
                     onClick = {
-                        controller.cameraSelector =
-                            if (controller.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
+                        cameraController.cameraSelector =
+                            if (cameraController.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
                                 CameraSelector.DEFAULT_FRONT_CAMERA
                             } else CameraSelector.DEFAULT_BACK_CAMERA
                     },
                     modifier = Modifier
                         .size(56.dp)
                         .align(Alignment.CenterEnd)
-                        .background(color = androidx.compose.ui.graphics.Color.White, shape = CircleShape)
+                        .background(
+                            color = androidx.compose.ui.graphics.Color.White,
+                            shape = CircleShape
+                        )
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.camera_switch),
@@ -254,12 +229,11 @@ fun CameraPresensi(viewModel: CameraPresViewModel, navController: NavHostControl
                 }
             }
         }
-
     }
 }
 
 @Composable
-fun CameraPresTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
+fun CameraPatTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -277,7 +251,7 @@ fun CameraPresTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
             )
         }
         Text(
-            text = "Presensi Masuk",
+            text = "Bukti Patroli",
             textAlign = TextAlign.Center,
             fontFamily = robotoFontFamily,
             fontWeight = androidx.compose.ui.text.font.FontWeight(500),
@@ -295,7 +269,7 @@ private fun takePhoto(
     context: Context,
     token: String,
     onPhotoTaken: (Bitmap) -> Unit,
-    navController: NavHostController
+    navController: NavController
 ) {
     controller.takePicture(
         ContextCompat.getMainExecutor(context),
@@ -303,26 +277,32 @@ private fun takePhoto(
             override fun onCaptureSuccess(image: ImageProxy) {
                 super.onCaptureSuccess(image)
 
-                val matrix = Matrix().apply {
-                    postRotate(image.imageInfo.rotationDegrees.toFloat())
+                try {
+                    val matrix = Matrix().apply {
+                        postRotate(image.imageInfo.rotationDegrees.toFloat())
+                    }
+
+                    val rotatedBitmap = Bitmap.createBitmap(
+                        image.toBitmap(), 0, 0, image.width, image.height, matrix, true
+                    )
+
+                    val location = getCurrentLocation(context)
+                    val address = getAddressFromLocation(context, location)
+
+                    val bitmapWithWatermark = addWatermark(
+                        context = context,
+                        bitmap = rotatedBitmap,
+                        location = location,
+                        address = address
+                    )
+                    onPhotoTaken(bitmapWithWatermark)
+
+                } catch (e: Exception) {
+                    Log.e("CameraPatroli", "Error processing photo: ${e.message}", e)
+                    Toast.makeText(context, "Error processing photo: ${e.message}", Toast.LENGTH_SHORT).show()
+                } finally {
+                    image.close()
                 }
-
-                val rotatedBitmap = Bitmap.createBitmap(
-                    image.toBitmap(), 0, 0, image.width, image.height, matrix, true
-                )
-
-                val location = getCurrentLocation(context)
-                val address = getAddressFromLocation(context, location)
-
-                val bitmapWithWatermark = addWatermark(
-                    context = context,
-                    bitmap = rotatedBitmap,
-                    location = location,
-                    address = address
-                )
-                onPhotoTaken(bitmapWithWatermark)
-                navController.navigate(Screen.CameraPresensiCheck.route)
-                image.close()
             }
 
             override fun onError(exception: ImageCaptureException) {
@@ -358,7 +338,7 @@ private fun getAddressFromLocation(context: Context, location: Location?): Strin
                 "Alamat tidak ditemukan"
             }
         } catch (e: Exception) {
-            Log.e("CameraPresensi", "Error getting address: ${e.message}", e)
+            Log.e("CameraPatroli", "Error getting address: ${e.message}", e)
             "Error mendapatkan alamat"
         }
     } else {
@@ -406,6 +386,54 @@ private fun addWatermark(context: Context, bitmap: Bitmap, location: Location?, 
         }
     }
     return result
+}
+
+private fun rotateBitmap(bitmap: Bitmap, rotationDegrees: Int): Bitmap {
+    val matrix = Matrix().apply { postRotate(rotationDegrees.toFloat()) }
+    return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+}
+
+private fun ImageProxy.toBitmap(): Bitmap {
+    val buffer = this.planes[0].buffer
+    buffer.rewind()
+    val bytes = ByteArray(buffer.capacity())
+    buffer.get(bytes)
+    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+}
+
+@Composable
+fun RequestLocationPermissions() {
+    val context = LocalContext.current
+    val permissionsLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
+            Toast.makeText(context, "Location permission granted", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Location permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED ||
+                            ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            ) != PackageManager.PERMISSION_GRANTED
+                    )
+        ) {
+            permissionsLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        }
+    }
 }
 
 @Composable

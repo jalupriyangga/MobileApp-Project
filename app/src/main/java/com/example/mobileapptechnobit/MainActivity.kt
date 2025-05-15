@@ -46,8 +46,6 @@ class MainActivity : ComponentActivity() {
                         factory = AuthViewModelFactory(authRepository, context)
                     )
 
-                    RequestLocationPermissions()
-
                     LaunchedEffect(Unit) {
                         val sharedPref = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
                         val token = sharedPref.getString("AUTH_TOKEN", null)
@@ -60,29 +58,6 @@ class MainActivity : ComponentActivity() {
                     }
                     NavGraph(navController = navController, authViewModel = authViewModel)
                 }
-            }
-        }
-    }
-
-    @Composable
-    fun RequestLocationPermissions() {
-        val context = LocalContext.current
-        val permissionsLauncher = rememberLauncherForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions ->
-            if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
-                Toast.makeText(context, "Location permission granted", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, "Location permission denied", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        LaunchedEffect(Unit) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (
-                        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                                ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                        )) {
-                permissionsLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
             }
         }
     }

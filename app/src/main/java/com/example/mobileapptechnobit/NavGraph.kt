@@ -1,23 +1,30 @@
 package com.example.mobileapptechnobit
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.example.mobileapptechnobit.ui.DetailScheduleScreen
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.mobileapptechnobit.ui.*
 import com.example.mobileapptechnobit.ui.ForgotPasswordScreen
 import com.example.mobileapptechnobit.ui.ResetPasswordScreen
 import com.example.mobileapptechnobit.ViewModel.AuthViewModel
 import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
 import com.example.mobileapptechnobit.ViewModel.CameraPresViewModel
+import com.example.mobileapptechnobit.ViewModel.PatroliViewModel
 import com.example.mobileapptechnobit.data.repository.AuthRepository
 import com.example.mobileapptechnobit.ui.component.SuccessScreen
 import kotlinx.coroutines.CoroutineScope
@@ -25,17 +32,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@SuppressLint("RememberReturnType")
 @Composable
 fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
     val context = LocalContext.current
     val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     val token = remember { sharedPref.getString("AUTH_TOKEN", null) }
+    val qrToken = remember { mutableStateOf<String?>(null) }
     val authRepository = AuthRepository()
     val authViewModel: AuthViewModel = viewModel(
         factory = AuthViewModelFactory(authRepository, context)
     )
     val lifecycleOwner = LocalLifecycleOwner.current
     val viewModel: CameraPresViewModel = viewModel()
+    val patroliViewModel: PatroliViewModel = viewModel()
 
 
     NavHost(
@@ -114,9 +124,7 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                     popUpTo(Screen.CameraPresensi.route) { inclusive = true }
                 }
             } else {
-                val cameraPresensi = CameraPresensi(context)
-                val token = sharedPref.getString("AUTH_TOKEN", "") ?: ""
-                cameraPresensi.CameraScreen(viewModel, navController, token)
+                CameraPresensi(viewModel, navController, token = token ?: "")
             }
         }
         composable(Screen.CameraPresensiCheck.route) {
@@ -127,18 +135,11 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
         }
         composable(Screen.ClockOut.route) {
             val clockInTime = viewModel.getClockInTime(context)
-            val token = sharedPref.getString("AUTH_TOKEN", "") ?: ""
 
-            ClockOutScreen(
-                navController = navController,
-                clockInTime = clockInTime,
-                token = token,
-                viewModel = viewModel
-            ) {
+            ClockOutScreen(navController = navController, clockInTime = clockInTime, token = token ?: "", viewModel = viewModel) {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        viewModel.sendClockOutToApi(token)
-
+                        viewModel.sendClockOutToApi(token ?: "")
                         viewModel.clearClockInTime(context)
                         viewModel.clearSessionData(context)
 
@@ -164,6 +165,28 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
         }
         composable(Screen.DetailPermission.route){
             DetailPermitScreen(navCtrl = navController)
+        }
+        composable(Screen.Patroli.route) {
+            val context = LocalContext.current
+            val activity = context as Activity
+            PatroliScreen(navCtrl = navController, activity = activity)
+        }
+        composable(
+            route = Screen.CameraPatroli.route,
+            arguments = listOf(navArgument("qrToken") { type = NavType.StringType })
+        ) { entry ->
+            val qrToken = entry.arguments?.getString("qrToken")?.let { Uri.decode(it) } ?: ""
+            CameraPatroli(navCtrl = navController, token = token ?: "", qrToken = qrToken, viewModel = patroliViewModel)
+        }
+        composable(
+            route = Screen.FormPatroli.route,
+            arguments = listOf(navArgument("qrToken") { type = NavType.StringType })
+        ) { entry ->
+            val qrTokenValue = entry.arguments?.getString("qrToken") ?: ""
+            FormPatroli(navCtrl = navController, token = token ?: "", qrToken = qrTokenValue, viewModel = patroliViewModel)
+        }
+        composable(Screen.PatroliSukses.route) {
+            PatroliSuksesScreen(navController, token = token ?: "")
         }
     }
 }
@@ -194,4 +217,8 @@ sealed class Screen(val route: String) {
     object Permission : Screen("permission_screen")
     object PermissionForm : Screen("permission_form_screen")
     object DetailPermission: Screen("detail_permission_screen")
+    object Patroli: Screen("patroli_screen")
+    object CameraPatroli : Screen("camera_patroli_screen/{qrToken}")
+    object FormPatroli : Screen("form_patroli_screen/{qrToken}")
+    object PatroliSukses : Screen("patroli_sukses_screen")
 }
