@@ -50,7 +50,7 @@ interface ApiService{
     suspend fun sendPresensi(@Header("Authorization") token: String, @Body requestBody: Presensi): Response<PresensiResponse> // Untuk Clock In
 
     @POST("v1/android/presensi")
-    suspend fun sendClockOutPresensi(@Header("Authorization") token: String, @Body requestBody: ClockOutRequest): Response<String>
+    suspend fun sendClockOutPresensi(@Header("Authorization") token: String, @Body requestBody: ClockOutRequest): Response<PresensiResponse>
 
     @GET("")
     suspend fun fetchPermission(@Header("Authorization") authorization: String): Response<Permission>

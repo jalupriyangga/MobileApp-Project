@@ -371,7 +371,7 @@ private fun addWatermark(context: Context, bitmap: Bitmap, location: Location?, 
     val canvas = Canvas(result)
     val paint = Paint().apply {
         color = Color.RED
-        textSize = 90f
+        textSize = 85f
         isAntiAlias = true
     }
 

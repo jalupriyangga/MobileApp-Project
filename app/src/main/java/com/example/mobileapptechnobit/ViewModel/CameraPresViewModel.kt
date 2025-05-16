@@ -121,6 +121,7 @@ class CameraPresViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 Log.e("ClockOutException", "Exception during Clock-Out", e)
+                throw e
             }
         }
     }

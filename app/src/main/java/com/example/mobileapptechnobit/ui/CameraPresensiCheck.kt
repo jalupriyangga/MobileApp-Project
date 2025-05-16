@@ -233,6 +233,7 @@ fun CameraPresensiCheck(
                                         Log.e("CameraPresensiCheck", "Error during Clock-In", e)
                                         withContext(Dispatchers.Main) {
                                             isLoading = false
+                                            Toast.makeText(context, "Periksa internet anda dan coba lagi", Toast.LENGTH_SHORT).show()
                                         }
                                     }
                                 }
