@@ -350,8 +350,10 @@ fun ProfileScreen(navController: NavController, token: String) {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 10.dp)
-                                    .clickable {  },
-                                verticalAlignment = Alignment.CenterVertically,
+                                    .clickable {
+                                        navController.navigate("detail_informasi_perusahaan")
+                                    },
+                                        verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 Text(

@@ -159,6 +159,9 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
         composable(Screen.Permission.route){
             PermissionScreen(navCtrl = navController)
         }
+        composable("detail_informasi_perusahaan") {
+            DetailInformasiPerusahaanScreen(navController = navController)
+        }
         composable(Screen.PermissionForm.route){
             PermitFormScreen(navCtrl = navController)
         }

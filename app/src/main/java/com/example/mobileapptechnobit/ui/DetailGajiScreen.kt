@@ -56,7 +56,7 @@ fun DetailGajiScreen(navCtrl: NavController) {
                     Text(
                         text = "Detail Gaji",
                         textAlign = TextAlign.Center,
-                        fontWeight = FontWeight(400),
+                        fontWeight = FontWeight(550),
                         color = Color.White,
                         fontSize = 22.sp,
                         fontFamily = robotoFontFamily,
