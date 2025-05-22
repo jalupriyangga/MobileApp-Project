@@ -4,12 +4,9 @@ import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -47,26 +43,21 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
-import com.example.mobileapptechnobit.R
-import com.example.mobileapptechnobit.data.remote.HistoryResponseItem
+import com.example.mobileapptechnobit.data.remote.HistoryPresensiResponseItem
 import com.example.mobileapptechnobit.ui.theme.primary100
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 import kotlinx.coroutines.launch
@@ -77,11 +68,11 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun DetailPresenceScreen(navCtrl: NavController) {
+fun DetailPresensiScreen(navCtrl: NavController) {
     var hasShownToast by remember { mutableStateOf(false) }
 
     val presenceItem = navCtrl.previousBackStackEntry!!
-        ?.savedStateHandle?.get<HistoryResponseItem>("presenceItem")
+        ?.savedStateHandle?.get<HistoryPresensiResponseItem>("presenceItem")
     val formattedDate = navCtrl.previousBackStackEntry
         ?.savedStateHandle?.get<String>("formattedDate")
 
@@ -236,7 +227,7 @@ fun HistoryPresensi(nama: String, tanggal: String, status: String, lokasi: Strin
 }
 
 @Composable
-fun ActionButton(nama: String, tanggal: String, status: String, lokasi: String, shift: String, foto: String?) {
+fun ActionButton(nama: String?, tanggal: String, status: String, lokasi: String, shift: String, foto: String?) {
     var pdfUri by remember { mutableStateOf<Uri?>(null) }
 
     val context = LocalContext.current
@@ -281,7 +272,11 @@ fun ActionButton(nama: String, tanggal: String, status: String, lokasi: String, 
     }
 }
 
-suspend fun generatePresensiPDF(context: Context, nama: String, tanggal: String, status: String, lokasi: String, shift: String, foto: String?): Uri? {
+suspend fun generatePresensiPDF(context: Context, nama: String?, tanggal: String, status: String, lokasi: String, shift: String, foto: String?): Uri? {
+    if (nama == null) {
+        Toast.makeText(context, "Nama tidak tersedia", Toast.LENGTH_SHORT).show()
+        return null
+    }
     val pageHeight = 1120
     val pageWidth = 792
     val pdfDocument = PdfDocument()
@@ -527,5 +522,5 @@ private fun formatDateForPDF(dateString: String): String {
 @Preview(showBackground = true)
 @Composable
 fun DetailPresenceScreenPreview() {
-    DetailPresenceScreen(navCtrl = rememberNavController())
+    DetailPresensiScreen(navCtrl = rememberNavController())
 }

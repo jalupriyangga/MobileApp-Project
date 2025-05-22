@@ -11,7 +11,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.ui.*
 import com.example.mobileapptechnobit.ui.ForgotPasswordScreen
 import com.example.mobileapptechnobit.ui.ResetPasswordScreen
@@ -85,8 +84,11 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
         composable(Screen.History.route){
             HistoryScreen(navCtrl = navController, token = token ?: "")
         }
-        composable(Screen.DetailHistory.route){
-            DetailPresenceScreen(navCtrl = navController)
+        composable(Screen.DetailHistoryPresensi.route){
+            DetailPresensiScreen(navCtrl = navController)
+        }
+        composable(Screen.DetailHistoryPatroli.route){
+            DetailPatroliScreen(navCtrl = navController)
         }
         composable(Screen.Schedule.route) {
             DetailScheduleScreen(navCtrl = navController, token = token ?: "")
@@ -184,7 +186,8 @@ sealed class Screen(val route: String) {
     object Success : Screen("success_screen/{message}/{route}")
     object Schedule: Screen("schedule_screen")
     object History : Screen("history_screen")
-    object DetailHistory : Screen("detail_history_screen")
+    object DetailHistoryPresensi : Screen("detail_history_presensi_screen")
+    object DetailHistoryPatroli : Screen("detail_history_patroli_screen")
     object CameraPresensi : Screen("camera_presensi_screen")
     object CameraPresensiCheck : Screen("camera_check_screen")
     object PresensiSukses : Screen("presensi_sukses_screen")

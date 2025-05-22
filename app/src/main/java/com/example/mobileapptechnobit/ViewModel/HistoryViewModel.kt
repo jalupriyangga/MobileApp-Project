@@ -5,7 +5,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.mobileapptechnobit.data.remote.HistoryResponseItem
+import com.example.mobileapptechnobit.data.remote.HistoryPatroliResponseItem
+import com.example.mobileapptechnobit.data.remote.HistoryPresensiResponseItem
 import com.example.mobileapptechnobit.data.repository.HistoryRepository
 import com.example.mobileapptechnobit.ui.DayInfo
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,11 +29,17 @@ class HistoryViewModelFactory(
 
 class HistoryViewModel(private val repository: HistoryRepository) : ViewModel() {
     // Original unfiltered data
-    private val _originalHistoryItems = MutableStateFlow<List<HistoryResponseItem>>(emptyList())
+    private val _originalHistoryPresensiItems = MutableStateFlow<List<HistoryPresensiResponseItem>>(emptyList())
+    private val _originalHistoryPatroliItems = MutableStateFlow<Result<List<HistoryPatroliResponseItem>>>(
+        Result.success(emptyList())
+    )
 
     // Filtered data that's displayed in the UI
-    private val _historyItems = MutableStateFlow<List<HistoryResponseItem>>(emptyList())
-    val historyItems: StateFlow<List<HistoryResponseItem>> = _historyItems
+    private val _historyPresensiItems = MutableStateFlow<List<HistoryPresensiResponseItem>>(emptyList())
+    val historyPresensiItems: StateFlow<List<HistoryPresensiResponseItem>> = _historyPresensiItems
+
+    private val _historyPatroliItems = MutableStateFlow<List<HistoryPatroliResponseItem>>(emptyList())
+    val historyPatroliItems: StateFlow<List<HistoryPatroliResponseItem>> = _historyPatroliItems
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -104,30 +111,59 @@ class HistoryViewModel(private val repository: HistoryRepository) : ViewModel() 
         Log.d("HistoryViewModel", "Atur ke hari: $day")
         _selectedDays.value = day
         applyFilters()
+        applyFiltersPatroli()
     }
 
     fun setSelectedTab(tabIndex: Int) {
         _selectedTab.value = tabIndex
         applyFilters()
+        applyFiltersPatroli()
     }
 
-    fun fetchHistory(token: String) {
+    fun fetchHistoryPresensi(token: String) {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
 
             try {
-                val result = repository.fetchHistory(token)
-                if (result != null) {
+                val resultHistoryPresensi = repository.fetchHistoryPresensi(token)
+                if (resultHistoryPresensi != null) {
                     // Store the original data
-                    _originalHistoryItems.value = result
-                    Log.d("HistoryViewModel", "Fetched ${result.size} history items")
+                    _originalHistoryPresensiItems.value = resultHistoryPresensi
+                    Log.d("HistoryViewModel", "Fetched ${resultHistoryPresensi.size} history items")
 
                     // Apply filters
                     applyFilters()
                 } else {
                     Log.e("HistoryViewModel", "Fetching history returned null with token: $token")
                     _error.value = "Failed to load history data"
+                }
+            } catch (e: Exception) {
+                Log.e("HistoryViewModel", "Error fetching history", e)
+                _error.value = e.message ?: "Unknown error occurred"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun fetchHistoryPatroli(token: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+
+            try {
+                val resultHistoryPatroli = repository.fetchHistoryPatroli(token)
+                if (resultHistoryPatroli != null) {
+                    // Store the original data
+                    _originalHistoryPatroliItems.value = resultHistoryPatroli
+                    Log.d("HistoryViewModel", "Fetched ${resultHistoryPatroli.isSuccess } history items")
+
+                    // Apply filters
+                    applyFiltersPatroli()
+                } else {
+                    Log.e("HistoryViewModel", "Fetching history returned null with token: $token")
+                    _error.value = "Failed to load history data Patroli"
                 }
             } catch (e: Exception) {
                 Log.e("HistoryViewModel", "Error fetching history", e)
@@ -145,7 +181,7 @@ class HistoryViewModel(private val repository: HistoryRepository) : ViewModel() 
 
         Log.d("HistoryViewModel", "Filtering for day: ${_selectedDays.value}, API date: $selectedApiDate")
 
-        val filtered = _originalHistoryItems.value.filter {
+        val filtered = _originalHistoryPresensiItems.value.filter {
             Log.d("HistoryViewModel", "Processing item date: ${it.tanggal}")
 
             // Check if date matches selected day
@@ -171,7 +207,38 @@ class HistoryViewModel(private val repository: HistoryRepository) : ViewModel() 
         }
 
         Log.d("HistoryViewModel", "Filtered to ${filtered.size} items for day: ${_selectedDays.value}, tab: ${_selectedTab.value}")
-        _historyItems.value = filtered
+        _historyPresensiItems.value = filtered
+    }
+
+    private fun applyFiltersPatroli(){
+        val selectedDayInfo = _weekDays.value.find { it.name == _selectedDays.value }
+        val selectedApiDate = selectedDayInfo?.apiDateFormat
+
+        Log.d("HistoryViewModel", "Filtering for day: ${_selectedDays.value}, API date: $selectedApiDate")
+
+        val filtered = _originalHistoryPatroliItems.value.getOrNull()?.filter {
+            Log.d("HistoryViewModel", "Processing item date: ${it.createdAt}")
+            val isCorrectDay = if (!it.createdAt.isNullOrEmpty() && selectedApiDate != null) {
+                try {
+                    val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale("id", "ID"))
+                    val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale("id", "ID"))
+                    val date = inputFormat.parse(it.createdAt)
+                    val formattedDate = outputFormat.format(date!!)
+                    formattedDate == selectedApiDate
+                } catch (e: Exception) {
+                    Log.e("HistoryViewModel", "Date parsing error: ${e.message}")
+                    false
+                }
+            } else {
+                false
+            }
+
+            Log.d("HistoryViewModel", "Item ${it.createdAt}: isCorrectDay=$isCorrectDay")
+            isCorrectDay
+        } ?: emptyList()
+
+        Log.d("HistoryViewModel", "Filtered to ${filtered.size} items for day: ${_selectedDays.value}, tab: ${_selectedTab.value}")
+        _historyPatroliItems.value = filtered
     }
 
     // Keep your existing method for backward compatibility

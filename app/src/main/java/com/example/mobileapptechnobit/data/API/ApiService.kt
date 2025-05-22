@@ -2,11 +2,11 @@ package com.example.mobileapptechnobit.data.API
 
 import com.example.mobileapptechnobit.data.remote.ClockOutRequest
 import com.example.mobileapptechnobit.data.remote.EmployeeResponse
+import com.example.mobileapptechnobit.data.remote.HistoryPatroliResponse
 import com.example.mobileapptechnobit.data.remote.Presensi
 import com.example.mobileapptechnobit.data.remote.PresensiResponse
 import com.example.mobileapptechnobit.data.remote.Permission
-import com.example.mobileapptechnobit.data.remote.HistoryResponse
-import com.example.mobileapptechnobit.data.remote.HistoryResponseItem
+import com.example.mobileapptechnobit.data.remote.HistoryPresensiResponseItem
 import com.example.mobileapptechnobit.data.remote.PatrolScheduleResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -64,7 +64,13 @@ interface ApiService{
     @GET("v1/android/history-presensi")
     suspend fun getHistoryPresensi(
         @Header("Authorization") token: String
-    ): Response<List<HistoryResponseItem>>
+    ): Response<List<HistoryPresensiResponseItem>>
+
+    @GET("v1/android/histori-patroli")
+    suspend fun getHistoryPatroli(
+        @Header("Authorization") token: String
+    ): HistoryPatroliResponse // TODO: Ganti Objek
+
 
     @GET("v1/android/jadwal-patroli")
     suspend fun getPatrolSchedules(
