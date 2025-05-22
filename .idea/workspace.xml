@@ -16,17 +16,19 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="40a52af4-5f87-4480-9e1b-52a19bae5246" name="Changes" comment="merged with history">
-      <change afterPath="$PROJECT_DIR$/.idea/AndroidProjectSystem.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ViewModel/ScheduleViewModel.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/remote/PatrolSchedule.kt" afterDir="false" />
+    <list default="true" id="40a52af4-5f87-4480-9e1b-52a19bae5246" name="Changes" comment="merged 4 branches">
       <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/NavGraph.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/NavGraph.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ViewModel/AuthViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ViewModel/AuthViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ViewModel/PermissionViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ViewModel/PermissionViewModel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/API/ApiService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/API/ApiService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/DetailScheduleScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/DetailScheduleScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/HomeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/HomeScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/repository/PermissionRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/repository/PermissionRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/DetailPermitScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/DetailPermitScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/HistoryScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/HistoryScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/PermissionScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/PermissionScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/PermitFormScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/PermitFormScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/UbahPassword.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/UbahPassword.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,10 +52,10 @@
         <option value="Kotlin Data Class" />
         <option value="Kotlin File" />
         <option value="resourceFile" />
-        <option value="Kotlin Class" />
         <option value="Kotlin File" />
         <option value="Kotlin Data Class" />
         <option value="Kotlin File" />
+        <option value="Kotlin Class" />
       </list>
     </option>
   </component>
@@ -75,8 +77,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/Technobit2025/MobileApp-Project.git&quot;,
-    &quot;accountId&quot;: &quot;69a5ff5c-38f5-4a28-bc7e-00dee5325789&quot;
-    &quot;accountId&quot;: &quot;104ce1ae-5589-4ed4-ab4b-78446aebe31c&quot;
+    &quot;accountId&quot;: &quot;5fea684c-8f4a-47b7-b765-90f14650e4ed&quot;
   }
 }</component>
   <component name="ProblemsViewState">
@@ -91,12 +92,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Android App.app.executor": "Run",
-    "git-widget-placeholder": "Merging Sprint3"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Android App.app.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Sprint3&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Sandro\AndroidStudioProjects\GitHub\Technobit-Project\MobileApp-Project\app\src\main\res\drawable" />
@@ -260,7 +266,7 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="aab0fd82-f8f8-4a37-bc6f-48cf6fa4ffca" name="Changes" comment="" />
+      <changelist id="40a52af4-5f87-4480-9e1b-52a19bae5246" name="Changes" comment="merged 4 branches" />
       <created>1741188995861</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -306,13 +312,13 @@
       <option name="project" value="LOCAL" />
       <updated>1746715869265</updated>
     </task>
-    <task id="LOCAL-00006" summary="revision completed">
+    <task id="LOCAL-00006" summary="merged 4 branches">
       <option name="closed" value="true" />
-      <created>1744852975580</created>
+      <created>1746716552688</created>
       <option name="number" value="00006" />
       <option name="presentableId" value="LOCAL-00006" />
       <option name="project" value="LOCAL" />
-      <updated>1744852975580</updated>
+      <updated>1746716552688</updated>
     </task>
     <task id="LOCAL-00007" summary="merge permission1 &amp; presensi">
       <option name="closed" value="true" />
@@ -322,7 +328,7 @@
       <option name="project" value="LOCAL" />
       <updated>1746714085804</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -345,7 +351,8 @@
     <MESSAGE value="merge permission1 &amp; presensi" />
     <MESSAGE value="feat: slicing history by month selector" />
     <MESSAGE value="merged with history" />
-    <option name="LAST_COMMIT_MESSAGE" value="merged with history" />
+    <MESSAGE value="merged 4 branches" />
+    <option name="LAST_COMMIT_MESSAGE" value="merged 4 branches" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">

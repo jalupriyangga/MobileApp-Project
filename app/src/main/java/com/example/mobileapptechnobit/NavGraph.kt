@@ -157,13 +157,16 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             ClockOutSuksesScreen(navController, viewModel = viewModel, context = context)
         }
         composable(Screen.Permission.route){
-            PermissionScreen(navCtrl = navController)
+            PermissionScreen(navCtrl = navController, token = token ?: "")
         }
         composable(Screen.PermissionForm.route){
-            PermitFormScreen(navCtrl = navController)
+            PermitFormScreen(navCtrl = navController, token = token ?: "")
         }
-        composable(Screen.DetailPermission.route){
-            DetailPermitScreen(navCtrl = navController)
+        composable(Screen.DetailPermission.route){ backStackEntry ->
+            DetailPermitScreen(
+                navCtrl = navController,
+                id = backStackEntry.arguments?.getString("id") ?: "",
+                )
         }
     }
 }
@@ -193,5 +196,5 @@ sealed class Screen(val route: String) {
 
     object Permission : Screen("permission_screen")
     object PermissionForm : Screen("permission_form_screen")
-    object DetailPermission: Screen("detail_permission_screen")
+    object DetailPermission: Screen("detail_permission_screen/{id}")
 }

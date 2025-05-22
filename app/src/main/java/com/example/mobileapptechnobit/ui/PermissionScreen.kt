@@ -1,6 +1,7 @@
 package com.example.mobileapptechnobit.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,10 +11,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -29,34 +31,52 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.R
-import com.example.mobileapptechnobit.ui.component.TopAppBar
+import com.example.mobileapptechnobit.ViewModel.PermissionViewModel
+import com.example.mobileapptechnobit.ViewModel.PermissionViewModelFactory
+import com.example.mobileapptechnobit.data.remote.PermissionResponseItem
+import com.example.mobileapptechnobit.data.repository.PermissionRepository
 import com.example.mobileapptechnobit.ui.theme.primary100
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedBoxWithConstraintsScope")
 @Composable
-fun PermissionScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
+fun PermissionScreen(modifier: Modifier = Modifier, navCtrl: NavController, token: String) {
 
     var selectedIndex by remember { mutableIntStateOf(0) }
+
+    val context = LocalContext.current
+    val repository = remember { PermissionRepository() }
+    val viewModel: PermissionViewModel = viewModel(factory = PermissionViewModelFactory(repository = repository, context = context))
+    val permissionItems by viewModel.permissionItems.observeAsState()
+    val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    val authToken = sharedPref.getString("AUTH_TOKEN", null)
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchPermission(token)
+    }
 
     Scaffold (
         topBar = {
@@ -87,11 +107,16 @@ fun PermissionScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
         }
     ){ padding ->
         if(selectedIndex == 0){
-            Column (Modifier.padding(padding).fillMaxSize()) {
-                PermissionCard(status = "Menunggu")
-                PermissionCard(status = "Persetujuan")
-                PermissionCard(status = "Disetujui")
-                PermissionCard(status = "Ditolak")
+            LazyColumn (Modifier.padding(padding).fillMaxSize()) {
+                permissionItems?.let {
+                    items(it){ item ->
+                        PermissionCard(
+                            permissionItem = item,
+                            viewModel = viewModel,
+                            navCtrl = navCtrl
+                        )
+                    }
+                }
             }
         }
     }
@@ -197,13 +222,24 @@ fun FloatingButton(modifier: Modifier = Modifier, navCtrl: NavController) {
     }
 }
 
-@Composable
-fun PermissionCard(modifier: Modifier = Modifier, status: String) {
+fun dateFormatter(date: String): String {
+    val formatInput = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    val formatOutput = SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID"))
+    val dayFormat = SimpleDateFormat("EEEE", Locale("id", "ID"))
+    val formattedDay = dayFormat.format(date).replaceFirstChar { it.uppercase() }
+    val ParsedDate = formatInput.parse(date)
+    val formattedDate = ParsedDate?.let { formatOutput.format(it) }
+    val dayDate = "$formattedDay, $formattedDate"
+    return dayDate
+}
 
-    val status by remember { mutableStateOf(status) }
+@Composable
+fun PermissionCard(modifier: Modifier = Modifier, permissionItem: PermissionResponseItem, viewModel: PermissionViewModel, navCtrl: NavController) {
+
+    val status by remember { mutableStateOf(permissionItem.status) }
 
  Card(
-     Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(top = 20.dp),
+     Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(top = 20.dp).clickable { navCtrl.navigate("detail_permission_screen/${permissionItem.id}") },
      elevation = CardDefaults.cardElevation(5.dp),
      shape = RoundedCornerShape(15.dp),
      colors = CardDefaults.cardColors(Color.White)
@@ -212,23 +248,23 @@ fun PermissionCard(modifier: Modifier = Modifier, status: String) {
          Row(verticalAlignment = Alignment.CenterVertically) {
              Icon(painter = painterResource(R.drawable.hugeicons_date_time), contentDescription = null, Modifier.size(28.dp), tint = Color.Gray)
              Spacer(Modifier.padding(horizontal = 5.dp))
-             Text(text = "Selasa, 4 Maret 2025", fontSize = 17.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight(500))
+             Text(text = dateFormatter(permissionItem.date), fontSize = 17.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight(500))
              Spacer(Modifier.weight(1f))
              if(status.equals("menunggu", ignoreCase = true)){
                  IconButton(onClick = {}) {
                      Icon(imageVector = Icons.Default.Edit, contentDescription = null, Modifier.size(25.dp), tint = Color.Gray)
                  }
              }
-             IconButton(onClick = {}) {
+             IconButton(onClick = { permissionItem.id?.let { viewModel.deletePermission(it) } }) {
                  Icon(imageVector = Icons.Default.Delete, contentDescription = null, Modifier.size(25.dp), tint = Color.Gray)
              }
          }
          HorizontalDivider(Modifier.padding(vertical = 10.dp))
          Row (verticalAlignment = Alignment.CenterVertically){
              Column {
-                 Text(text = "Jenis Izin: Sakit", fontSize = 13.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight(400))
+                 Text(text = "Jenis Izin: ${permissionItem.type}", fontSize = 13.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight(400))
                  Spacer(Modifier.padding(vertical = 3.dp))
-                 Text(text = "Tanggal pengajuan: 02 Maret 2025", fontSize = 13.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight(400))
+                 Text(text = "Tanggal pengajuan: ${permissionItem.created_at}", fontSize = 13.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight(400))
              }
              Column (horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                  Text(
@@ -251,5 +287,5 @@ fun PermissionCard(modifier: Modifier = Modifier, status: String) {
 @Preview
 @Composable
 private fun PermissionScreenPrev() {
-    PermissionScreen(navCtrl = rememberNavController())
+    PermissionScreen(navCtrl = rememberNavController(), token = "")
 }

@@ -186,15 +186,6 @@ fun ChangePasswordScreen(modifier: Modifier = Modifier, navCtrl: NavController, 
             visualTransformation = if (repeatNewPassisVisible) VisualTransformation.None else PasswordVisualTransformation(),
         )
 
-//        Spacer(modifier = Modifier.height(20.dp))
-//        Text(
-//            text = "Lupa Password",
-//            color = Color(0xFF2752E7),
-//            textAlign = TextAlign.Right,
-//            textDecoration = TextDecoration.Underline,
-//            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).clickable { navCtrl.navigate("forgot_password_screen") }
-//        )
-
         Spacer(modifier = Modifier.height(50.dp))
         Button(
             onClick = {

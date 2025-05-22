@@ -8,6 +8,7 @@ import com.example.mobileapptechnobit.data.remote.Permission
 import com.example.mobileapptechnobit.data.remote.HistoryResponse
 import com.example.mobileapptechnobit.data.remote.HistoryResponseItem
 import com.example.mobileapptechnobit.data.remote.PatrolScheduleResponse
+import com.example.mobileapptechnobit.data.remote.PermissionResponseItem
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -17,10 +18,12 @@ import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService{
 
+    // API autentikasi
     @Headers("Accept: application/json", "Content-Type: application/json")
     @POST("v1/login")
     suspend fun login(@Body request: HashMap<String, String>): Response<ResponseBody>
@@ -37,6 +40,8 @@ interface ApiService{
     @PUT("v1/android/change-password")
     suspend fun changePassword(@Header("Authorization") authorization: String, @Body request: HashMap<String, String>): Response<ResponseBody>
 
+
+    // API user & employee
     @GET("v1/profile/employee")
     suspend fun fetchEmployeeProfile(@Header("Authorization") authorization: String): Response<EmployeeResponse>
 
@@ -46,31 +51,39 @@ interface ApiService{
     @GET("v1/profile/user")
     suspend fun getUserProfile(@Header("Authorization") token: String): Response<UserProfileResponse>
 
+
+    // API Presensi
     @POST("v1/android/presensi")
     suspend fun sendPresensi(@Header("Authorization") token: String, @Body requestBody: Presensi): Response<PresensiResponse> // Untuk Clock In
 
     @POST("v1/android/presensi")
     suspend fun sendClockOutPresensi(@Header("Authorization") token: String, @Body requestBody: ClockOutRequest): Response<String>
 
-    @GET("")
-    suspend fun fetchPermission(@Header("Authorization") authorization: String): Response<Permission>
 
-    @GET("")
-    suspend fun getPermission(@Header("Authorization") authorization: String): Response<Permission>
+    // API Perizinan
+    @POST("v1/android/perizinan")
+    suspend fun sendPermission(@Header("Authorization") authorization: String, @Body request: HashMap<String, String>): Response<ResponseBody>
 
-    @DELETE("")
-    suspend fun deletePermission(@Header("Authorization") authorization: String): Response<Permission>
+    @DELETE("v1/android/perizinan/{id}")
+    suspend fun deletePermission(@Path("id") id: String): Response<Unit>
 
+    @GET("v1/android/perizinan")
+    suspend fun fetchPermission(
+        @Header("Authorization") token: String): Response<List<PermissionResponseItem>>
+
+
+    // API histori
     @GET("v1/android/history-presensi")
     suspend fun getHistoryPresensi(
         @Header("Authorization") token: String
     ): Response<List<HistoryResponseItem>>
 
+
+    // API jadwal
     @GET("v1/android/jadwal-patroli")
     suspend fun getPatrolSchedules(
         @Header("Authorization") token: String,
         @Query("date") date: String? = null,
         @Query("company_id") companyId: Int? = null
     ): Response<List<PatrolScheduleResponse>>
-
 }

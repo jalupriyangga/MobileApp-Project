@@ -1,5 +1,7 @@
 package com.example.mobileapptechnobit.ui
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,11 +33,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -50,19 +55,28 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.R
+import com.example.mobileapptechnobit.ViewModel.AuthViewModel
+import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
+import com.example.mobileapptechnobit.ViewModel.PermissionViewModel
+import com.example.mobileapptechnobit.ViewModel.PermissionViewModelFactory
+import com.example.mobileapptechnobit.data.repository.AuthRepository
+import com.example.mobileapptechnobit.data.repository.PermissionRepository
 import com.example.mobileapptechnobit.ui.component.TopAppBar
 import com.example.mobileapptechnobit.ui.theme.primary100
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
 @Composable
-fun PermitFormScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
+fun PermitFormScreen(modifier: Modifier = Modifier, navCtrl: NavController, token: String) {
     Scaffold (
         topBar = {
             Box(Modifier
@@ -82,7 +96,7 @@ fun PermitFormScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
         Column (Modifier
             .padding(padding)
             .fillMaxSize()) {
-            PermitForm(navCtrl = navCtrl)
+            PermitForm(navCtrl = navCtrl, token = token)
         }
     }
 }
@@ -121,48 +135,31 @@ fun PermissionFormTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PermitForm(modifier: Modifier = Modifier, navCtrl: NavController) {
+fun PermitForm(modifier: Modifier = Modifier, navCtrl: NavController, token: String) {
 
     var jenisIzin by remember { mutableStateOf("Pilih") }
     val pilihanIzin = listOf("Sakit", "Izin", "Cuti")
     var keterangan by remember { mutableStateOf("") }
 
-    val calendar = Calendar.getInstance()
-    val currentYear = calendar.get(Calendar.YEAR)
-    val currentMonth = calendar.get(Calendar.MONTH)
-    val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
-
-    val initialDate = remember {
-        "%02d/%02d/%04d".format(currentDay, currentMonth + 1, currentYear)
-    }
-
-//    var selectedDate by remember { mutableStateOf(initialDate) }
-//    var showDialog by remember { mutableStateOf(false) }
-
     var showConfirmDialog by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
-
     val context = LocalContext.current
+    val today = remember { LocalDate.now() }
+    val tomorrowMillis = remember { today.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli() }
 
-//    val datePickerDialog = remember {
-//        DatePickerDialog(
-//            context,
-//            { _, year, month, dayOfMonth ->
-//                selectedDate = "%02d/%02d/%04d".format(dayOfMonth, month + 1, year)
-//            },
-//            currentYear, currentMonth, currentDay
-//        ).apply {
-//            // Tambahkan tombol Cancel agar dialog benar-benar tertutup
-//            setButton(DatePickerDialog.BUTTON_NEGATIVE, "Cancel") { dialog, _ ->
-//                dialog.dismiss()
-//            }
-//        }
-//    }
+    val state = rememberDatePickerState(
+        initialSelectedDateMillis = tomorrowMillis,
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return utcTimeMillis > System.currentTimeMillis()
+            }
+        }
+    )
 
-    val state = rememberDatePickerState()
     var showDialog by remember { mutableStateOf(false) }
-    val formatter = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
-    var selectedDate by remember { mutableStateOf(formatter.format(Date())) }
+    val formatter = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
+    val tomorrow = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.time
+    var selectedDate by remember { mutableStateOf(formatter.format(tomorrow)) }
 
     if (showDialog) {
         DatePickerDialog(
@@ -185,18 +182,18 @@ fun PermitForm(modifier: Modifier = Modifier, navCtrl: NavController) {
                     Text("CANCEL", color = Color.Black)
                 }
             },
-            colors = DatePickerDefaults.colors(
-                containerColor = Color.White, // Latar dialog
-                titleContentColor = Color.Blue, // "Select date"
-                headlineContentColor = Color.Blue, // Tanggal besar (Apr 22, 2025)
-                weekdayContentColor = Color.Black,
-                subheadContentColor = primary100,
-                selectedDayContainerColor = primary100, // Lingkaran biru di tanggal terpilih
-                selectedDayContentColor = primary100,
-                todayContentColor = primary100
-            )
         ) {
-            DatePicker(state = state)
+            DatePicker(
+                state = state,
+                colors = DatePickerDefaults.colors(
+                    todayContentColor = primary100,
+                    todayDateBorderColor = primary100,
+                    selectedDayContainerColor = primary100,
+                    selectedDayContentColor = Color.White,
+                    selectedYearContentColor = primary100,
+                    disabledSelectedDayContentColor = primary100
+                )
+            )
         }
     }
 
@@ -267,7 +264,22 @@ fun PermitForm(modifier: Modifier = Modifier, navCtrl: NavController) {
 
         Spacer(Modifier.weight(1f))
         Button(
-            onClick = { showConfirmDialog = true },
+            onClick = {
+                if(selectedDate.isNotEmpty()){
+                    if(jenisIzin.isNotEmpty()){
+                        if(keterangan.isNotEmpty()){
+                            showConfirmDialog = true
+                        } else{
+                            Toast.makeText(context, "Keterangan tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                        }
+                    } else{
+                        Toast.makeText(context, "Jenis izin tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                else{
+                    Toast.makeText(context, "tanggal tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                }
+            },
             Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -280,13 +292,25 @@ fun PermitForm(modifier: Modifier = Modifier, navCtrl: NavController) {
         ConfirmDialog(
             showDialog = showConfirmDialog,
             navCtrl = navCtrl,
-            onDismiss = { showDialog = false}
+            selectedDate = selectedDate,
+            permission = jenisIzin,
+            reason = keterangan,
+            token = token,
+            onDismiss = { showConfirmDialog = false}
         )
     }
 }
 
 @Composable
-fun ConfirmDialog(modifier: Modifier = Modifier, showDialog: Boolean, navCtrl: NavController, onDismiss: () -> Unit) {
+fun ConfirmDialog(modifier: Modifier = Modifier, showDialog: Boolean, navCtrl: NavController, onDismiss: () -> Unit, selectedDate: String, permission: String, reason: String, token: String) {
+
+    val context = LocalContext.current
+    val repository = remember { PermissionRepository() }
+    val viewModel: PermissionViewModel = viewModel(factory = PermissionViewModelFactory(repository = repository, context = context))
+    val isSuccess by viewModel.isSuccess.observeAsState()
+
+    val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    val authToken = sharedPref.getString("AUTH_TOKEN", null) ?: token
 
     if (showDialog) {
         AlertDialog(
@@ -318,7 +342,7 @@ fun ConfirmDialog(modifier: Modifier = Modifier, showDialog: Boolean, navCtrl: N
                     ) {
                         Button(
                             onClick = {
-                                navCtrl.navigate("success_screen/Perizinan Anda Berhasil Dikirim!/permission_screen")
+                                viewModel.sendPermission(authToken, selectedDate, permission, reason)
                                 onDismiss()
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = primary100),
@@ -359,10 +383,15 @@ fun ConfirmDialog(modifier: Modifier = Modifier, showDialog: Boolean, navCtrl: N
             modifier = Modifier.background(Color.Transparent)
         )
     }
+    LaunchedEffect(isSuccess) {
+        if(isSuccess == true){
+            navCtrl.navigate("success_screen/Perizinan Anda Berhasil Dikirim!/permission_screen")
+        }
+    }
 }
 
 @Preview
 @Composable
 private fun PermitFormPrev() {
-    PermitFormScreen(navCtrl = rememberNavController())
+    PermitFormScreen(navCtrl = rememberNavController(), token = "")
 }
