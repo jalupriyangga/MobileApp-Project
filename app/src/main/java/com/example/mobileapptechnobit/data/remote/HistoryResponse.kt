@@ -4,14 +4,28 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
+// Data class untuk response wrapper by Gson Array
 @Parcelize
 data class HistoryPresensiResponseItem(
+    @SerializedName("id")
     val id: String? = "",
+
+    @SerializedName("foto")
     val foto: String? = null,
+
+    @SerializedName("lokasi")
     val lokasi: String = "",
+
+    @SerializedName("nama")
     val nama: String = "",
+
+    @SerializedName("shift")
     val shift: String? = null,
+
+    @SerializedName("status")
     val status: String = "",
+
+    @SerializedName("catatan")
     val tanggal: String = ""
 ) : Parcelable
 
@@ -48,7 +62,7 @@ data class HistoryPatroliResponseItem(
     val photoUrl: String = ""
 ) : Parcelable
 
-// Data class untuk response wrapper lengkap
+// Data class untuk response wrapper by Gson Object
 @Parcelize
 data class HistoryPatroliResponse(
     @SerializedName("message")

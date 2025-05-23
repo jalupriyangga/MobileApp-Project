@@ -64,13 +64,12 @@ interface ApiService{
     @GET("v1/android/history-presensi")
     suspend fun getHistoryPresensi(
         @Header("Authorization") token: String
-    ): Response<List<HistoryPresensiResponseItem>>
+    ): Response<List<HistoryPresensiResponseItem>> // Get Data by Gson Array
 
     @GET("v1/android/histori-patroli")
     suspend fun getHistoryPatroli(
         @Header("Authorization") token: String
-    ): HistoryPatroliResponse // TODO: Ganti Objek
-
+    ): HistoryPatroliResponse // Get Data by Gson Object contains Array
 
     @GET("v1/android/jadwal-patroli")
     suspend fun getPatrolSchedules(

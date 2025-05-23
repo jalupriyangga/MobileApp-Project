@@ -42,7 +42,7 @@ class HistoryRepository(private val apiService: ApiService) {
                 }
             } catch (e: Exception) {
                 Result.failure(e)
-            } as Result<List<HistoryPatroliResponseItem>>
+            }
         }
     }
 }

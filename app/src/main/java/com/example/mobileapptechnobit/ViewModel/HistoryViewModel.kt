@@ -29,7 +29,7 @@ class HistoryViewModelFactory(
 
 class HistoryViewModel(private val repository: HistoryRepository) : ViewModel() {
     // Original unfiltered data
-    private val _originalHistoryPresensiItems = MutableStateFlow<List<HistoryPresensiResponseItem>>(emptyList())
+    private val _originalHistoryPresensiItems = MutableStateFlow< List<HistoryPresensiResponseItem>>(emptyList())
     private val _originalHistoryPatroliItems = MutableStateFlow<Result<List<HistoryPatroliResponseItem>>>(
         Result.success(emptyList())
     )
