@@ -9,9 +9,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.mobileapptechnobit.ui.*
 import com.example.mobileapptechnobit.ui.ForgotPasswordScreen
 import com.example.mobileapptechnobit.ui.ResetPasswordScreen
@@ -159,9 +161,16 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
         composable(Screen.Permission.route){
             PermissionScreen(navCtrl = navController)
         }
-        composable("detail_informasi_perusahaan") {
-            DetailInformasiPerusahaanScreen(navController = navController)
+        composable(
+            route = "detail_informasi_perusahaan/{token}",
+            arguments = listOf(navArgument("token") { type = NavType.StringType })
+        ) {
+                backStackEntry ->
+            val token = backStackEntry.arguments?.getString("token") ?: ""
+            DetailInformasiPerusahaanScreen(navController = navController,token = token)
         }
+
+
         composable(Screen.PermissionForm.route){
             PermitFormScreen(navCtrl = navController)
         }

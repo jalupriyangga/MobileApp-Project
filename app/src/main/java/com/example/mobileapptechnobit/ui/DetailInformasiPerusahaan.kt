@@ -6,11 +6,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -18,9 +22,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.mobileapptechnobit.ViewModel.CompanyProfileViewModel
+import androidx.compose.foundation.Image
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 
 @Composable
-fun DetailInformasiPerusahaanScreen(navController: NavController) {
+fun DetailInformasiPerusahaanScreen(
+    navController: NavController,
+    token: String,
+    viewModel: CompanyProfileViewModel = viewModel()
+) {
+    val companyProfile by viewModel.companyProfile.collectAsState()
+    val error by viewModel.error.collectAsState()
+
+    LaunchedEffect(token) {
+        if (token.isNotEmpty()) {
+            viewModel.fetchCompanyProfile(token)
+        }
+    }
+
     Scaffold(
         topBar = {
             Box {
@@ -60,52 +81,77 @@ fun DetailInformasiPerusahaanScreen(navController: NavController) {
             }
         }
     ) { padding ->
-        val scrollState = rememberScrollState()
 
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .padding(horizontal = 16.dp, vertical = 24.dp)
-                .fillMaxSize()
-                .verticalScroll(scrollState),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "LOGO",
-                fontSize = 48.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFFFF6F00),
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
+        if (companyProfile != null) {
+            val company = companyProfile!!
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .padding(horizontal = 16.dp, vertical = 24.dp)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Tampilkan logo perusahaan
+                AsyncImage(
+                    model = company.logo,
+                    contentDescription = "Logo Perusahaan",
+                    modifier = Modifier
+                        .size(120.dp)
+                        .padding(bottom = 16.dp),
+                    contentScale = ContentScale.Fit
+                )
 
-            Text(
-                text = "PT. ARUNIKA PRAWIRATAMA INDONESIA",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                textAlign = TextAlign.Center
-            )
+                // Nama perusahaan ditengah
+                Text(
+                    text = company.name,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi feugiat quam magna. Suspendisse egestas lectus nec nulla posuere, non tristique nisi tristique. Nunc vel malesuada orci. Vestibulum nec nibh metus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.\n\n" +
-                        "Praesent sit amet augue et diam dapibus pulvinar quis at purus. Nam pharetra, purus vitae accumsan fermentum, ipsum nisi imperdiet dui, vitae efficitur libero mauris egestas nisl. Fusce tincidunt ipsum id nisl varius feugiat. Praesent a dui dignissim augue commodo hendrerit quis at odio.\n\n" +
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi feugiat quam magna. Suspendisse egestas lectus nec nulla posuere, non tristique nisi tristique. Nunc vel malesuada orci. Vestibulum nec nibh metus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.",
-                fontSize = 14.sp,
-                lineHeight = 20.sp
-            )
+                Text(
+                    text = company.description,
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp
+                )
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            ContactItem(Icons.Outlined.Email, "info@gmail.com")
-            ContactItem(Icons.Outlined.Phone, "+62 812 1234 5678")
-            ContactItem(Icons.Outlined.LocationOn, "Jl. Teknologi No. 12, Malang")
-            ContactItem(Icons.Outlined.Language, "www.website.id")
+                ContactItem(Icons.Outlined.Email, company.email)
+                ContactItem(Icons.Outlined.Phone, company.phone)
+                ContactItem(Icons.Outlined.LocationOn, company.location)
+                ContactItem(Icons.Outlined.Language, company.website)
+            }
 
+        } else if (error != null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = error ?: "Terjadi kesalahan",
+                    color = Color.Red,
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
         }
     }
 }
-
 @Composable
 fun ContactItem(icon: ImageVector, text: String) {
     Row(

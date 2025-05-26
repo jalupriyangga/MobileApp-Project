@@ -103,6 +103,8 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-permissions:0.20.3")
 
     implementation ("androidx.compose.ui:ui-graphics:1.3.1")
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
 
 
 }

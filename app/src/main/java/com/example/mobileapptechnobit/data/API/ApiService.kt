@@ -1,6 +1,7 @@
 package com.example.mobileapptechnobit.data.API
 
 import com.example.mobileapptechnobit.data.remote.ClockOutRequest
+import com.example.mobileapptechnobit.data.remote.CompanyProfileResponse
 import com.example.mobileapptechnobit.data.remote.EmployeeResponse
 import com.example.mobileapptechnobit.data.remote.Presensi
 import com.example.mobileapptechnobit.data.remote.PresensiResponse
@@ -65,6 +66,10 @@ interface ApiService{
     suspend fun getHistoryPresensi(
         @Header("Authorization") token: String
     ): Response<List<HistoryResponseItem>>
+
+    @GET("v1/android/company-profile")
+    suspend fun getCompanyProfile(@Header("Authorization") token: String): Response<CompanyProfileResponse>
+
 
     @GET("v1/android/jadwal-patroli")
     suspend fun getPatrolSchedules(
