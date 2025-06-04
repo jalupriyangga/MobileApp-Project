@@ -29,6 +29,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -55,7 +56,8 @@ import com.example.mobileapptechnobit.Screen
 import com.example.mobileapptechnobit.ViewModel.HistoryViewModel
 import com.example.mobileapptechnobit.ViewModel.HistoryViewModelFactory
 import com.example.mobileapptechnobit.data.API.ApiClient.apiService
-import com.example.mobileapptechnobit.data.remote.HistoryResponseItem
+import com.example.mobileapptechnobit.data.remote.HistoryPatroliResponseItem
+import com.example.mobileapptechnobit.data.remote.HistoryPresensiResponseItem
 import com.example.mobileapptechnobit.data.repository.HistoryRepository
 import com.example.mobileapptechnobit.ui.component.BottomNavigationBar
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
@@ -75,20 +77,25 @@ fun HistoryScreen(
     val viewModel: HistoryViewModel = viewModel(factory = factory)
 
     // Collect state from ViewModel
-    val historyItems = viewModel.historyItems.collectAsState()
+    val historyPresensiItems = viewModel.historyPresensiItems.collectAsState()
+    val historyPatroliItems = viewModel.historyPatroliItems.collectAsState()
     val selectedDays = viewModel.selectedDay.collectAsState()
     val selectedTab = viewModel.selectedTab.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
     // Debug logs
-    LaunchedEffect(historyItems.value) {
-        Log.d("HistoryScreen", "History items in UI: ${historyItems.value.size}")
+    LaunchedEffect(historyPresensiItems.value) {
+        Log.d("HistoryScreen", "History presensi items in UI: ${historyPresensiItems.value.size}")
+    }
+    LaunchedEffect(historyPatroliItems.value) {
+        Log.d("HistoryScreen", "History patroli items in UI: ${historyPatroliItems.value.size}")
     }
 
     // Fetch data when composable appears
     LaunchedEffect(Unit) {
-        viewModel.fetchHistory(token)
+        viewModel.fetchHistoryPresensi(token)
+        viewModel.fetchHistoryPatroli(token)
     }
 
     Scaffold(
@@ -102,9 +109,8 @@ fun HistoryScreen(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize() // Make sure the column takes full size
+                .fillMaxSize()
         ) {
-            // Month selector
             HistoryDaysSelector(
                 selectedDay = selectedDays.value,
                 onDaySelected = { day -> viewModel.setSelecteDays(day) }
@@ -124,7 +130,7 @@ fun HistoryScreen(
                         Text(text = error ?: "Unknown error", color = Color.Red)
                     }
                 }
-                historyItems.value.isEmpty() -> {
+                selectedTab.value == 0 && historyPresensiItems.value.isEmpty() -> {
                     // Empty state
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -136,35 +142,72 @@ fun HistoryScreen(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "History di hari ${selectedDays.value} tidak ada",
+                                text = "History Presensi di hari ${selectedDays.value} tidak ada",
                                 color = Color.Gray,
                                 textAlign = TextAlign.Center
                             )
                         }
                     }
                 }
-                else -> {
-                    // Display history items
+                selectedTab.value == 1 && historyPatroliItems.value.isEmpty() -> {
+                    // Empty state
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = null,
+                                modifier = Modifier.size(48.dp),
+                                tint = Color.Gray
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "History Patroli di hari ${selectedDays.value} tidak ada",
+                                color = Color.Gray,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+                selectedTab.value == 0 && historyPresensiItems.value.isNotEmpty() -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(bottom = 16.dp)
                     ) {
-                        items(historyItems.value){
-
-                        }
-                        items(historyItems.value) { item ->
-                            // Convert the date format from "2025-05-05" to "Senin 05 Mei 2025"
-                            val formattedDate = formatDateForDisplay(item.tanggal)
-
-                            Log.d("HistoryScreen", "Rendering item: ${item.tanggal}, ${item.status}")
-                            HistoryCard(
-                                historyItem = item,
+                        items(historyPresensiItems.value) { presensiItem ->
+                            val formattedDate = formatDateForDisplay(presensiItem.tanggal)
+                            Log.d("HistoryScreen", "Rendering presensi item: ${presensiItem.tanggal}, ${presensiItem.status}")
+                            HistoryPresensiCard(
+                                historyItem = presensiItem,
                                 navController = navCtrl,
                                 formattedDate = formattedDate
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                         }
                     }
+                }
+                selectedTab.value == 1 && historyPatroliItems.value.isNotEmpty() -> {
+                    Log.d(
+                        "HistoryScreen",
+                        "Rendering patroli items: ${historyPatroliItems.value.size} items"
+                    )
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 16.dp)
+                    ) {
+                        items(items = historyPatroliItems.value) { patroliItem: HistoryPatroliResponseItem ->
+                            Column {
+                                val formattedDate = formatDateTimeForDisplay(patroliItem.createdAt)
+                                Log.d("HistoryScreen", "Rendering patroli item: ${patroliItem.createdAt}, ${patroliItem.status}")
+                                HistoryPatroliCard(
+                                    historyItem = patroliItem,
+                                    navController = navCtrl,
+                                    formattedDate = formattedDate
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                            }
+                        }
+                    }
+
                 }
             }
         }
@@ -182,6 +225,34 @@ fun formatDateForDisplay(dateString: String): String {
     } catch (e: Exception) {
         Log.e("HistoryScreen", "Error formatting date: $dateString", e)
         return dateString
+    }
+}
+fun formatDateTimeForDisplay(dateTimeString: String): String {
+    try {
+        // Handle different possible datetime formats
+        val possibleFormats = listOf(
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("id", "ID")),
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale("id", "ID")),
+            SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale("id", "ID")),
+            SimpleDateFormat("yyyy-MM-dd", Locale("id", "ID"))
+        )
+
+        val outputFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale("id", "ID"))
+
+        for (inputFormat in possibleFormats) {
+            try {
+                val date = inputFormat.parse(dateTimeString)
+                return date?.let { outputFormat.format(it) } ?: dateTimeString
+            } catch (e: Exception) {
+                // Try next format
+                continue
+            }
+        }
+
+        return dateTimeString
+    } catch (e: Exception) {
+        Log.e("HistoryScreen", "Error formatting datetime: $dateTimeString", e)
+        return dateTimeString
     }
 }
 
@@ -256,8 +327,8 @@ fun HistoryTopBar(modifier: Modifier = Modifier, index: (Int) -> Unit) {
 }
 
 @Composable
-fun HistoryCard(
-    historyItem: HistoryResponseItem,
+fun HistoryPresensiCard(
+    historyItem: HistoryPresensiResponseItem,
     modifier: Modifier = Modifier,
     navController: NavController,
     formattedDate: String
@@ -273,7 +344,7 @@ fun HistoryCard(
         onClick = {
             navController.currentBackStackEntry?.savedStateHandle?.set("presenceItem", historyItem)
             navController.currentBackStackEntry?.savedStateHandle?.set("formattedDate", formattedDate)
-            navController.navigate(Screen.DetailHistory.route)
+            navController.navigate(Screen.DetailHistoryPresensi.route)
         }
     ) {
         Column(modifier = Modifier.padding(20.dp))
@@ -422,11 +493,11 @@ fun HistoryDaysSelector(
         daysInfo
     }
 
-    androidx.compose.material3.Surface(
+    Surface(
         shadowElevation = 4.dp,
     ) {
         LazyRow(
-            modifier = Modifier.fillMaxWidth().height(64.dp), // Increased height to fit date
+            modifier = Modifier.fillMaxWidth().height(64.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(start = 14.dp, end = 14.dp),
             verticalAlignment = Alignment.CenterVertically,

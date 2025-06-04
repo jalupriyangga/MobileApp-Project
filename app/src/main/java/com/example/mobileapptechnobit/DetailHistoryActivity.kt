@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.ui.HistoryScreen
 
-class DetailPresenceActivity : ComponentActivity() {
+class DetailHistoryActivity : ComponentActivity() {
 
     // Launcher for handling permission requests
     private val requestPermissionsLauncher =

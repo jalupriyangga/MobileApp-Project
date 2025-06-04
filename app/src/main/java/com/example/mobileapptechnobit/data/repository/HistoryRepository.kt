@@ -2,13 +2,13 @@ package com.example.mobileapptechnobit.data.repository
 
 import android.util.Log
 import com.example.mobileapptechnobit.data.API.ApiService
-import com.example.mobileapptechnobit.data.remote.HistoryResponse
-import com.example.mobileapptechnobit.data.remote.HistoryResponseItem
+import com.example.mobileapptechnobit.data.remote.HistoryPatroliResponseItem
+import com.example.mobileapptechnobit.data.remote.HistoryPresensiResponseItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class HistoryRepository(private val apiService: ApiService) {
-    suspend fun fetchHistory(token: String): List<HistoryResponseItem>? {
+    suspend fun fetchHistoryPresensi(token: String): List<HistoryPresensiResponseItem>? {
         return withContext(Dispatchers.IO) {
             try {
                 val authToken = "Bearer $token"
@@ -25,6 +25,23 @@ class HistoryRepository(private val apiService: ApiService) {
             } catch (e: Exception) {
                 Log.e("HistoryRepository", "Exception: ${e.message}", e)
                 return@withContext null
+            }
+        }
+    }
+
+    suspend fun fetchHistoryPatroli(token: String): Result<List<HistoryPatroliResponseItem>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val authToken = "Bearer $token"
+                val response = apiService.getHistoryPatroli(authToken)
+                Log.d("HistoryRepository", "Response: $response")
+                if (response.data.isNotEmpty()) {
+                    Result.success(response.data)
+                } else {
+                    Result.failure(Exception("Data kosong: ${response.message}"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
             }
         }
     }

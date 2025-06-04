@@ -4,6 +4,11 @@ import com.example.mobileapptechnobit.data.remote.AlternatePermissionResponse
 import com.example.mobileapptechnobit.data.remote.ClockOutRequest
 import com.example.mobileapptechnobit.data.remote.EmployeeResponse
 import com.example.mobileapptechnobit.data.remote.HistoryResponseItem
+import com.example.mobileapptechnobit.data.remote.HistoryPatroliResponse
+import com.example.mobileapptechnobit.data.remote.Presensi
+import com.example.mobileapptechnobit.data.remote.PresensiResponse
+import com.example.mobileapptechnobit.data.remote.Permission
+import com.example.mobileapptechnobit.data.remote.HistoryPresensiResponseItem
 import com.example.mobileapptechnobit.data.remote.PatrolScheduleResponse
 import com.example.mobileapptechnobit.data.remote.PatroliRequest
 import com.example.mobileapptechnobit.data.remote.PermissionResponse
@@ -91,7 +96,12 @@ interface ApiService{
     @GET("v1/android/history-presensi")
     suspend fun getHistoryPresensi(
         @Header("Authorization") token: String
-    ): Response<List<HistoryResponseItem>>
+    ): Response<List<HistoryPresensiResponseItem>> // Get Data by Gson Array
+
+    @GET("v1/android/histori-patroli")
+    suspend fun getHistoryPatroli(
+        @Header("Authorization") token: String
+    ): HistoryPatroliResponse // Get Data by Gson Object contains Array
 
 
     // API jadwal

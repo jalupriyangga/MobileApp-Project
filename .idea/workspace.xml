@@ -17,6 +17,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="40a52af4-5f87-4480-9e1b-52a19bae5246" name="Changes" comment="merge patroli &amp; permission2" />
+    <list default="true" id="40a52af4-5f87-4480-9e1b-52a19bae5246" name="Changes" comment="feat:  history patroli">
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/DetailPresenceActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/DetailHistoryActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/API/ApiService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/API/ApiService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/remote/HistoryResponse.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/remote/HistoryResponse.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/repository/HistoryRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/repository/HistoryRepository.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -25,7 +33,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\Acer\.android\avd\Medium_Phone_API_35.avd)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\ASUS\.android\avd\Pixel_9_Pro_XL_API_35.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -43,6 +51,7 @@
         <option value="Kotlin File" />
         <option value="Kotlin File" />
         <option value="Kotlin File" />
+        <option value="Kotlin Class" />
         <option value="Kotlin Class" />
       </list>
     </option>
@@ -67,6 +76,7 @@
     &quot;url&quot;: &quot;https://github.com/Technobit2025/MobileApp-Project.git&quot;,
     &quot;accountId&quot;: &quot;cb77743d-d039-476c-8df3-5ba1960edcf3&quot;
     &quot;accountId&quot;: &quot;5fea684c-8f4a-47b7-b765-90f14650e4ed&quot;
+    &quot;accountId&quot;: &quot;69a5ff5c-38f5-4a28-bc7e-00dee5325789&quot;
   }
 }</component>
   <component name="ProblemsViewState">
@@ -92,10 +102,23 @@
     "git-widget-placeholder": "Sprint4",
     "kotlin-language-version-configured": "true",
     "memory.settings.postsync.last.time.stamp": "1748843810647"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Android App.app.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Sprint3&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;P:/MobileApp-Project/app/src/main/java/com/example/mobileapptechnobit/ui&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="P:\MobileApp-Project\app\src\main\java\com\example\mobileapptechnobit\ui" />
       <recent name="C:\Users\Sandro\AndroidStudioProjects\GitHub\Technobit-Project\MobileApp-Project\app\src\main\res\drawable" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -330,6 +353,7 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
+      <changelist id="40a52af4-5f87-4480-9e1b-52a19bae5246" name="Changes" comment="merged with history" />
       <changelist id="40a52af4-5f87-4480-9e1b-52a19bae5246" name="Changes" comment="merged 4 branches" />
       <changelist id="40a52af4-5f87-4480-9e1b-52a19bae5246" name="Changes" comment="merged with history" />
       <created>1741188995861</created>
@@ -378,12 +402,15 @@
       <updated>1746715869265</updated>
     </task>
     <task id="LOCAL-00006" summary="merged 4 branches">
+    <task id="LOCAL-00006" summary="feat:  history patroli">
       <option name="closed" value="true" />
       <created>1746716552688</created>
+      <created>1747919353318</created>
       <option name="number" value="00006" />
       <option name="presentableId" value="LOCAL-00006" />
       <option name="project" value="LOCAL" />
       <updated>1746716552688</updated>
+      <updated>1747919353318</updated>
     </task>
     <task id="LOCAL-00007" summary="not connected to API yet">
       <option name="closed" value="true" />
@@ -401,6 +428,7 @@
       <option name="project" value="LOCAL" />
       <updated>1749043765319</updated>
     </task>
+    <option name="localTasksCounter" value="7" />
     <task id="LOCAL-00009" summary="merge patroli &amp; permission2">
       <option name="closed" value="true" />
       <created>1749045390905</created>
@@ -437,22 +465,20 @@
     <MESSAGE value="connected to API" />
     <MESSAGE value="merge patroli &amp; permission2" />
     <option name="LAST_COMMIT_MESSAGE" value="merge patroli &amp; permission2" />
+    <MESSAGE value="feat:  history patroli" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat:  history patroli" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
       <map>
         <entry key="com.example.mobileapptechnobit">
           <value>
-            <CheckInfo lastCheckTimestamp="1746437799501" />
-            <CheckInfo lastCheckTimestamp="1746455489453" />
-            <CheckInfo lastCheckTimestamp="1746496707709" />
+            <CheckInfo lastCheckTimestamp="1747115115846" />
           </value>
         </entry>
         <entry key="com.example.mobileapptechnobit.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1746437799502" />
-            <CheckInfo lastCheckTimestamp="1746455489509" />
-            <CheckInfo lastCheckTimestamp="1746496707655" />
+            <CheckInfo lastCheckTimestamp="1747115115808" />
           </value>
         </entry>
       </map>
