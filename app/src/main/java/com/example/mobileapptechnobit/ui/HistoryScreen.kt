@@ -149,6 +149,9 @@ fun HistoryScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(bottom = 16.dp)
                     ) {
+                        items(historyItems.value){
+
+                        }
                         items(historyItems.value) { item ->
                             // Convert the date format from "2025-05-05" to "Senin 05 Mei 2025"
                             val formattedDate = formatDateForDisplay(item.tanggal)

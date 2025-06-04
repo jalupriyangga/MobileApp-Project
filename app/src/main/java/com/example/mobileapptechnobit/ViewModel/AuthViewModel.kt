@@ -148,7 +148,7 @@ class AuthViewModel(private val repository: AuthRepository, private val context:
         _isSuccess.value = false
 
         val authToken = "Bearer $token"
-        Log.d("ProfileRepository", "Auth Token: $authToken")
+        Log.d("ProfileViewModel", "Auth Token: $authToken")
 
         viewModelScope.launch {
             try {

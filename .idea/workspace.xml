@@ -25,6 +25,7 @@
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/FormPatroli.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/FormPatroli.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/PatroliScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/PatroliScreen.kt" afterDir="false" />
     </list>
+    <list default="true" id="40a52af4-5f87-4480-9e1b-52a19bae5246" name="Changes" comment="connected to API" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -51,6 +52,7 @@
         <option value="Kotlin File" />
         <option value="Kotlin File" />
         <option value="Kotlin File" />
+        <option value="Kotlin Class" />
       </list>
     </option>
   </component>
@@ -73,6 +75,7 @@
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/Technobit2025/MobileApp-Project.git&quot;,
     &quot;accountId&quot;: &quot;cb77743d-d039-476c-8df3-5ba1960edcf3&quot;
+    &quot;accountId&quot;: &quot;5fea684c-8f4a-47b7-b765-90f14650e4ed&quot;
   }
 }</component>
   <component name="ProblemsViewState">
@@ -336,6 +339,7 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
+      <changelist id="40a52af4-5f87-4480-9e1b-52a19bae5246" name="Changes" comment="merged 4 branches" />
       <changelist id="40a52af4-5f87-4480-9e1b-52a19bae5246" name="Changes" comment="merged with history" />
       <created>1741188995861</created>
       <option name="number" value="Default" />
@@ -382,23 +386,31 @@
       <option name="project" value="LOCAL" />
       <updated>1746715869265</updated>
     </task>
-    <task id="LOCAL-00006" summary="revision completed">
+    <task id="LOCAL-00006" summary="merged 4 branches">
       <option name="closed" value="true" />
-      <created>1744852975580</created>
+      <created>1746716552688</created>
       <option name="number" value="00006" />
       <option name="presentableId" value="LOCAL-00006" />
       <option name="project" value="LOCAL" />
-      <updated>1744852975580</updated>
+      <updated>1746716552688</updated>
     </task>
-    <task id="LOCAL-00007" summary="merge permission1 &amp; presensi">
+    <task id="LOCAL-00007" summary="not connected to API yet">
       <option name="closed" value="true" />
-      <created>1746714085804</created>
+      <created>1747899342387</created>
       <option name="number" value="00007" />
       <option name="presentableId" value="LOCAL-00007" />
       <option name="project" value="LOCAL" />
-      <updated>1746714085804</updated>
+      <updated>1747899342387</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00008" summary="connected to API">
+      <option name="closed" value="true" />
+      <created>1749043765319</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1749043765319</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -421,7 +433,10 @@
     <MESSAGE value="merge permission1 &amp; presensi" />
     <MESSAGE value="feat: slicing history by month selector" />
     <MESSAGE value="merged with history" />
-    <option name="LAST_COMMIT_MESSAGE" value="merged with history" />
+    <MESSAGE value="merged 4 branches" />
+    <MESSAGE value="not connected to API yet" />
+    <MESSAGE value="connected to API" />
+    <option name="LAST_COMMIT_MESSAGE" value="connected to API" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
