@@ -175,8 +175,13 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             PermitFormScreen(navCtrl = navController)
         }
         composable("detail_gaji") {
-            DetailGajiScreen(navCtrl = navController)
+            val context = LocalContext.current
+            val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+            val token = sharedPref.getString("AUTH_TOKEN", null) ?: ""
+
+            DetailGajiScreen(navCtrl = navController, token = token) // ✅ Sudah ada `token`
         }
+
         composable(Screen.DetailPermission.route){
             DetailPermitScreen(navCtrl = navController)
         }

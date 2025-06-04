@@ -2,6 +2,8 @@ package com.example.mobileapptechnobit.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
@@ -97,6 +99,7 @@ fun ProfileScreen(navController: NavController, token: String) {
     val scrollState = rememberScrollState()
     val companyProfileViewModel: CompanyProfileViewModel = viewModel()
     val companyProfileState by companyProfileViewModel.companyProfile.collectAsState()
+
 
     // Navigasi ke detail_informasi_perusahaan
     Button(onClick = {
@@ -438,6 +441,49 @@ fun ProfileScreen(navController: NavController, token: String) {
                             )
                         }
                     }
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 15.dp, end = 20.dp)
+                            .clickable {
+                                val url = "https://drive.google.com/file/d/12pcsdKHThZyhlXdHlS8NqdZWAJA7c4MR/view?usp=sharing"
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                context.startActivity(intent)
+                            }
+                            .shadow(12.dp, RoundedCornerShape(16.dp), clip = true),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 10.dp, horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.download_guides),
+                                    contentDescription = "unduh buku panduan",
+                                    modifier = Modifier.size(40.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    fontSize = 14.sp,
+                                    text = "Unduh Buku Panduan",
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Normal,
+                                    fontFamily = robotoFontFamily
+                                )
+                            }
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = "Arrow",
+                                tint = Color.Blue,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                    }
 
                     Card(
                         modifier = Modifier
@@ -482,6 +528,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                     }
                     Spacer(Modifier.height(20.dp))
                 }
+
         },
         bottomBar = { BottomNavigationBar(navCtrl = navController, index = 2) }
     )
@@ -492,7 +539,7 @@ fun ProfileScreen(navController: NavController, token: String) {
         Log.d("PS", "Token yang diterima: $token")
         userProfile = repository.getUserProfile(token)
     }
-
+    @Composable
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },

@@ -67,6 +67,7 @@ import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
 import com.example.mobileapptechnobit.ViewModel.CameraPresViewModel
 import com.example.mobileapptechnobit.ViewModel.ProfileViewModel
 import com.example.mobileapptechnobit.ViewModel.ProfileViewModelFactory
+import com.example.mobileapptechnobit.ViewModel.SalaryViewModel
 import com.example.mobileapptechnobit.data.API.UserProfileResponse
 import com.example.mobileapptechnobit.data.remote.PatrolScheduleResponse
 import com.example.mobileapptechnobit.data.repository.AuthRepository
@@ -75,6 +76,7 @@ import com.example.mobileapptechnobit.ui.component.BottomNavigationBar
 import com.example.mobileapptechnobit.ui.component.TopAppBar
 import com.example.mobileapptechnobit.ui.theme.primary100
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
+import com.example.mobileapptechnobit.data.remote.formatCurrency
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -101,7 +103,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
                 Column {
                     ProfileSection()
                     ScheduleCard(navCtrl = navCtrl, schedules = schedules, isLoading = isLoading, error = error)
-                    SalaryCard(navCtrl = navCtrl)
+                    SalaryCard(navCtrl = navCtrl, token = token)
 
                 }
             }
@@ -265,10 +267,18 @@ fun ScheduleCard(
 @Composable
 fun SalaryCard(
     navCtrl: NavController,
-    salaryAmount: String = "Rp3.000.000,00"
+    token: String,
+    viewModel: SalaryViewModel = viewModel()
 ) {
+    val salary by viewModel.salaryData.collectAsState()
     var isVisible by remember { mutableStateOf(true) }
 
+    LaunchedEffect(Unit) {
+        viewModel.fetchSalary(token)
+    }
+
+
+    val salaryAmount = formatCurrency(salary?.detail?.total_gaji)
 
     Card(
         shape = RoundedCornerShape(12.dp),
@@ -278,9 +288,7 @@ fun SalaryCard(
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 5.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -303,32 +311,22 @@ fun SalaryCard(
                     tint = Color.Gray,
                     modifier = Modifier
                         .size(24.dp)
-                        .clickable {
-                            isVisible = !isVisible
-                        }
+                        .clickable { isVisible = !isVisible }
                 )
             }
-
 
             Spacer(modifier = Modifier.height(10.dp))
             HorizontalDivider(color = Color.LightGray, thickness = 1.dp)
             Spacer(modifier = Modifier.height(8.dp))
 
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable {
-                        navCtrl.navigate("detail_gaji")
-                    },
+                    .clickable { navCtrl.navigate("detail_gaji") },
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Lihat selengkapnya",
-                    color = Color.Gray,
-                    fontSize = 14.sp
-                )
+                Text("Lihat selengkapnya", color = Color.Gray, fontSize = 14.sp)
                 Icon(
                     imageVector = Icons.Default.ArrowForward,
                     contentDescription = null,
@@ -341,6 +339,7 @@ fun SalaryCard(
         }
     }
 }
+
 
 
 @Composable

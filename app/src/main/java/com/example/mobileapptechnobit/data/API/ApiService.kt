@@ -9,6 +9,7 @@ import com.example.mobileapptechnobit.data.remote.Permission
 import com.example.mobileapptechnobit.data.remote.HistoryResponse
 import com.example.mobileapptechnobit.data.remote.HistoryResponseItem
 import com.example.mobileapptechnobit.data.remote.PatrolScheduleResponse
+import com.example.mobileapptechnobit.data.remote.SalaryDetailResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -77,5 +78,11 @@ interface ApiService{
         @Query("date") date: String? = null,
         @Query("company_id") companyId: Int? = null
     ): Response<List<PatrolScheduleResponse>>
+
+    @GET("v1/android/salary-detail")
+    suspend fun getSalaryDetail(
+        @Header("Authorization") token: String
+    ): Response<SalaryDetailResponse>
+
 
 }

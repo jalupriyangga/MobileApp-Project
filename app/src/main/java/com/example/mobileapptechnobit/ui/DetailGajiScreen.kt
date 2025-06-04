@@ -6,6 +6,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,9 +18,12 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mobileapptechnobit.R
+import com.example.mobileapptechnobit.ViewModel.SalaryViewModel
+import com.example.mobileapptechnobit.data.remote.formatCurrency
 
 val robotoFontFamily = FontFamily(
     Font(R.font.roboto_regular, FontWeight.Normal),
@@ -25,7 +31,18 @@ val robotoFontFamily = FontFamily(
 )
 
 @Composable
-fun DetailGajiScreen(navCtrl: NavController) {
+fun DetailGajiScreen(
+    navCtrl: NavController,
+    token: String,
+    viewModel: SalaryViewModel = viewModel()
+) {
+    val salary by viewModel.salaryData.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchSalary(token) // Tanpa kirim period ID
+    }
+
+
     Scaffold(
         topBar = {
             Box {
@@ -82,7 +99,7 @@ fun DetailGajiScreen(navCtrl: NavController) {
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Text(
-                text = "Rp3.000.000",
+                text = formatCurrency(salary?.detail?.total_gaji),
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = robotoFontFamily,
@@ -91,11 +108,11 @@ fun DetailGajiScreen(navCtrl: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            SalaryRow("Gaji Pokok", "Rp4.000.000")
-            SalaryRow("Tunjangan", "Rp1.000.000")
-            SalaryRow("Bonus", "Rp500.000")
-            SalaryRow("Pajak", "Rp700.000")
-            SalaryRow("Insentif Pajak", "Rp700.000")
+            SalaryRow("Gaji Pokok", formatCurrency(salary?.detail?.gaji_pokok))
+            SalaryRow("Tunjangan", formatCurrency(salary?.detail?.tunjangan))
+            SalaryRow("Bonus", formatCurrency(salary?.detail?.bonus))
+            SalaryRow("Pajak", formatCurrency(salary?.detail?.pajak))
+            SalaryRow("Insentif Pajak", formatCurrency(salary?.detail?.insentif_pajak))
         }
     }
 }
