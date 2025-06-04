@@ -176,6 +176,16 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
         composable(Screen.Permission.route){
             PermissionScreen(navCtrl = navController, token = token ?: "", viewModel = permissionViewModel)
         }
+        composable(
+            route = "detail_informasi_perusahaan/{token}",
+            arguments = listOf(navArgument("token") { type = NavType.StringType })
+        ) {
+                backStackEntry ->
+            val token = backStackEntry.arguments?.getString("token") ?: ""
+            DetailInformasiPerusahaanScreen(navController = navController,token = token)
+        }
+
+
         composable(Screen.PermissionForm.route){
             PermitFormScreen(navCtrl = navController, token = token ?: "")
         }
@@ -201,6 +211,13 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
         ) { entry ->
             val qrToken = entry.arguments?.getString("qrToken")?.let { Uri.decode(it) } ?: ""
             CameraPatroli(navCtrl = navController, token = token ?: "", qrToken = qrToken, viewModel = patroliViewModel)
+        }
+        composable("detail_gaji") {
+            val context = LocalContext.current
+            val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+            val token = sharedPref.getString("AUTH_TOKEN", null) ?: ""
+
+            DetailGajiScreen(navCtrl = navController, token = token) // ✅ Sudah ada `token`
         }
         composable(
             route = Screen.FormPatroli.route,

@@ -2,7 +2,10 @@ package com.example.mobileapptechnobit.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -60,6 +63,7 @@ import com.example.mobileapptechnobit.R
 import com.example.mobileapptechnobit.Screen
 import com.example.mobileapptechnobit.ViewModel.AuthViewModel
 import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
+import com.example.mobileapptechnobit.ViewModel.CompanyProfileViewModel
 import com.example.mobileapptechnobit.ViewModel.ProfileViewModel
 import com.example.mobileapptechnobit.ViewModel.ProfileViewModelFactory
 import com.example.mobileapptechnobit.data.API.UserProfileResponse
@@ -74,21 +78,39 @@ import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ProfileScreen(navController: NavController, token: String) {
-
     val context = LocalContext.current
+
+    // Gunakan token yang diterima dari parameter jika valid, fallback ke SharedPreferences
+    val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    val validToken = if (token.isNotEmpty()) token else sharedPref.getString("AUTH_TOKEN", null) ?: ""
+
     val repository = ProfileRepository(context)
     val viewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(repository))
+
     val authRepository = AuthRepository()
     val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(authRepository, context))
+
     val profileState = viewModel.employeesProfile.collectAsState()
     val profile = profileState.value
-    val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-    val token = sharedPref.getString("AUTH_TOKEN", null) ?: ""
 
     var showLogoutDialog by remember { mutableStateOf(false) }
     var userProfile by remember { mutableStateOf<UserProfileResponse?>(null) }
 
     val scrollState = rememberScrollState()
+    val companyProfileViewModel: CompanyProfileViewModel = viewModel()
+    val companyProfileState by companyProfileViewModel.companyProfile.collectAsState()
+
+
+    // Navigasi ke detail_informasi_perusahaan
+    Button(onClick = {
+        if (validToken.isNotEmpty()) {
+            navController.navigate("detail_informasi_perusahaan/$validToken")
+        } else {
+            Toast.makeText(context, "Token tidak ditemukan", Toast.LENGTH_SHORT).show()
+        }
+    }) {
+        Text("Lihat Detail Perusahaan")
+    }
 
     Scaffold(
         topBar = {
@@ -272,9 +294,8 @@ fun ProfileScreen(navController: NavController, token: String) {
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
-                        Column(
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        ) {
+                        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            // No. WA
                             Row(
                                 modifier = Modifier.padding(vertical = 10.dp),
                                 verticalAlignment = Alignment.CenterVertically
@@ -294,12 +315,11 @@ fun ProfileScreen(navController: NavController, token: String) {
                                         fontFamily = robotoFontFamily
                                     )
                                     Text(
-                                        text = "0895363734078",
+                                        text = companyProfileState?.phone ?: "-",
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         color = Color.Black,
                                         fontFamily = robotoFontFamily
-
                                     )
                                 }
                             }
@@ -311,6 +331,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                                 color = black20,
                             )
 
+                            // Email
                             Row(
                                 modifier = Modifier.padding(vertical = 10.dp),
                                 verticalAlignment = Alignment.CenterVertically
@@ -330,7 +351,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                                         fontFamily = robotoFontFamily
                                     )
                                     Text(
-                                        text = "iniemail.com",
+                                        text = companyProfileState?.email ?: "-",
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         color = Color.Black,
@@ -346,11 +367,14 @@ fun ProfileScreen(navController: NavController, token: String) {
                                 color = black20,
                             )
 
+                            // Tombol lihat selengkapnya
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 10.dp)
-                                    .clickable {  },
+                                    .clickable {
+                                        navController.navigate("detail_informasi_perusahaan/$token")
+                                    },
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
                             ) {
@@ -372,6 +396,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                             }
                         }
                     }
+
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -403,6 +428,49 @@ fun ProfileScreen(navController: NavController, token: String) {
                                 Text(
                                     fontSize = 14.sp,
                                     text = "Ubah Password",
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Normal,
+                                    fontFamily = robotoFontFamily
+                                )
+                            }
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = "Arrow",
+                                tint = Color.Blue,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                    }
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 15.dp, end = 20.dp)
+                            .clickable {
+                                val url = "https://drive.google.com/file/d/12pcsdKHThZyhlXdHlS8NqdZWAJA7c4MR/view?usp=sharing"
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                context.startActivity(intent)
+                            }
+                            .shadow(12.dp, RoundedCornerShape(16.dp), clip = true),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 10.dp, horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.download_guides),
+                                    contentDescription = "unduh buku panduan",
+                                    modifier = Modifier.size(40.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    fontSize = 14.sp,
+                                    text = "Unduh Buku Panduan",
                                     color = Color.Black,
                                     fontWeight = FontWeight.Normal,
                                     fontFamily = robotoFontFamily
@@ -460,6 +528,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                     }
                     Spacer(Modifier.height(20.dp))
                 }
+
         },
         bottomBar = { BottomNavigationBar(navCtrl = navController, index = 2) }
     )
@@ -470,7 +539,7 @@ fun ProfileScreen(navController: NavController, token: String) {
         Log.d("PS", "Token yang diterima: $token")
         userProfile = repository.getUserProfile(token)
     }
-
+    @Composable
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },

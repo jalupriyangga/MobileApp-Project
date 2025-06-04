@@ -2,6 +2,7 @@ package com.example.mobileapptechnobit.data.API
 
 import com.example.mobileapptechnobit.data.remote.AlternatePermissionResponse
 import com.example.mobileapptechnobit.data.remote.ClockOutRequest
+import com.example.mobileapptechnobit.data.remote.CompanyProfileResponse
 import com.example.mobileapptechnobit.data.remote.EmployeeResponse
 import com.example.mobileapptechnobit.data.remote.HistoryPatroliResponse
 import com.example.mobileapptechnobit.data.remote.Presensi
@@ -11,6 +12,7 @@ import com.example.mobileapptechnobit.data.remote.HistoryPresensiResponseItem
 import com.example.mobileapptechnobit.data.remote.PatrolScheduleResponse
 import com.example.mobileapptechnobit.data.remote.PatroliRequest
 import com.example.mobileapptechnobit.data.remote.PermissionResponse
+import com.example.mobileapptechnobit.data.remote.SalaryDetailResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -102,6 +104,10 @@ interface ApiService{
 
 
     // API jadwal
+    @GET("v1/android/company-profile")
+    suspend fun getCompanyProfile(@Header("Authorization") token: String): Response<CompanyProfileResponse>
+
+
     @GET("v1/android/jadwal-patroli")
     suspend fun getPatrolSchedules(
         @Header("Authorization") token: String,
@@ -111,5 +117,11 @@ interface ApiService{
 
     @POST("v1/android/patroli")
     suspend fun submitPatroli(@Header("Authorization") token: String, @Body request: PatroliRequest): Response<ResponseBody>
+
+    @GET("v1/android/salary-detail")
+    suspend fun getSalaryDetail(
+        @Header("Authorization") token: String
+    ): Response<SalaryDetailResponse>
+
 
 }
