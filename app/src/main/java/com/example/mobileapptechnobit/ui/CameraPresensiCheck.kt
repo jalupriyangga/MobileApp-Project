@@ -11,6 +11,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -61,30 +63,21 @@ fun CameraPresensiCheck(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Row(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Box(modifier = Modifier.weight(6f), contentAlignment = Alignment.Center) {
-                            Text(
-                                text = "Konfirmasi Foto",
-                                color = Color.White,
-                                textAlign = TextAlign.Center,
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.Medium,
-                                fontFamily = robotoFontFamily
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = colorResource(id = R.color.primary100)
-                ),
-                modifier = Modifier.height(112.dp)
-            )
+            Box {
+                TopAppBar(
+                    title = {},
+                    colors = TopAppBarDefaults.smallTopAppBarColors(
+                        containerColor = colorResource(id = R.color.primary100)
+                    ),
+                    modifier = Modifier.height(112.dp)
+                )
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                ) {
+                    CameraPresCheckTitle(navCtrl = navController)
+                }
+            }
         },
         bottomBar = {
             Box(
@@ -264,6 +257,38 @@ fun CameraPresensiCheck(
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
+    }
+}
+
+@Composable
+fun CameraPresCheckTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 30.dp)
+    ) {
+        IconButton(
+            onClick = { navCtrl.popBackStack() },
+            Modifier.padding(start = 10.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "back button",
+                tint = androidx.compose.ui.graphics.Color.White,
+                modifier = Modifier.size(28.dp)
+            )
+        }
+        Text(
+            text = "Konfirmasi Foto",
+            textAlign = TextAlign.Center,
+            fontFamily = robotoFontFamily,
+            fontWeight = androidx.compose.ui.text.font.FontWeight(500),
+            color = androidx.compose.ui.graphics.Color.White,
+            fontSize = 25.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Center)
+        )
     }
 }
 

@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -92,37 +93,21 @@ fun EditProfile(navController: NavController, token: String) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Row(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Box(modifier = Modifier.weight(1f)) {
-                            IconButton(onClick = { navController.popBackStack() }) {
-                                Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
-                            }
-                        }
-                        Box(modifier = Modifier.weight(6f), contentAlignment = Alignment.Center) {
-                            Text(
-                                text = "Edit Profil",
-                                color = Color.White,
-                                textAlign = TextAlign.Center,
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.Medium,
-                                fontFamily = robotoFontFamily
-                            )
-                        }
-                        Box(modifier = Modifier.weight(1f)) {
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
-                    containerColor = Color(0xFF2752E7)
-                ),
-                modifier = Modifier.height(120.dp),
-            )
+            Box {
+                TopAppBar(
+                    title = {},
+                    colors = TopAppBarDefaults.smallTopAppBarColors(
+                        containerColor = colorResource(id = R.color.primary100)
+                    ),
+                    modifier = Modifier.height(112.dp)
+                )
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                ) {
+                    EditProfileTitle(navCtrl = navController)
+                }
+            }
         }
     ) { paddingValues ->
         Box(
@@ -485,6 +470,38 @@ fun EditProfile(navController: NavController, token: String) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun EditProfileTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 30.dp)
+    ) {
+        IconButton(
+            onClick = { navCtrl.popBackStack() },
+            Modifier.padding(start = 10.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "back button",
+                tint = androidx.compose.ui.graphics.Color.White,
+                modifier = Modifier.size(28.dp)
+            )
+        }
+        Text(
+            text = "Edit Profil",
+            textAlign = TextAlign.Center,
+            fontFamily = robotoFontFamily,
+            fontWeight = androidx.compose.ui.text.font.FontWeight(500),
+            color = androidx.compose.ui.graphics.Color.White,
+            fontSize = 25.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Center)
+        )
     }
 }
 

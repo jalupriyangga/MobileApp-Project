@@ -183,7 +183,7 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             arguments = listOf(navArgument("qrToken") { type = NavType.StringType })
         ) { entry ->
             val qrTokenValue = entry.arguments?.getString("qrToken") ?: ""
-            FormPatroli(navCtrl = navController, token = token ?: "", qrToken = qrTokenValue, viewModel = patroliViewModel)
+            FormPatroli(navCtrl = navController, token = token ?: "", qrToken = qrTokenValue, viewModelPat = patroliViewModel)
         }
         composable(Screen.PatroliSukses.route) {
             PatroliSuksesScreen(navController, token = token ?: "")

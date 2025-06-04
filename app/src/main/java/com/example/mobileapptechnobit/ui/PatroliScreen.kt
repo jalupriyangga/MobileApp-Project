@@ -50,6 +50,7 @@ import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import org.json.JSONObject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -194,16 +195,28 @@ fun CameraPreviewWithQRReaderWithFrame(onQRCodeScanned: (String) -> Unit) {
                                 scanner.process(inputImage)
                                     .addOnSuccessListener { barcodes ->
                                         for (barcode in barcodes) {
-                                            if (barcode.valueType == Barcode.TYPE_TEXT || barcode.rawValue != null) {
-                                                onQRCodeScanned(barcode.rawValue ?: "")
-                                                imageProxy.close()
-                                                return@addOnSuccessListener
+                                            val raw = barcode.rawValue
+                                            Log.d("QRScanner", "Isi QR code: $raw")
+                                            if (raw != null) {
+                                                if (raw.trim().startsWith("{") && raw.trim().endsWith("}")) {
+                                                    try {
+                                                        val json = JSONObject(raw)
+                                                        val name = json.optString("name")
+                                                        val latitude = json.optDouble("latitude")
+                                                        val longitude = json.optDouble("longitude")
+                                                        Log.d("QRScanner", "QR Info -> name: $name, latitude: $latitude, longitude: $longitude")
+                                                    } catch (e: Exception) {
+                                                        Log.e("QRScanner", "Failed to parse QR JSON: ${e.message}")
+                                                    }
+                                                } else {
+                                                    // Jika bukan JSON, tidak perlu log apapun, atau bisa log pesan khusus
+                                                    Log.d("QRScanner", "QR tidak berisi informasi name, latitude, longitude")
+                                                }
                                             }
+                                            onQRCodeScanned(barcode.rawValue ?: "")
+                                            imageProxy.close()
+                                            return@addOnSuccessListener
                                         }
-                                        imageProxy.close()
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.e("QRScanner", "Error processing image: ${e.message}")
                                         imageProxy.close()
                                     }
                             } catch (e: Exception) {

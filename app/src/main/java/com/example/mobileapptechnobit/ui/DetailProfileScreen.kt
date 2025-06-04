@@ -36,6 +36,7 @@ import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.AnnotatedString
 
 fun formatCurrency(value: String): String {
@@ -70,37 +71,21 @@ fun DetailProfileScreen(navController: NavController, token: String) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Row(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Box(modifier = Modifier.weight(1f)) {
-                            IconButton(onClick = { navController.navigate("profile_screen") }) {
-                                Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
-                            }
-                        }
-                        Box(modifier = Modifier.weight(6f), contentAlignment = Alignment.Center) {
-                            Text(
-                                text = "Profil Anda",
-                                color = Color.White,
-                                textAlign = TextAlign.Center,
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.Medium,
-                                fontFamily = robotoFontFamily
-                            )
-                        }
-                        Box(modifier = Modifier.weight(1f)) {
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
-                    containerColor = Color(0xFF2752E7)
-                ),
-                modifier = Modifier.height(120.dp),
-            )
+            Box {
+                TopAppBar(
+                    title = {},
+                    colors = TopAppBarDefaults.smallTopAppBarColors(
+                        containerColor = colorResource(id = R.color.primary100)
+                    ),
+                    modifier = Modifier.height(112.dp)
+                )
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                ) {
+                    DetailProfileTitle(navCtrl = navController)
+                }
+            }
         }
     ) { paddingValues ->
         Box(
@@ -150,6 +135,38 @@ fun DetailProfileScreen(navController: NavController, token: String) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun DetailProfileTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 30.dp)
+    ) {
+        IconButton(
+            onClick = { navCtrl.popBackStack() },
+            Modifier.padding(start = 10.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "back button",
+                tint = androidx.compose.ui.graphics.Color.White,
+                modifier = Modifier.size(28.dp)
+            )
+        }
+        Text(
+            text = "Profil Anda",
+            textAlign = TextAlign.Center,
+            fontFamily = robotoFontFamily,
+            fontWeight = androidx.compose.ui.text.font.FontWeight(500),
+            color = androidx.compose.ui.graphics.Color.White,
+            fontSize = 25.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Center)
+        )
     }
 }
 

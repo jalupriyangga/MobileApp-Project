@@ -8,6 +8,7 @@ import com.example.mobileapptechnobit.data.remote.Permission
 import com.example.mobileapptechnobit.data.remote.HistoryResponse
 import com.example.mobileapptechnobit.data.remote.HistoryResponseItem
 import com.example.mobileapptechnobit.data.remote.PatrolScheduleResponse
+import com.example.mobileapptechnobit.data.remote.PatroliRequest
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -72,5 +73,8 @@ interface ApiService{
         @Query("date") date: String? = null,
         @Query("company_id") companyId: Int? = null
     ): Response<List<PatrolScheduleResponse>>
+
+    @POST("v1/android/patroli")
+    suspend fun submitPatroli(@Header("Authorization") token: String, @Body request: PatroliRequest): Response<ResponseBody>
 
 }

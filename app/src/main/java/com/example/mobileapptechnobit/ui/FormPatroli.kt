@@ -79,14 +79,14 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormPatroli(
-    viewModel: PatroliViewModel,
+    viewModelPat: PatroliViewModel,
     navCtrl: NavController,
     qrToken: String,
     token: String
 ) {
-    val bitmap by viewModel.capturedBitmap.collectAsState()
+    val bitmap by viewModelPat.capturedBitmap.collectAsState()
     Log.d("FormPatroli", "Bitmap diterima: $bitmap")
-    val token = viewModel.token.collectAsState().value
+    val token = viewModelPat.token.collectAsState().value
 
     val context = LocalContext.current
     val repository = ProfileRepository(context)
@@ -104,6 +104,8 @@ fun FormPatroli(
     var selectedCondition by remember { mutableStateOf("Aman") }
     var notes by remember { mutableStateOf(TextFieldValue("")) }
     var showDialog by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    var isLoading by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.fetchEmployeesProfile(token ?: "")
@@ -205,8 +207,46 @@ fun FormPatroli(
                             Button(
                                 onClick = {
                                     showDialog = false
-                                    Toast.makeText(context, "Form telah dikirim", Toast.LENGTH_SHORT).show() // Apus aja udah ada sukses screen
-                                    // Implementasi API
+                                    isLoading = true
+                                    coroutineScope.launch {
+                                        try {
+                                            val filename = "patroli_${SimpleDateFormat("ddMMyyyy_HHmmss", Locale.getDefault()).format(Date())}.jpg"
+                                            val shiftId = when(selectedShift) {
+                                                "Pagi" -> 1
+                                                "Siang" -> 2
+                                                "Malam" -> 3
+                                                else -> 1
+                                            }
+                                            val catatan = notes.text
+                                            val kondisi = selectedCondition.lowercase()
+
+                                            // Dummy (ganti dengan hasil scan jika sudah)
+                                            val placeId = 1
+                                            val latitude = "-7.9666"
+                                            val longitude = "112.6326"
+
+                                            // Konversi bitmap ke base64 di sini!
+                                            val photoBase64 = bitmap?.let { bitmapToBase64(it) } ?: ""
+
+                                            viewModelPat.submitPatroli(
+                                                token = token,
+                                                photoBase64 = photoBase64,
+                                                filename = filename,
+                                                shiftId = shiftId,
+                                                catatan = catatan,
+                                                kondisi = kondisi,
+                                                placeId = placeId,
+                                                latitude = latitude,
+                                                longitude = longitude
+                                            )
+
+                                            isLoading = false
+                                            navCtrl.navigate(Screen.PatroliSukses.route)
+                                        } catch (e: Exception) {
+                                            isLoading = false
+                                            Toast.makeText(context, "Gagal kirim data: ${e.message}", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = primary100),
                                 shape = RoundedCornerShape(8.dp),

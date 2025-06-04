@@ -1,77 +1,79 @@
 package com.example.mobileapptechnobit.ViewModel
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobileapptechnobit.data.API.ApiClient
-import com.example.mobileapptechnobit.data.remote.Presensi
-import com.example.mobileapptechnobit.data.remote.PresensiResponse
-import kotlinx.coroutines.Dispatchers
+import com.example.mobileapptechnobit.data.remote.PatroliRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
 class PatroliViewModel : ViewModel() {
-
     private val _capturedBitmap = MutableStateFlow<Bitmap?>(null)
     val capturedBitmap: StateFlow<Bitmap?> get() = _capturedBitmap
 
     private val _token = MutableStateFlow<String?>(null)
     val token: StateFlow<String?> get() = _token
 
-    private val _presensiResponse = MutableStateFlow<PresensiResponse?>(null)
-    val presensiResponse: StateFlow<PresensiResponse?> get() = _presensiResponse
+    private val _submitSuccess = MutableStateFlow<Boolean?>(null)
+    val submitSuccess: StateFlow<Boolean?> get() = _submitSuccess
+
+    private val _submitMessage = MutableStateFlow<String?>(null)
+    val submitMessage: StateFlow<String?> get() = _submitMessage
 
     fun onTakePhoto(bitmap: Bitmap, token: String) {
         _capturedBitmap.value = bitmap
         _token.value = token
-        Log.d("PatroliViewModel", "Bitmap dan token disimpan: $bitmap, $token")
     }
 
     fun clearData() {
-        Log.d("PatroliViewModel", "Clearing captured data.")
         _capturedBitmap.value = null
         _token.value = null
     }
 
-    suspend fun sendPatroliDataToApi(
-        token: String,
+    fun submitPatroli(
+        token: String?,
         photoBase64: String,
-        filename: String
+        filename: String,
+        shiftId: Int,
+        catatan: String,
+        kondisi: String,
+        placeId: Int = 1,
+        latitude: String = "-7.9666",
+        longitude: String = "112.6326"
     ) {
-        withContext(Dispatchers.IO) {
+        viewModelScope.launch {
             try {
-                val requestBody = Presensi(
-                    status = "On Patrol",
-                    photo_data = photoBase64,
+                val request = PatroliRequest(
+                    photo_base64 = photoBase64,
                     filename = filename,
-                    company_place_id = 1,
-                    note = "Patroli check-in"
+                    shift_id = shiftId,
+                    place_id = placeId,
+                    catatan = catatan,
+                    kondisi = kondisi,
+                    latitude = latitude,
+                    longitude = longitude
                 )
-                val response = ApiClient.apiService.sendPresensi("Bearer $token", requestBody)
-
+                val response = ApiClient.apiService.submitPatroli("Bearer $token", request)
+                _submitSuccess.value = response.isSuccessful
                 if (response.isSuccessful) {
-                    _presensiResponse.value = response.body()
-                    Log.d("PatroliResponse", "Patroli data successfully sent: ${response.body()}")
+                    val responseBodyString = response.body()?.string()
+                    _submitMessage.value = responseBodyString
+                    Log.d("PatroliViewModel", "Sukses submit patroli: $responseBodyString")
                 } else {
-                    val errorBody = response.errorBody()?.string() ?: "No error body"
-                    Log.e("PatroliError", "Failed to send patrol data: $errorBody")
+                    val errMsg = response.errorBody()?.string()
+                    _submitMessage.value = errMsg
+                    Log.e("PatroliViewModel", "Gagal submit: $errMsg")
                 }
             } catch (e: Exception) {
-                Log.e("PatroliException", "Exception during patrol data submission", e)
+                _submitSuccess.value = false
+                _submitMessage.value = e.message
+                Log.e("PatroliViewModel", "Exception submit patroli: ${e.message}")
             }
         }
-    }
-
-    fun bitmapToBase64(bitmap: Bitmap): String {
-        val outputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-        val byteArray = outputStream.toByteArray()
-        return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
 }
