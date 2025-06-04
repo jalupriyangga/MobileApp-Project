@@ -1,4 +1,4 @@
-package com.example.mobileapptechnobit.ui
+package com.example.mobileapptechnobit.ui.authentication
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

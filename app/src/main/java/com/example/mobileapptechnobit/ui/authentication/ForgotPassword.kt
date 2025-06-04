@@ -1,4 +1,4 @@
-package com.example.mobileapptechnobit.ui
+package com.example.mobileapptechnobit.ui.authentication
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
@@ -11,8 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -25,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,8 +30,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,24 +43,22 @@ import com.example.mobileapptechnobit.data.repository.AuthRepository
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 
 @Composable
-fun ResetPasswordScreen(modifier: Modifier = Modifier, navCtrl: NavController, email: String) {
-
-    var newPass by remember { mutableStateOf("") }
-    var RepeatNewPass by remember { mutableStateOf("") }
-    var newPassIsVisible by remember { mutableStateOf(false) }
-    var repeatNewPassIsVisible by remember { mutableStateOf(false) }
+fun ForgotPasswordScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
+    var email by remember { mutableStateOf("") }
     val context = LocalContext.current
+    var inputOTP by remember { mutableStateOf("") }
     val repository = remember { AuthRepository() }
     val viewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository = repository, context = context))
-    val resetPasswordMessage by viewModel.resetPasswordMessage.observeAsState()
-    val isSuccess by viewModel.isSuccess.observeAsState()
+    val forgotPasswordMessage by viewModel.requestOtpMessage.observeAsState()
+    val verifyOtpMessage by viewModel.verifyOtpMessage.observeAsState()
+    val isVerified by viewModel.isOtpVerified.observeAsState()
 
     Column(
         Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         IconButton(
-            onClick = { navCtrl.navigate("forgot_password_screen") },
+            onClick = { navCtrl.navigate("login_screen")},
             modifier = Modifier.align(Alignment.Start).padding(top = 20.dp, start = 20.dp)) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -75,7 +68,7 @@ fun ResetPasswordScreen(modifier: Modifier = Modifier, navCtrl: NavController, e
 
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = "Perbarui Password",
+            text = "Lupa Password",
             fontFamily = robotoFontFamily,
             fontWeight = FontWeight.Bold,
             fontSize = 25.sp
@@ -83,7 +76,7 @@ fun ResetPasswordScreen(modifier: Modifier = Modifier, navCtrl: NavController, e
 
         Spacer(modifier = Modifier.height(5.dp))
         Text(
-            text = "Silakan perbarui password anda",
+            text = "Silakan masukkan email anda",
             fontFamily = robotoFontFamily,
             fontWeight = FontWeight(400),
             fontSize = 16.sp
@@ -91,7 +84,7 @@ fun ResetPasswordScreen(modifier: Modifier = Modifier, navCtrl: NavController, e
 
         Spacer(modifier = Modifier.height(40.dp))
         Text(
-            text = "Password Baru",
+            text = "Email",
             textAlign = TextAlign.Left,
             fontFamily = robotoFontFamily,
             fontWeight = FontWeight(500),
@@ -99,100 +92,88 @@ fun ResetPasswordScreen(modifier: Modifier = Modifier, navCtrl: NavController, e
             modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp).padding(bottom = 8.dp)
         )
         OutlinedTextField(
-            value = newPass,
-            onValueChange = {newPass = it},
-            placeholder = { Text(text = "Masukkan password baru", color = Color.Gray)},
+            value = email,
+            onValueChange = { email = it },
+            placeholder = { Text(text = "Masukkan email anda", color = Color.Gray) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp),
-            trailingIcon = {
-                val visibilityIcon = if (newPassIsVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                IconButton(
-                    onClick = {
-                        newPassIsVisible = !newPassIsVisible
-                    }
-                ) {
-                    Icon(imageVector = visibilityIcon, contentDescription = null)
-                }
-            },
-            supportingText = {
-                if(newPass == ""){ }
-                else if(newPass.length < 8){
-                    Text(text = "Password harus terdiri dari minimal 8 karakter", color =  Color.Red)
-                }
-            },
-            visualTransformation = if (newPassIsVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(40.dp))
+        Button(
+            onClick = {
+                if (email.isBlank()) {
+                    Toast.makeText(context, "Email tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                    return@Button
+                }
+                viewModel.requestOtp(email)
+            },
+            colors = ButtonDefaults.buttonColors(Color(0xFF2752E7)),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp).height(50.dp),
+            shape = RoundedCornerShape(5.dp),
+        ) {
+            Text(
+                text = "Kirim Kode OTP",
+                fontFamily = robotoFontFamily,
+                fontWeight = FontWeight(500),
+                fontSize = 16.sp,
+            )
+        }
+        LaunchedEffect (isVerified){
+            forgotPasswordMessage?.let {
+                Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            }
+            if(isVerified == true){
+                navCtrl.navigate("reset_password_screen/$email")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(40.dp))
         Text(
-            text = "Konfirmasi Password",
+            text = "Kode OTP",
             textAlign = TextAlign.Left,
             fontFamily = robotoFontFamily,
             fontWeight = FontWeight(500),
-            fontSize = 17.sp,
+            fontSize = 16.sp,
             modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp).padding(bottom = 8.dp)
         )
         OutlinedTextField(
-            value = RepeatNewPass,
-            onValueChange = {RepeatNewPass = it},
-            placeholder = { Text(text = "Masukkan password baru", color = Color.Gray)},
+            value = inputOTP,
+            onValueChange = { inputOTP = it},
+            placeholder = { Text(text = "Masukkan Kode OTP", color = Color.Gray)},
             modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp),
-            trailingIcon = {
-                val visibilityIcon = if (repeatNewPassIsVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                IconButton(
-                    onClick = {
-                        repeatNewPassIsVisible = !repeatNewPassIsVisible
-                    }
-                ) {
-                    Icon(imageVector = visibilityIcon, contentDescription = null)
-                }
-            },
-            supportingText = {
-                if(RepeatNewPass == ""){ }
-                else if(RepeatNewPass != newPass){
-                    Text(text = "Password tidak sesuai", color =  Color.Red)
-                }
-            },
-            visualTransformation = if (repeatNewPassIsVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
 
         )
 
         Spacer(modifier = Modifier.height(40.dp))
         Button(
             onClick = {
-                if (newPass == RepeatNewPass) {
-                    viewModel.resetPassword(email, newPass)
-                } else {
-                    Toast.makeText(context, "Pengulangan password salah!", Toast.LENGTH_SHORT).show()
+                if (email.isBlank()) {
+                    Toast.makeText(context, "Email tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                    return@Button
+                }
+                viewModel.verifyOtp(email, inputOTP)
+                verifyOtpMessage?.let {
+                    Toast.makeText(context, it, Toast.LENGTH_LONG).show()
                 }
             },
             colors = ButtonDefaults.buttonColors(Color(0xFF2752E7)),
             modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp).height(50.dp),
-            shape = RoundedCornerShape(5.dp)
+            shape = RoundedCornerShape(5.dp),
         ) {
             Text(
-                text = "Perbarui Password",
+                text = "Lanjut",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight(500),
                 fontSize = 16.sp,
             )
         }
-        LaunchedEffect(isSuccess) {
-            resetPasswordMessage?.let {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            }
-            if(isSuccess == true){
-                navCtrl.navigate("success_screen/Password anda berhasil diperbarui/login_screen")
-            }
-        }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-private fun ResetPrev() {
-    rememberCompositionContext()
-    ResetPasswordScreen(navCtrl = rememberNavController(), email = "hironemus")
+private fun LupaPassPrev() {
+    ForgotPasswordScreen(navCtrl = rememberNavController())
 }

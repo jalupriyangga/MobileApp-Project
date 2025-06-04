@@ -48,9 +48,6 @@ interface ApiService{
     @GET("v1/profile/employee")
     suspend fun fetchEmployeeProfile(@Header("Authorization") authorization: String): Response<EmployeeResponse>
 
-//    @GET("v1/profile/employee")
-//    suspend fun fetchEmployeeProfile(@Header("Authorization") authorization: String): Response<ResponseBody>
-
     @PUT("v1/profile/employee")
     suspend fun updateEmployeeProfile(@Header("Authorization") authorization: String, @Body request: Map<String, String>): Response<Unit>
 
@@ -82,12 +79,8 @@ interface ApiService{
     @PUT("v1/android/permits/confirm")
     suspend fun sendApproval(@Header("Authorization") token: String, @Body request: HashMap<String, Any>): Response<ResponseBody>
 
-    @PUT("v1/android/permit/alternate-confirm")
+    @PUT("v1/android/permits/alternate/approved")
     suspend fun sendAlternateApproval(@Header("Authorization") token: String, @Body request: HashMap<String, Any>): Response<ResponseBody>
-
-
-//    @GET("v1/android/permits")
-//    suspend fun fetchPermission(@Header("Authorization") token: String): Response<ResponseBody>
 
 
 
@@ -107,7 +100,6 @@ interface ApiService{
     @GET("v1/android/company-profile")
     suspend fun getCompanyProfile(@Header("Authorization") token: String): Response<CompanyProfileResponse>
 
-
     @GET("v1/android/jadwal-patroli")
     suspend fun getPatrolSchedules(
         @Header("Authorization") token: String,
@@ -122,6 +114,5 @@ interface ApiService{
     suspend fun getSalaryDetail(
         @Header("Authorization") token: String
     ): Response<SalaryDetailResponse>
-
 
 }

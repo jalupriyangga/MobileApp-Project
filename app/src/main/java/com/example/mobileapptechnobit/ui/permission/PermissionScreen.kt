@@ -1,4 +1,4 @@
-package com.example.mobileapptechnobit.ui
+package com.example.mobileapptechnobit.ui.permission
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -80,14 +80,6 @@ fun PermissionScreen(modifier: Modifier = Modifier, navCtrl: NavController, toke
 
     Scaffold (
         topBar = {
-//                Box(Modifier.height(130.dp).graphicsLayer { clip = true }){
-//                    TopAppBar()
-//                    Column(
-//                        Modifier.fillMaxWidth().padding(top = 15.dp)
-//                    ) {
-//                        PermissionTitle(navCtrl = navCtrl)
-//                    }
-//                }
             PermitTopBar (
                 modifier = modifier,
                 navCtrl = navCtrl,
@@ -107,15 +99,10 @@ fun PermissionScreen(modifier: Modifier = Modifier, navCtrl: NavController, toke
         }
     ){ padding ->
         if(selectedIndex == 0){
-//            if(altPermissionItems?.isNullOrEmpty() == true){
-//                Text("alternate is empty")
-//            } else{
-//                Text("alternate is not empty, count: ${altPermissionItems?.size}")
-//            }
             LazyColumn (Modifier.padding(padding).fillMaxSize()) {
                 permissionItems?.let {
                     items(it){ item ->
-                        if(isAfterToday(item.date)){
+                        if(!isBeforeToday(item.date)){
                             PermissionCard(
                                 permissionItem = item,
                                 viewModel = viewModel,
@@ -127,7 +114,7 @@ fun PermissionScreen(modifier: Modifier = Modifier, navCtrl: NavController, toke
                 }
                 altPermissionItems?.let {
                     items(it){ item ->
-                        if(isAfterToday(item.date)){
+                        if(!isBeforeToday(item.date)){
                             PermissionCard(
                                 permissionItem = item,
                                 viewModel = viewModel,

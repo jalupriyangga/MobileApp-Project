@@ -1,4 +1,4 @@
-package com.example.mobileapptechnobit.ui
+package com.example.mobileapptechnobit.ui.authentication
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -29,7 +29,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.R
-import com.example.mobileapptechnobit.Screen
 import com.example.mobileapptechnobit.ViewModel.AuthViewModel
 import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
 import com.example.mobileapptechnobit.data.repository.AuthRepository

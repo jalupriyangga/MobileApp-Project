@@ -143,6 +143,8 @@ class PermissionViewModel(private val repository: PermissionRepository, private 
 
     fun sendApproval(token: String, id: Int, approval: String) {
 
+        _isEmpApproved.value = false
+
         viewModelScope.launch {
             try {
                 val response = repository.sendApproval(token, id, approval)
@@ -162,7 +164,14 @@ class PermissionViewModel(private val repository: PermissionRepository, private 
         }
     }
 
+    fun resetStatus(){
+        _isEmpApproved.value = false
+        _isAltApproved.value = false
+    }
+
     fun sendAlternateApproval(token: String, id: Int, approval: String) {
+
+        _isAltApproved.value = false
 
         viewModelScope.launch {
             try {
@@ -181,5 +190,7 @@ class PermissionViewModel(private val repository: PermissionRepository, private 
                 _alternateApprovalMessage.postValue("Terjadi kesalahan: ${e.localizedMessage}")
             }
         }
+
+
     }
 }

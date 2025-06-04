@@ -1,4 +1,4 @@
-package com.example.mobileapptechnobit.ui
+package com.example.mobileapptechnobit.ui.permission
 
 import android.content.Context
 import android.widget.Toast
@@ -59,11 +59,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.R
-import com.example.mobileapptechnobit.ViewModel.AuthViewModel
-import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
 import com.example.mobileapptechnobit.ViewModel.PermissionViewModel
 import com.example.mobileapptechnobit.ViewModel.PermissionViewModelFactory
-import com.example.mobileapptechnobit.data.repository.AuthRepository
 import com.example.mobileapptechnobit.data.repository.PermissionRepository
 import com.example.mobileapptechnobit.ui.component.TopAppBar
 import com.example.mobileapptechnobit.ui.theme.primary100

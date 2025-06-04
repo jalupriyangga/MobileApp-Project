@@ -1,4 +1,4 @@
-package com.example.mobileapptechnobit.ui
+package com.example.mobileapptechnobit.ui.permission
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -31,7 +31,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -352,9 +351,9 @@ fun BottomButton(modifier: Modifier = Modifier, viewModel: PermissionViewModel, 
         Button(
             onClick = {
                 if(isRequester){
-                    viewModel.sendApproval(token, id,  "approved")
+                    viewModel.sendApproval(token, id, "approved")
                 } else{
-                    viewModel.sendAlternateApproval(token, id, "approved")
+                    viewModel.sendApproval(token, id, "approved")
                 }
             },
             shape = RoundedCornerShape(5.dp),
@@ -365,14 +364,31 @@ fun BottomButton(modifier: Modifier = Modifier, viewModel: PermissionViewModel, 
         ) {
             Text(text = "Setuju", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
         }
+        var isEmployeeApproved = isEmpApproved
+        var isAlternateApproved = isAltApproved
+
+//        LaunchedEffect(isEmployeeApproved) {
+//            if(isEmployeeApproved == true){
+//                navCtrl.navigate("success_screen/Anda telah menyetujui perizinan!/permission_screen")
+//                isEmployeeApproved = false
+//            }
+//        }
+//        LaunchedEffect(isAlternateApproved) {
+//            if(isAlternateApproved == true){
+//                navCtrl.navigate("success_screen/Anda telah menyetujui perizinan!/permission_screen")
+//                isAlternateApproved = false
+//            }
+//        }
         LaunchedEffect(isEmpApproved) {
             if(isEmpApproved == true){
                 navCtrl.navigate("success_screen/Anda telah menyetujui perizinan!/permission_screen")
+                viewModel.resetStatus()
             }
         }
         LaunchedEffect(isAltApproved) {
             if(isAltApproved == true){
                 navCtrl.navigate("success_screen/Anda telah menyetujui perizinan!/permission_screen")
+                viewModel.resetStatus()
             }
         }
     }
