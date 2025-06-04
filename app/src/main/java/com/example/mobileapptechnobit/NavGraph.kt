@@ -18,8 +18,13 @@ import com.example.mobileapptechnobit.ui.ResetPasswordScreen
 import com.example.mobileapptechnobit.ViewModel.AuthViewModel
 import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
 import com.example.mobileapptechnobit.ViewModel.CameraPresViewModel
+import com.example.mobileapptechnobit.ViewModel.PermissionViewModel
+import com.example.mobileapptechnobit.ViewModel.PermissionViewModelFactory
+import com.example.mobileapptechnobit.data.remote.PermissionResponseItem
 import com.example.mobileapptechnobit.data.repository.AuthRepository
+import com.example.mobileapptechnobit.data.repository.PermissionRepository
 import com.example.mobileapptechnobit.ui.component.SuccessScreen
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,10 +35,18 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
     val context = LocalContext.current
     val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     val token = remember { sharedPref.getString("AUTH_TOKEN", null) }
+
+    // auth view model
     val authRepository = AuthRepository()
     val authViewModel: AuthViewModel = viewModel(
         factory = AuthViewModelFactory(authRepository, context)
     )
+
+    // Permission view model
+    val permissionRepository = remember { PermissionRepository() }
+    val permissionViewModel: PermissionViewModel = viewModel(factory = PermissionViewModelFactory(repository = permissionRepository, context = context))
+
+    // camera view model
     val lifecycleOwner = LocalLifecycleOwner.current
     val viewModel: CameraPresViewModel = viewModel()
 
@@ -157,16 +170,21 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             ClockOutSuksesScreen(navController, viewModel = viewModel, context = context)
         }
         composable(Screen.Permission.route){
-            PermissionScreen(navCtrl = navController, token = token ?: "")
+            PermissionScreen(navCtrl = navController, token = token ?: "", viewModel = permissionViewModel)
         }
         composable(Screen.PermissionForm.route){
             PermitFormScreen(navCtrl = navController, token = token ?: "")
         }
         composable(Screen.DetailPermission.route){ backStackEntry ->
+            val gson = Gson()
+            val json = backStackEntry.arguments?.getString("permissionItem")
             DetailPermitScreen(
                 navCtrl = navController,
-                id = backStackEntry.arguments?.getString("id") ?: "",
-                )
+                id = backStackEntry.arguments?.getString("id")?.toInt() ?: 0,
+                isRequester = backStackEntry.arguments?.getString("isRequester").toBoolean(),
+                token = token ?: "",
+                viewModel = permissionViewModel
+            )
         }
     }
 }
@@ -196,5 +214,6 @@ sealed class Screen(val route: String) {
 
     object Permission : Screen("permission_screen")
     object PermissionForm : Screen("permission_form_screen")
-    object DetailPermission: Screen("detail_permission_screen/{id}")
+//    object DetailPermission: Screen("detail_permission_screen/{id}")
+    object DetailPermission: Screen("detail_permission_screen/{id}/{isRequester}")
 }

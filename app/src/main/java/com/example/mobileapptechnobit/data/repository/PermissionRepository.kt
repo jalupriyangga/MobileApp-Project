@@ -2,8 +2,8 @@ package com.example.mobileapptechnobit.data.repository
 
 import android.util.Log
 import com.example.mobileapptechnobit.data.API.ApiClient
-import com.example.mobileapptechnobit.data.remote.Permission
-import com.example.mobileapptechnobit.data.remote.PermissionResponseItem
+import com.example.mobileapptechnobit.data.remote.AlternatePermissionResponse
+import com.example.mobileapptechnobit.data.remote.PermissionResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
 
@@ -15,7 +15,7 @@ class PermissionRepository {
         val request = hashMapOf(
             "date" to date,
             "permission" to permission,
-            "alasan" to reason
+            "reason" to reason
         )
         val authToken = "Bearer $token"
         Log.d("PermissionRepository", "Auth Token: $authToken")
@@ -23,14 +23,46 @@ class PermissionRepository {
         Log.d("PermissionRepository", "permission: $permission")
         Log.d("PermissionRepository", "Alasan: $reason")
 
-        return api.sendPermission(token, request)
+        return api.sendPermission(authToken, request)
     }
 
-    suspend fun deletePermission(id: String): Response<Unit> {
-        return api.deletePermission(id)
+    suspend fun deletePermission(token: String, id: Int): Response<ResponseBody> {
+        val authToken = "Bearer $token"
+        val request = hashMapOf(
+            "id" to id
+        )
+        return api.deletePermission(authToken, request)
     }
 
-    suspend fun fetchPermission(token: String): Response<List<PermissionResponseItem>> {
-        return api.fetchPermission(token)
+    suspend fun fetchPermission(token: String): Response<PermissionResponse> {
+
+        val authToken = "Bearer $token"
+        return api.fetchPermission(authToken)
+    }
+
+    suspend fun fetchAlternatePermission(token: String): Response<AlternatePermissionResponse> {
+
+        val authToken = "Bearer $token"
+        return api.fetchAlternatePermission(authToken)
+    }
+
+    suspend fun sendApproval(token: String, id: Int, approval: String): Response<ResponseBody> {
+        val request: HashMap<String, Any> = hashMapOf(
+            "permit_id" to id,
+            "status" to approval,
+        )
+        val authToken = "Bearer $token"
+
+        return api.sendApproval(authToken, request)
+    }
+
+    suspend fun sendAlternateApproval(token: String, id: Int, approval: String): Response<ResponseBody> {
+        val request: HashMap<String, Any> = hashMapOf(
+            "id" to id,
+            "status" to approval,
+        )
+        val authToken = "Bearer $token"
+
+        return api.sendAlternateApproval(authToken, request)
     }
 }

@@ -12,11 +12,13 @@ class ProfileRepository(private val context: Context) {
 
     suspend fun fetchEmployeesProfile(token: String): Employees? {
         return withContext(Dispatchers.IO) {
+
             try {
                 val authToken = "Bearer $token"
                 Log.d("ProfileRepository", "Auth Token: $authToken")
+//                Log.d("ProfileRepositoryTokenCheck", "Auth Token: $token")
 
-                val response = ApiClient.apiService.fetchEmployeeProfile(authToken)
+                val response = ApiClient.apiService.fetchEmployeeProfile(token)
                 Log.d("ProfileRepository", "Response Code: ${response.code()}")
                 Log.d("ProfileRepository", "Response Message: ${response.message()}")
                 Log.d("ProfileRepository", "Response Headers: ${response.headers()}")
@@ -38,6 +40,16 @@ class ProfileRepository(private val context: Context) {
             }
         }
     }
+
+//    suspend fun fetchEmployeesProfile(token: String): Response<ResponseBody> {
+//            // debugging
+//            val authToken1 = "Bearer $token"
+//            val response1 = ApiClient.apiService.fetchEmployeeProfile(authToken1)
+//            val json = response1.body()?.string()
+//            Log.d("PROFILE_RAW_RESPONSE", json ?: "null")
+//            return  response1
+//    }
+
 
     suspend fun updateProfile(token: String, updateFields: Map<String, String>): Boolean {
         return withContext(Dispatchers.IO) {

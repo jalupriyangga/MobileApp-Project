@@ -138,7 +138,7 @@ fun PermissionFormTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
 fun PermitForm(modifier: Modifier = Modifier, navCtrl: NavController, token: String) {
 
     var jenisIzin by remember { mutableStateOf("Pilih") }
-    val pilihanIzin = listOf("Sakit", "Izin", "Cuti")
+    val pilihanIzin = listOf("sakit", "izin", "cuti")
     var keterangan by remember { mutableStateOf("") }
 
     var showConfirmDialog by remember { mutableStateOf(false) }
@@ -265,21 +265,16 @@ fun PermitForm(modifier: Modifier = Modifier, navCtrl: NavController, token: Str
         Spacer(Modifier.weight(1f))
         Button(
             onClick = {
-                if(selectedDate.isNotEmpty()){
-                    if(jenisIzin.isNotEmpty()){
+                    if(jenisIzin != "Pilih"){
                         if(keterangan.isNotEmpty()){
                             showConfirmDialog = true
                         } else{
                             Toast.makeText(context, "Keterangan tidak boleh kosong!", Toast.LENGTH_SHORT).show()
                         }
                     } else{
-                        Toast.makeText(context, "Jenis izin tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Anda harus memilih jenis izin!", Toast.LENGTH_SHORT).show()
                     }
-                }
-                else{
-                    Toast.makeText(context, "tanggal tidak boleh kosong!", Toast.LENGTH_SHORT).show()
-                }
-            },
+                },
             Modifier
                 .fillMaxWidth()
                 .height(50.dp),

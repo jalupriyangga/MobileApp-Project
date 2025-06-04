@@ -1,24 +1,22 @@
 package com.example.mobileapptechnobit.data.API
 
+import com.example.mobileapptechnobit.data.remote.AlternatePermissionResponse
 import com.example.mobileapptechnobit.data.remote.ClockOutRequest
 import com.example.mobileapptechnobit.data.remote.EmployeeResponse
-import com.example.mobileapptechnobit.data.remote.Presensi
-import com.example.mobileapptechnobit.data.remote.PresensiResponse
-import com.example.mobileapptechnobit.data.remote.Permission
-import com.example.mobileapptechnobit.data.remote.HistoryResponse
 import com.example.mobileapptechnobit.data.remote.HistoryResponseItem
 import com.example.mobileapptechnobit.data.remote.PatrolScheduleResponse
-import com.example.mobileapptechnobit.data.remote.PermissionResponseItem
+import com.example.mobileapptechnobit.data.remote.PermissionResponse
+import com.example.mobileapptechnobit.data.remote.Presensi
+import com.example.mobileapptechnobit.data.remote.PresensiResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.HTTP
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService{
@@ -45,6 +43,9 @@ interface ApiService{
     @GET("v1/profile/employee")
     suspend fun fetchEmployeeProfile(@Header("Authorization") authorization: String): Response<EmployeeResponse>
 
+//    @GET("v1/profile/employee")
+//    suspend fun fetchEmployeeProfile(@Header("Authorization") authorization: String): Response<ResponseBody>
+
     @PUT("v1/profile/employee")
     suspend fun updateEmployeeProfile(@Header("Authorization") authorization: String, @Body request: Map<String, String>): Response<Unit>
 
@@ -64,12 +65,25 @@ interface ApiService{
     @POST("v1/android/perizinan")
     suspend fun sendPermission(@Header("Authorization") authorization: String, @Body request: HashMap<String, String>): Response<ResponseBody>
 
-    @DELETE("v1/android/perizinan/{id}")
-    suspend fun deletePermission(@Path("id") id: String): Response<Unit>
+    @HTTP(method = "DELETE", path = "v1/android/perizinan", hasBody = true)
+    suspend fun deletePermission(@Header("Authorization") authorization: String, @Body request: HashMap<String, Int>): Response<ResponseBody>
 
-    @GET("v1/android/perizinan")
-    suspend fun fetchPermission(
-        @Header("Authorization") token: String): Response<List<PermissionResponseItem>>
+    @GET("v1/android/permits")
+    suspend fun fetchPermission(@Header("Authorization") token: String): Response<PermissionResponse>
+
+    @GET("v1/android/permits/alternate")
+    suspend fun fetchAlternatePermission(@Header("Authorization") token: String): Response<AlternatePermissionResponse>
+
+    @PUT("v1/android/permits/confirm")
+    suspend fun sendApproval(@Header("Authorization") token: String, @Body request: HashMap<String, Any>): Response<ResponseBody>
+
+    @PUT("v1/android/permit/alternate-confirm")
+    suspend fun sendAlternateApproval(@Header("Authorization") token: String, @Body request: HashMap<String, Any>): Response<ResponseBody>
+
+
+//    @GET("v1/android/permits")
+//    suspend fun fetchPermission(@Header("Authorization") token: String): Response<ResponseBody>
+
 
 
     // API histori
