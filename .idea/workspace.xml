@@ -16,16 +16,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="40a52af4-5f87-4480-9e1b-52a19bae5246" name="Changes" comment="merged with history">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/NavGraph.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/NavGraph.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ViewModel/PatroliViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ViewModel/PatroliViewModel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/API/ApiService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/data/API/ApiService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/FormPatroli.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/FormPatroli.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/PatroliScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/mobileapptechnobit/ui/PatroliScreen.kt" afterDir="false" />
-    </list>
-    <list default="true" id="40a52af4-5f87-4480-9e1b-52a19bae5246" name="Changes" comment="connected to API" />
+    <list default="true" id="40a52af4-5f87-4480-9e1b-52a19bae5246" name="Changes" comment="merge patroli &amp; permission2" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -34,7 +25,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\theoraditya\.android\avd\Pixel_8a_API_35.avd)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\Acer\.android\avd\Medium_Phone_API_35.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -90,19 +81,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Android App.app.executor&quot;: &quot;Run&quot;,
-    &quot;Compose Preview.PatroliScreenPreview.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Patroli&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;memory.settings.postsync.last.time.stamp&quot;: &quot;1748843810647&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Android App.app.executor": "Run",
+    "Compose Preview.PatroliScreenPreview.executor": "Run",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "Sprint4",
+    "kotlin-language-version-configured": "true",
+    "memory.settings.postsync.last.time.stamp": "1748843810647"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Sandro\AndroidStudioProjects\GitHub\Technobit-Project\MobileApp-Project\app\src\main\res\drawable" />
@@ -410,7 +401,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749043765319</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="merge patroli &amp; permission2">
+      <option name="closed" value="true" />
+      <created>1749045390905</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1749045390905</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -436,7 +435,8 @@
     <MESSAGE value="merged 4 branches" />
     <MESSAGE value="not connected to API yet" />
     <MESSAGE value="connected to API" />
-    <option name="LAST_COMMIT_MESSAGE" value="connected to API" />
+    <MESSAGE value="merge patroli &amp; permission2" />
+    <option name="LAST_COMMIT_MESSAGE" value="merge patroli &amp; permission2" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
