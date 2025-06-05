@@ -176,35 +176,37 @@ fun ScheduleCard(
     isLoading: Boolean,
     error: String?
 ) {
-        val nearestSchedule = schedules?.firstOrNull()
-        nearestSchedule?.let { schedule ->
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 20.dp, vertical = 10.dp)
-                    .fillMaxWidth()
-                    .background(Color.White, RoundedCornerShape(12.dp))
-                    .padding(16.dp)
-            ) {
+    val nearestSchedule = schedules?.firstOrNull()
+    nearestSchedule?.let { schedule ->
+        Card(
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(Color.White),
+            elevation = CardDefaults.cardElevation(4.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 10.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        schedule.tanggal,
+                        text = schedule.tanggal,
                         fontFamily = robotoFontFamily,
-                        fontWeight = FontWeight(500),
+                        fontWeight = FontWeight.Medium,
                         fontSize = 17.sp
                     )
                     Spacer(Modifier.weight(1f))
                     Text(
-                        "Lihat Jadwal",
+                        text = "Lihat Jadwal",
                         color = Color.Gray,
                         fontSize = 14.sp,
                         modifier = Modifier.clickable {
                             navCtrl.navigate("schedule_screen")
                         }
                     )
-                    Spacer(Modifier.padding(start = 10.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
                     Icon(
                         imageVector = Icons.Default.ArrowForward,
                         contentDescription = null,
@@ -221,7 +223,9 @@ fun ScheduleCard(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Row(
-                    Modifier.padding(horizontal = 25.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -230,18 +234,25 @@ fun ScheduleCard(
                         modifier = Modifier.size(45.dp),
                         tint = Color.Unspecified
                     )
-                    Column(Modifier.padding(start = 8.dp)) {
+                    Column(modifier = Modifier.padding(start = 8.dp)) {
                         Text(
                             text = "Mulai",
                             fontFamily = robotoFontFamily,
-                            fontWeight = FontWeight(500),
+                            fontWeight = FontWeight.Medium,
                             fontSize = 16.sp
                         )
-                        Text(text = schedule.jam_mulai, fontFamily = robotoFontFamily)
+                        Text(
+                            text = schedule.jam_mulai,
+                            fontFamily = robotoFontFamily
+                        )
                     }
 
                     Spacer(Modifier.weight(1f))
-                    VerticalDivider(thickness = 1.dp, color = Color.LightGray, modifier = Modifier.height(50.dp))
+                    VerticalDivider(
+                        thickness = 1.dp,
+                        color = Color.LightGray,
+                        modifier = Modifier.height(50.dp)
+                    )
                     Spacer(Modifier.weight(1f))
 
                     Icon(
@@ -250,19 +261,24 @@ fun ScheduleCard(
                         modifier = Modifier.size(45.dp),
                         tint = Color.Unspecified
                     )
-                    Column(Modifier.padding(start = 8.dp)) {
+                    Column(modifier = Modifier.padding(start = 8.dp)) {
                         Text(
                             text = "Selesai",
                             fontFamily = robotoFontFamily,
-                            fontWeight = FontWeight(500),
+                            fontWeight = FontWeight.Medium,
                             fontSize = 16.sp
                         )
-                        Text(text = schedule.jam_selesai, fontFamily = robotoFontFamily)
+                        Text(
+                            text = schedule.jam_selesai,
+                            fontFamily = robotoFontFamily
+                        )
                     }
                 }
             }
         }
     }
+}
+
 
 @Composable
 fun SalaryCard(
@@ -296,23 +312,29 @@ fun SalaryCard(
                 Column {
                     Text("Informasi Gaji", fontSize = 14.sp, color = Color.Gray)
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        if (isVisible) salaryAmount else "••••••••••",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row (
+                        verticalAlignment = Alignment.CenterVertically,
+                    ){
+                        Text(
+                            if (isVisible) salaryAmount else "••••••••••",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Icon(
+                            painter = painterResource(
+                                if (isVisible) R.drawable.eyes_open else R.drawable.eyes_closed
+                            ),
+                            contentDescription = "Toggle Visibility",
+                            tint = Color.Gray,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable { isVisible = !isVisible }
+                        )
+                    }
+
                 }
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    painter = painterResource(
-                        if (isVisible) R.drawable.eyes_open else R.drawable.eyes_closed
-                    ),
-                    contentDescription = "Toggle Visibility",
-                    tint = Color.Gray,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable { isVisible = !isVisible }
-                )
+
             }
 
             Spacer(modifier = Modifier.height(10.dp))
