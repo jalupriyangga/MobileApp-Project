@@ -21,11 +21,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.compose.ui.res.painterResource
+import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.mobileapptechnobit.ViewModel.CompanyProfileViewModel
 import androidx.compose.foundation.Image
 import coil.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
+import com.example.mobileapptechnobit.R
 
 @Composable
 fun DetailInformasiPerusahaanScreen(
@@ -121,10 +124,11 @@ fun DetailInformasiPerusahaanScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                ContactItem(Icons.Outlined.Email, company.email)
-                ContactItem(Icons.Outlined.Phone, company.phone)
-                ContactItem(Icons.Outlined.LocationOn, company.location)
-                ContactItem(Icons.Outlined.Language, company.website)
+                ContactItem(R.drawable.ic_email, company.email)
+                ContactItem(R.drawable.ic_phone, company.phone)
+                ContactItem(R.drawable.ic_location, company.location)
+                ContactItem(R.drawable.ic_web, company.website)
+
             }
 
         } else if (error != null) {
@@ -153,20 +157,20 @@ fun DetailInformasiPerusahaanScreen(
     }
 }
 @Composable
-fun ContactItem(icon: ImageVector, text: String) {
+fun ContactItem(@DrawableRes iconRes: Int, text: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
     ) {
-        Icon(
-            imageVector = icon,
+        Image(
+            painter = painterResource(id = iconRes),
             contentDescription = null,
-            modifier = Modifier.size(20.dp),
-            tint = Color.Black
+            modifier = Modifier.size(20.dp)
         )
         Spacer(modifier = Modifier.width(12.dp))
         Text(text = text, fontSize = 14.sp)
     }
 }
+
