@@ -68,58 +68,6 @@ class ProfileViewModel(private val repository: ProfileRepository) : ViewModel() 
         }
     }
 
-//    fun fetchEmployeesProfile(token: String) {
-//        authToken = token
-//        viewModelScope.launch {
-//            try {
-//                Log.d("API_REQUEST", "Fetching profile with token: $token")
-//                val profile = repository.fetchEmployeesProfile(token)
-//                if (profile != null) {
-//                    Log.d("API_REQUEST", "Profile fetched successfully: $profile")
-//                } else {
-//                    Log.e("API_REQUEST", "Profile fetch failed, profile is null")
-//                    _employeesProfile.value = Employees(
-//                        id = 0,
-//                        userId = 0,
-//                        fullname = "Data tidak ditemukan",
-//                        nickname = "",
-//                        phone = "",
-//                        emergencyContact = "",
-//                        emergencyPhone = "",
-//                        gender = "",
-//                        birthDate = "",
-//                        birthPlace = "",
-//                        maritalStatus = "",
-//                        nationality = "",
-//                        religion = "",
-//                        bloodType = "",
-//                        idNumber = "",
-//                        taxNumber = "",
-//                        socialSecurityNumber = "",
-//                        healthInsuranceNumber = "",
-//                        address = "",
-//                        city = "",
-//                        province = "",
-//                        postalCode = "",
-//                        department = "",
-//                        position = "",
-//                        employmentStatus = "",
-//                        hireDate = "",
-//                        contractEndDate = "",
-//                        salary = "",
-//                        bankName = "",
-//                        bankAccountNumber = "",
-//                        active = 0,
-//                        createdAt = "",
-//                        updatedAt = ""
-//                    )
-//                }
-//            } catch (e: Exception) {
-//                Log.e("API_REQUEST", "Error fetching profile", e)
-//            }
-//        }
-//    }
-
     fun updateProfile(
         token: String,
         fullname: String?,
