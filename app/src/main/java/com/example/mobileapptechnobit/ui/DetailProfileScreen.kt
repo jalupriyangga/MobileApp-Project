@@ -39,7 +39,8 @@ import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.AnnotatedString
 
-fun formatCurrency(value: String): String {
+fun formatCurrency(value: String?): String {
+    if (value.isNullOrBlank()) return "-"
     return try {
         val number = value.toDouble()
         val symbols = DecimalFormatSymbols().apply {
@@ -100,18 +101,18 @@ fun DetailProfileScreen(navController: NavController, token: String) {
                 ) {
                     items(
                         listOf(
-                            "Nama Lengkap" to profileData.fullname,
-                            "Nama Panggilan" to profileData.nickname,
-                            "NIP" to profileData.idNumber,
-                            "Jabatan" to profileData.position,
-                            "Departemen" to profileData.department,
-                            "Status Kerja" to profileData.employmentStatus,
-                            "No. Handphone" to profileData.phone,
-                            "Jenis Kelamin" to profileData.gender,
-                            "Tanggal Lahir" to profileData.birthDate,
-                            "Agama" to profileData.religion,
-                            "Golongan Darah" to profileData.bloodType,
-                            "Alamat" to profileData.address,
+                            "Nama Lengkap" to (profileData.fullname ?: "-"),
+                            "Nama Panggilan" to (profileData.nickname ?: "-"),
+                            "NIP" to (profileData.idNumber ?: "-"),
+                            "Jabatan" to (profileData.position ?: "-"),
+                            "Departemen" to (profileData.department ?: "-"),
+                            "Status Kerja" to (profileData.employmentStatus ?: "-"),
+                            "No. Handphone" to (profileData.phone ?: "-"),
+                            "Jenis Kelamin" to (profileData.gender ?: "-"),
+                            "Tanggal Lahir" to (profileData.birthDate ?: "-"),
+                            "Agama" to (profileData.religion ?: "-"),
+                            "Golongan Darah" to (profileData.bloodType ?: "-"),
+                            "Alamat" to (profileData.address ?: "-"),
                             "Gaji" to formatCurrency(profileData.salary)
                         )
                     ) { item ->
@@ -146,7 +147,7 @@ fun DetailProfileTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
             .padding(vertical = 30.dp)
     ) {
         IconButton(
-            onClick = { navCtrl.popBackStack() },
+            onClick = { navCtrl.navigate("profile_screen") },
             Modifier.padding(start = 10.dp)
         ) {
             Icon(

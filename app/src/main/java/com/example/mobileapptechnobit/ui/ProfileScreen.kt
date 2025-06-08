@@ -83,6 +83,7 @@ fun ProfileScreen(navController: NavController, token: String) {
     // Gunakan token yang diterima dari parameter jika valid, fallback ke SharedPreferences
     val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     val validToken = if (token.isNotEmpty()) token else sharedPref.getString("AUTH_TOKEN", null) ?: ""
+    val currentToken = sharedPref.getString("AUTH_TOKEN", null) ?: token
 
     val repository = ProfileRepository(context)
     val viewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(repository))
@@ -534,10 +535,10 @@ fun ProfileScreen(navController: NavController, token: String) {
     )
 
 
-    LaunchedEffect(token) {
-        viewModel.fetchEmployeesProfile(token)
-        Log.d("PS", "Token yang diterima: $token")
-        userProfile = repository.getUserProfile(token)
+    LaunchedEffect(currentToken) {
+        viewModel.fetchEmployeesProfile(currentToken)
+        Log.d("PS", "Token yang diterima: $currentToken")
+        userProfile = repository.getUserProfile(currentToken)
     }
     @Composable
     if (showLogoutDialog) {
