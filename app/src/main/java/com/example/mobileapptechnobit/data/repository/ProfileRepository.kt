@@ -18,7 +18,7 @@ class ProfileRepository(private val context: Context) {
                 Log.d("ProfileRepository", "Auth Token: $authToken")
 //                Log.d("ProfileRepositoryTokenCheck", "Auth Token: $token")
 
-                val response = ApiClient.apiService.fetchEmployeeProfile(token)
+                val response = ApiClient.apiService.fetchEmployeeProfile(authToken)
                 Log.d("ProfileRepository", "Response Code: ${response.code()}")
                 Log.d("ProfileRepository", "Response Message: ${response.message()}")
                 Log.d("ProfileRepository", "Response Headers: ${response.headers()}")
