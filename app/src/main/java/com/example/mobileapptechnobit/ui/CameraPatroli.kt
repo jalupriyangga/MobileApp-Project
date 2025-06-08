@@ -56,7 +56,9 @@ import androidx.navigation.NavController
 import com.example.mobileapptechnobit.R
 import com.example.mobileapptechnobit.Screen
 import com.example.mobileapptechnobit.ViewModel.PatroliViewModel
+import com.example.mobileapptechnobit.data.remote.PatroliQrInfo
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
+import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -75,6 +77,10 @@ fun CameraPatroli(
         LifecycleCameraController(context).apply {
             setEnabledUseCases(CameraController.IMAGE_CAPTURE)
         }
+    }
+
+    val qrInfo = remember(qrToken) {
+        Gson().fromJson(qrToken, PatroliQrInfo::class.java)
     }
 
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
@@ -185,11 +191,8 @@ fun CameraPatroli(
                             token = token,
                             onPhotoTaken = { bitmap ->
                                 viewModel.onTakePhoto(bitmap, token)
-                                val newQrToken = "ini qrToken"
-                                val encodedNewQrToken = Uri.encode(newQrToken)
-                                Log.d("CameraPatroli", "Navigating to FormPatroli with QR Token: $qrToken")
-                                navCtrl.navigate(Screen.FormPatroli.route.replace("{qrToken}", encodedNewQrToken))
-                            },
+                                Log.d("CameraPatroli", "Navigating to FormPatroli with QR Info: $qrToken")
+                                navCtrl.navigate(Screen.FormPatroli.route.replace("{qrToken}", Uri.encode(Gson().toJson(qrInfo))))                            },
                             navController = navCtrl
 
                         )

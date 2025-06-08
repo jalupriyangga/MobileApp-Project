@@ -46,7 +46,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mobileapptechnobit.R
 import com.example.mobileapptechnobit.Screen
+import com.example.mobileapptechnobit.data.remote.PatroliQrInfo
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
+import com.google.gson.Gson
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
@@ -105,12 +107,14 @@ fun PatroliScreen(
             ) {
                 CameraPreviewWithQRReaderWithFrame(
                     onQRCodeScanned = { qrCode ->
-                        Toast.makeText(activity, "QR Code: $qrCode", Toast.LENGTH_LONG).show()
-                        val qrToken = "exampleQrToken/with_special_characters"
-                        val encodedQrToken = Uri.encode(qrToken)
-
-                        navCtrl.navigate(Screen.CameraPatroli.route.replace("{qrToken}", encodedQrToken))                    }
-                )
+                        try {
+                            val qrInfo = Gson().fromJson(qrCode, PatroliQrInfo::class.java)
+                            val encodedQrInfo = Uri.encode(Gson().toJson(qrInfo))
+                            navCtrl.navigate(Screen.CameraPatroli.route.replace("{qrToken}", encodedQrInfo))
+                        } catch (e: Exception) {
+                            Toast.makeText(activity, "QR tidak valid", Toast.LENGTH_LONG).show()
+                        }
+                    }                )
             }
         } else {
             Box(
@@ -209,7 +213,6 @@ fun CameraPreviewWithQRReaderWithFrame(onQRCodeScanned: (String) -> Unit) {
                                                         Log.e("QRScanner", "Failed to parse QR JSON: ${e.message}")
                                                     }
                                                 } else {
-                                                    // Jika bukan JSON, tidak perlu log apapun, atau bisa log pesan khusus
                                                     Log.d("QRScanner", "QR tidak berisi informasi name, latitude, longitude")
                                                 }
                                             }

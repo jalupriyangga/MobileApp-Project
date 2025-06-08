@@ -16,7 +16,12 @@ data class PatroliRequest(
 
 @Parcelize
 data class PatroliQrInfo(
-    val placeId: Int,
-    val latitude: String,
-    val longitude: String
+    val id: Int,
+    val company_id: Int,
+    val code: String,
+    val name: String,
+    val address: String,
+    val latitude: Double,
+    val longitude: Double,
+    val description: String
 ) : Parcelable

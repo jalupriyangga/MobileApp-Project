@@ -64,10 +64,12 @@ import com.example.mobileapptechnobit.Screen
 import com.example.mobileapptechnobit.ViewModel.PatroliViewModel
 import com.example.mobileapptechnobit.ViewModel.ProfileViewModel
 import com.example.mobileapptechnobit.ViewModel.ProfileViewModelFactory
+import com.example.mobileapptechnobit.data.remote.PatroliQrInfo
 import com.example.mobileapptechnobit.data.repository.ProfileRepository
 import com.example.mobileapptechnobit.saveBitmapToPublicPictures
 import com.example.mobileapptechnobit.ui.theme.primary100
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -94,9 +96,9 @@ fun FormPatroli(
     val employeeProfile by viewModel.employeesProfile.collectAsState()
     val fullname = employeeProfile?.fullname ?: ""
 
-    Log.d("FormPatroli", "Bitmap diterima: $bitmap")
-    Log.d("FormPatroli", "Auth Token: $token")
-    Log.d("FormPatroli", "Employee Profile: $employeeProfile")
+    val qrInfo = remember(qrToken) {
+        Gson().fromJson(qrToken, PatroliQrInfo::class.java)
+    }
 
     val date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
     val time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
@@ -220,12 +222,6 @@ fun FormPatroli(
                                             val catatan = notes.text
                                             val kondisi = selectedCondition.lowercase()
 
-                                            // Dummy (ganti dengan hasil scan jika sudah)
-                                            val placeId = 1
-                                            val latitude = "-7.9666"
-                                            val longitude = "112.6326"
-
-                                            // Konversi bitmap ke base64 di sini!
                                             val photoBase64 = bitmap?.let { bitmapToBase64(it) } ?: ""
 
                                             viewModelPat.submitPatroli(
@@ -235,9 +231,9 @@ fun FormPatroli(
                                                 shiftId = shiftId,
                                                 catatan = catatan,
                                                 kondisi = kondisi,
-                                                placeId = placeId,
-                                                latitude = latitude,
-                                                longitude = longitude
+                                                placeId = qrInfo.id,
+                                                latitude = qrInfo.latitude.toString(),
+                                                longitude = qrInfo.longitude.toString()
                                             )
 
                                             isLoading = false
@@ -289,6 +285,11 @@ fun FormPatroliSubmit(
     onNotesChange: (TextFieldValue) -> Unit,
     onSubmit: () -> Unit
 ) {
+
+    val qrInfo = remember(qrToken) {
+        Gson().fromJson(qrToken, PatroliQrInfo::class.java)
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize(),
@@ -298,8 +299,8 @@ fun FormPatroliSubmit(
         item {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Sesi Patroli: $qrToken",
-                fontSize = 20.sp,
+                text = "${qrInfo.name}",
+                fontSize = 23.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth() .padding(bottom = 10.dp),

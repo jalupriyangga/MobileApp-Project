@@ -42,9 +42,9 @@ class PatroliViewModel : ViewModel() {
         shiftId: Int,
         catatan: String,
         kondisi: String,
-        placeId: Int = 1,
-        latitude: String = "-7.9666",
-        longitude: String = "112.6326"
+        placeId: Int,
+        latitude: String,
+        longitude: String
     ) {
         viewModelScope.launch {
             try {
