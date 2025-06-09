@@ -1,6 +1,7 @@
 package com.example.mobileapptechnobit.ui
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,6 +13,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,12 +37,17 @@ fun DetailScheduleScreen(
     token: String,
     viewModel: ScheduleViewModel = viewModel()
 ) {
+    val context = LocalContext.current
     val schedules = viewModel.scheduleList
     val isLoading = viewModel.isLoading
     val error = viewModel.errorMessage
+    val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    val validToken = if (token.isNotEmpty()) token else sharedPref.getString("AUTH_TOKEN", null) ?: ""
+    val currentToken = sharedPref.getString("AUTH_TOKEN", null) ?: token
 
     LaunchedEffect(Unit) {
         viewModel.fetchSchedules(token = token)
+        Log.d("PS", "Token yang diterima: $currentToken")
     }
 
     Scaffold(
