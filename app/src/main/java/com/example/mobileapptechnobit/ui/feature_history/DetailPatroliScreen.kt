@@ -1,5 +1,6 @@
-package com.example.mobileapptechnobit.ui
+package com.example.mobileapptechnobit.ui.feature_history
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,13 +43,21 @@ import com.example.mobileapptechnobit.data.repository.ProfileRepository
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 
 @Composable
-fun DetailPatroliScreen(navCtrl: NavController) {
+fun DetailPatroliScreen(navCtrl: NavController, token: String) {
     var hasShownToast by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val repository = ProfileRepository(context)
     val viewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(repository))
-    val profile by viewModel.employeesProfile.collectAsState()
+    val employeeProfile by viewModel.employeesProfile.collectAsState()
+    val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    val authToken = sharedPref.getString("AUTH_TOKEN", null) ?: token
+
+    LaunchedEffect(authToken) {
+        println("Fetching profile with token: $authToken")
+        viewModel.fetchEmployeesProfile(authToken)
+        Log.d("DPS", "Token yang diterima: $authToken")
+    }
 
     val presenceItem = navCtrl.previousBackStackEntry!!
         ?.savedStateHandle?.get<HistoryPatroliResponseItem>("presenceItem")
@@ -57,7 +67,8 @@ fun DetailPatroliScreen(navCtrl: NavController) {
     if (presenceItem == null) {
         return
     }
-    val nama = profile?.fullname
+    val nama = employeeProfile?.fullname
+
     Log.d(
         "DetailPatroliScreen",
         "Nama Karyawan: $nama, Tanggal: $formattedDate, Status: ${presenceItem.status}, Lokasi: ${presenceItem.patrolLocation}, Shift: ${presenceItem.shiftId}"
@@ -66,17 +77,29 @@ fun DetailPatroliScreen(navCtrl: NavController) {
     val status = presenceItem.status
     val lokasi = presenceItem.patrolLocation
     val shift = presenceItem.shiftId.toString() ?: "Pagi"
+    var artiKodeShift : String = ""
+    val catatan = presenceItem.catatan ?: "Tidak ada catatan"
     val foto = presenceItem.photoUrl
 
     Scaffold(
         topBar = {
             Box {
                 Column(Modifier.fillMaxWidth()) {
-                    val linkfoto = "https://app.arunikaprawira.com$foto"
+                    val linkfoto = "$foto"
+                    Log.d("DetailPatroliScreen", "Link Foto: $linkfoto")
                     HistoryPatroliTitle(modifier = Modifier, navCtrl)
                     Column(Modifier.background(Color.White)) {
-                        HistoryPatroli(nama, tanggal, status, lokasi, shift, linkfoto)
-                        ActionButton(nama, tanggal, status, lokasi, shift, linkfoto)
+                        when(shift){
+                            "1" -> {
+                                artiKodeShift = "Pagi"
+                            }
+                            "2" -> {
+                                artiKodeShift = "Siang"
+                            }
+                            else -> {artiKodeShift = "Malam"}
+                        }
+                        HistoryPatroli(nama, tanggal, status, lokasi, artiKodeShift, catatan, linkfoto)
+                        ActionButtonPatroli(nama, tanggal, status, lokasi, artiKodeShift, catatan, catatan, linkfoto)
                     }
                 }
             }
@@ -111,7 +134,7 @@ fun HistoryPatroliTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
 }
 
 @Composable
-fun HistoryPatroli(nama: String?, tanggal: String, status: String, lokasi: String, shift: String, foto: String?) {
+fun HistoryPatroli(nama: String?, tanggal: String, status: String, lokasi: String, shift: String, catatan: String, foto: String?) {
     Column {
         Column(
             modifier = Modifier
@@ -128,7 +151,7 @@ fun HistoryPatroli(nama: String?, tanggal: String, status: String, lokasi: Strin
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Nama Karyawan \t:\t$nama",
+                text = "Nama Karyawan \t:\t $nama",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Light,
                 fontSize = 18.sp
@@ -190,7 +213,21 @@ fun HistoryPatroli(nama: String?, tanggal: String, status: String, lokasi: Strin
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "$shift",
+                text = shift,
+                fontFamily = robotoFontFamily,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text ="Catatan",
+                fontFamily = robotoFontFamily,
+                fontWeight = FontWeight.Light,
+                fontSize = 12.sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = catatan,
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Medium,
                 fontSize = 14.sp

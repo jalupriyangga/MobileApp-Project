@@ -1,4 +1,4 @@
-package com.example.mobileapptechnobit.ui
+package com.example.mobileapptechnobit.ui.feature_history
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -59,7 +59,12 @@ fun HistoryPatroliCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = historyItem.shiftId.toString(),
+                    text =
+                    when(historyItem.shiftId.toString()){
+                        "1" -> "Pagi"
+                        "2" -> "Siang"
+                        else -> {"Malam"}
+                    },
                     fontFamily = robotoFontFamily,
                     fontWeight = FontWeight(500),
                     fontSize = 15.sp,
@@ -67,8 +72,8 @@ fun HistoryPatroliCard(
                     modifier = Modifier
                         .background(
                             color = when (historyItem.shiftId.toString().lowercase()) {
-                                "pagi" -> Color(0xffFFF700)
-                                "siang" -> Color(0xffFFB834)
+                                "1" -> Color(0xffFFF700)
+                                "2" -> Color(0xffFFB834)
                                 else -> Color(0xff89CDFF) // malam or default
                             },
                             shape = RoundedCornerShape(5.dp)
@@ -77,7 +82,7 @@ fun HistoryPatroliCard(
                         .width(70.dp),
                 )
                 Spacer(Modifier.padding(horizontal = 5.dp))
-                Text("Lokasi Patroli", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
+                Text(historyItem.patrolLocation, fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
             }
             Spacer(modifier = Modifier.height(10.dp))
             HorizontalDivider(
@@ -90,27 +95,27 @@ fun HistoryPatroliCard(
                     Text(formattedDate, fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
                     if (historyItem.patrolLocation.isNotEmpty()) {
 //                Text(historyItem.status, fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 15.sp)
-                        Text(text = "08.00 WIB", fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 15.sp, modifier = Modifier.padding(top = 5.dp))
+                        Text(text = historyItem.createdAt.substring(startIndex = 11) + " WIB", fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 15.sp, modifier = Modifier.padding(top = 5.dp))
                     }
                 }
-                Text(
-                    text = historyItem.shiftId.toString(),
-                    fontFamily = robotoFontFamily,
-                    fontWeight = FontWeight(500),
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .background(
-                            color = when (historyItem.shiftId.toString().lowercase()) {
-                                "Aman" -> success100
-                                "Tidak Aman" -> error100
-                                else -> Color(0xff89CDFF) // malam or default
-                            },
-                            shape = RoundedCornerShape(5.dp)
-                        )
-                        .padding(vertical = 5.dp)
-                        .width(40.dp),
-                )
+//                Text(
+//                    text = historyItem.shiftId.toString(),
+//                    fontFamily = robotoFontFamily,
+//                    fontWeight = FontWeight(500),
+//                    fontSize = 12.sp,
+//                    textAlign = TextAlign.Center,
+//                    modifier = Modifier
+//                        .background(
+//                            color = when (historyItem.shiftId.toString().lowercase()) {
+//                                "Aman" -> success100
+//                                "Tidak Aman" -> error100
+//                                else -> Color(0xff89CDFF) // malam or default
+//                            },
+//                            shape = RoundedCornerShape(5.dp)
+//                        )
+//                        .padding(vertical = 5.dp)
+//                        .width(40.dp),
+//                )
             }
             Text(text = "Catatan : ", fontFamily = robotoFontFamily, modifier = Modifier.padding(vertical = 8.dp))
             Text(text = historyItem.catatan, fontFamily = robotoFontFamily)
