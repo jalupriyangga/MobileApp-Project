@@ -333,7 +333,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                                     Text(
                                         text = companyProfile?.phone ?: "-",
                                         fontSize = 14.sp,
-                                        fontWeight = FontWeight.SemiBold,
+                                        fontWeight = FontWeight.Normal,
                                         color = Color.Black,
                                         fontFamily = robotoFontFamily
                                     )
@@ -369,7 +369,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                                     Text(
                                         text = companyProfile?.email ?: "-",
                                         fontSize = 14.sp,
-                                        fontWeight = FontWeight.SemiBold,
+                                        fontWeight = FontWeight.Normal,
                                         color = Color.Black,
                                         fontFamily = robotoFontFamily
                                     )
