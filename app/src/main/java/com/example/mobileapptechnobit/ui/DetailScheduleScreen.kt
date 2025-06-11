@@ -45,9 +45,9 @@ fun DetailScheduleScreen(
     val validToken = if (token.isNotEmpty()) token else sharedPref.getString("AUTH_TOKEN", null) ?: ""
     val currentToken = sharedPref.getString("AUTH_TOKEN", null) ?: token
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchSchedules(token = token)
-        Log.d("PS", "Token yang diterima: $currentToken")
+    LaunchedEffect(currentToken) {
+        viewModel.fetchSchedules(currentToken)
+        Log.d("detailschedules", "Token yang diterima: $currentToken")
     }
 
     Scaffold(

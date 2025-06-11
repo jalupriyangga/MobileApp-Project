@@ -3,8 +3,9 @@ package com.example.mobileapptechnobit.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import java.net.URLEncoder
 import android.util.Log
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -88,6 +89,7 @@ fun ProfileScreen(navController: NavController, token: String) {
     val repository = ProfileRepository(context)
     val viewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(repository))
 
+
     val authRepository = AuthRepository()
     val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(authRepository, context))
 
@@ -102,10 +104,17 @@ fun ProfileScreen(navController: NavController, token: String) {
     val companyProfileState by companyProfileViewModel.companyProfile.collectAsState()
 
 
-    // Navigasi ke detail_informasi_perusahaan
+    val encodedToken = try {
+        URLEncoder.encode(validToken, "UTF-8")
+    } catch (e: Exception) {
+        ""
+    }
+
+    Log.d("TOKEN_DEBUG", "Navigating with token: $encodedToken")
+
     Button(onClick = {
-        if (validToken.isNotEmpty()) {
-            navController.navigate("detail_informasi_perusahaan/$validToken")
+        if (encodedToken.isNotEmpty()) {
+            navController.navigate("detail_informasi_perusahaan/$encodedToken")
         } else {
             Toast.makeText(context, "Token tidak ditemukan", Toast.LENGTH_SHORT).show()
         }
