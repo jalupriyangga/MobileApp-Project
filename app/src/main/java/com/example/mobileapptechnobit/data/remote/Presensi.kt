@@ -20,8 +20,8 @@ data class PresensiData(
     val checked_in_at: String,
     val checked_out_at: String?,
     val status: String,
-    val note: String,
     val photo_path: String,
+    val note: String,
     val updated_at: String,
     val created_at: String
 )

@@ -80,7 +80,6 @@ import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 fun ProfileScreen(navController: NavController, token: String) {
     val context = LocalContext.current
 
-    // Gunakan token yang diterima dari parameter jika valid, fallback ke SharedPreferences
     val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     val validToken = if (token.isNotEmpty()) token else sharedPref.getString("AUTH_TOKEN", null) ?: ""
     val currentToken = sharedPref.getString("AUTH_TOKEN", null) ?: token
@@ -102,7 +101,6 @@ fun ProfileScreen(navController: NavController, token: String) {
     val companyProfileState by companyProfileViewModel.companyProfile.collectAsState()
 
 
-    // Navigasi ke detail_informasi_perusahaan
     Button(onClick = {
         if (validToken.isNotEmpty()) {
             navController.navigate("detail_informasi_perusahaan/$validToken")
@@ -122,8 +120,11 @@ fun ProfileScreen(navController: NavController, token: String) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 120.dp, start = 20.dp, end = 20.dp, bottom = 30.dp)
-                            .shadow(16.dp, RoundedCornerShape(16.dp), clip = true),
+                            .clickable {
+                                navController.navigate(Screen.DetailProfile.route)
+                            },
                         shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(4.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
                         Row(
@@ -290,8 +291,8 @@ fun ProfileScreen(navController: NavController, token: String) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 10.dp, end = 20.dp, bottom = 30.dp)
-                            .shadow(20.dp, RoundedCornerShape(16.dp), clip = true),
+                            .padding(top = 10.dp, end = 20.dp, bottom = 30.dp),
+                        elevation = CardDefaults.cardElevation(4.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
@@ -406,9 +407,8 @@ fun ProfileScreen(navController: NavController, token: String) {
                                 navController.navigate(Screen.ChangePassword.route) {
                                     popUpTo(Screen.Profile.route) { inclusive = true }
                                 }
-//                                authViewModel.logout()
-                            }
-                            .shadow(12.dp, RoundedCornerShape(16.dp), clip = true),
+                            },
+                        elevation = CardDefaults.cardElevation(4.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
@@ -450,8 +450,8 @@ fun ProfileScreen(navController: NavController, token: String) {
                                 val url = "https://drive.google.com/file/d/12pcsdKHThZyhlXdHlS8NqdZWAJA7c4MR/view?usp=sharing"
                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                                 context.startActivity(intent)
-                            }
-                            .shadow(12.dp, RoundedCornerShape(16.dp), clip = true),
+                            },
+                        elevation = CardDefaults.cardElevation(4.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
@@ -492,8 +492,8 @@ fun ProfileScreen(navController: NavController, token: String) {
                             .padding(top = 15.dp, end = 20.dp)
                             .clickable {
                                 showLogoutDialog = true
-                            }
-                            .shadow(12.dp, RoundedCornerShape(16.dp), clip = true),
+                            },
+                        elevation = CardDefaults.cardElevation(4.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {

@@ -53,6 +53,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import org.json.JSONObject
+import java.util.concurrent.Executors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -168,6 +169,7 @@ fun CameraPreviewWithQRReaderWithFrame(onQRCodeScanned: (String) -> Unit) {
     val lifecycleOwner = LocalLifecycleOwner.current
     var isFlashOn by remember { mutableStateOf(false) }
     var cameraControl by remember { mutableStateOf<androidx.camera.core.CameraControl?>(null) }
+    var hasScanned by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(
@@ -176,18 +178,25 @@ fun CameraPreviewWithQRReaderWithFrame(onQRCodeScanned: (String) -> Unit) {
                 val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
                 cameraProviderFuture.addListener({
                     val cameraProvider = cameraProviderFuture.get()
-                    val preview = androidx.camera.core.Preview.Builder().build().also {
-                        it.setSurfaceProvider(previewView.surfaceProvider)
-                    }
+                    val preview = androidx.camera.core.Preview.Builder()
+                        .setTargetResolution(android.util.Size(640, 480))
+                        .build().apply {
+                            setSurfaceProvider(previewView.surfaceProvider)
+                        }
 
                     val cameraSelector = androidx.camera.core.CameraSelector.DEFAULT_BACK_CAMERA
                     val imageAnalysis = androidx.camera.core.ImageAnalysis.Builder()
+                        .setTargetResolution(android.util.Size(640, 480))
                         .setBackpressureStrategy(androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                         .build()
 
-                    imageAnalysis.setAnalyzer(
-                        java.util.concurrent.Executors.newSingleThreadExecutor()
-                    ) { imageProxy ->
+                    val executor = Executors.newSingleThreadExecutor()
+                    imageAnalysis.setAnalyzer(executor) { imageProxy ->
+                        if (hasScanned) {
+                            imageProxy.close()
+                            return@setAnalyzer
+                        }
+
                         val mediaImage = imageProxy.image
                         if (mediaImage != null) {
                             try {
@@ -201,25 +210,17 @@ fun CameraPreviewWithQRReaderWithFrame(onQRCodeScanned: (String) -> Unit) {
                                         for (barcode in barcodes) {
                                             val raw = barcode.rawValue
                                             Log.d("QRScanner", "Isi QR code: $raw")
-                                            if (raw != null) {
-                                                if (raw.trim().startsWith("{") && raw.trim().endsWith("}")) {
-                                                    try {
-                                                        val json = JSONObject(raw)
-                                                        val name = json.optString("name")
-                                                        val latitude = json.optDouble("latitude")
-                                                        val longitude = json.optDouble("longitude")
-                                                        Log.d("QRScanner", "QR Info -> name: $name, latitude: $latitude, longitude: $longitude")
-                                                    } catch (e: Exception) {
-                                                        Log.e("QRScanner", "Failed to parse QR JSON: ${e.message}")
-                                                    }
-                                                } else {
-                                                    Log.d("QRScanner", "QR tidak berisi informasi name, latitude, longitude")
-                                                }
+                                            if (raw != null && !hasScanned) {
+                                                hasScanned = true
+                                                onQRCodeScanned(barcode.rawValue ?: "")
+                                                cameraProvider.unbindAll()
+                                                imageProxy.close()
+                                                return@addOnSuccessListener
                                             }
-                                            onQRCodeScanned(barcode.rawValue ?: "")
-                                            imageProxy.close()
-                                            return@addOnSuccessListener
                                         }
+                                        imageProxy.close()
+                                    }
+                                    .addOnFailureListener {
                                         imageProxy.close()
                                     }
                             } catch (e: Exception) {

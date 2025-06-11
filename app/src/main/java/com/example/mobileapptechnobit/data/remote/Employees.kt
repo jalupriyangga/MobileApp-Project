@@ -43,5 +43,6 @@ data class Employees (
     @SerializedName("bank_account_number") val bankAccountNumber: String,
     val active: Int,
     @SerializedName("created_at") val createdAt: String,
-    @SerializedName("updated_at") val updatedAt: String
+    @SerializedName("updated_at") val updatedAt: String,
+    val company_id: Int
 )

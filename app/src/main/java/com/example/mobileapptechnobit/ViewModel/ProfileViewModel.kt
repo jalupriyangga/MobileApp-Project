@@ -59,7 +59,8 @@ class ProfileViewModel(private val repository: ProfileRepository) : ViewModel() 
                         bankAccountNumber = "",
                         active = 0,
                         createdAt = "",
-                        updatedAt = ""
+                        updatedAt = "",
+                        company_id = 0
                     )
                 }
             } catch (e: Exception) {

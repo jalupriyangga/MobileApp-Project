@@ -154,6 +154,12 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
         composable(Screen.PresensiSukses.route) {
             PresensiSuksesScreen(navController)
         }
+        composable(Screen.CameraPresensiOut.route) {
+            CameraPresensiOut(viewModel, navController, token = token ?: "")
+        }
+        composable(Screen.CameraPresOutCheck.route) {
+            CameraPresOutCheck(viewModel, navController, context)
+        }
         composable(Screen.ClockOut.route) {
             val clockInTime = viewModel.getClockInTime(context)
 
@@ -259,6 +265,8 @@ sealed class Screen(val route: String) {
     object CameraPresensiCheck : Screen("camera_check_screen")
     object PresensiSukses : Screen("presensi_sukses_screen")
     object ClockOut : Screen("clock_out_screen")
+    object CameraPresensiOut : Screen("camera_presensi_out_screen")
+    object CameraPresOutCheck : Screen("camera_out_check_screen")
     object ClockOutSukses : Screen("clock_out_sukses_screen")
 
     object Permission : Screen("permission_screen")
