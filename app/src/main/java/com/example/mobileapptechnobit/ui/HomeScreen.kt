@@ -283,7 +283,6 @@ fun ScheduleCard(
     }
 }
 
-
 @Composable
 fun SalaryCard(
     navCtrl: NavController,
@@ -296,7 +295,6 @@ fun SalaryCard(
     LaunchedEffect(Unit) {
         viewModel.fetchSalary(token)
     }
-
 
     val salaryAmount = formatCurrency(salary?.detail?.total_gaji)
 
