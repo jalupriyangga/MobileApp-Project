@@ -12,6 +12,8 @@ import com.example.mobileapptechnobit.data.remote.PermissionResponse
 import com.example.mobileapptechnobit.data.remote.Presensi
 import com.example.mobileapptechnobit.data.remote.PresensiResponse
 import com.example.mobileapptechnobit.data.remote.SalaryDetailResponse
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -19,8 +21,10 @@ import retrofit2.http.GET
 import retrofit2.http.HTTP
 import retrofit2.http.Header
 import retrofit2.http.Headers
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Query
 
 interface ApiService{
@@ -55,8 +59,21 @@ interface ApiService{
 
 
     // API Presensi
+//    @POST("v1/android/presensi")
+//    suspend fun sendPresensi(@Header("Authorization") token: String, @Body requestBody: Presensi): Response<PresensiResponse>
+
+    @Headers("Accept: application/json")
+    @Multipart
     @POST("v1/android/presensi")
-    suspend fun sendPresensi(@Header("Authorization") token: String, @Body requestBody: Presensi): Response<PresensiResponse>
+    suspend fun sendPresensi(
+        @Header("Authorization") token: String,
+        @Part photo: MultipartBody.Part,
+        @Part("photo_file") photoFile: RequestBody,
+        @Part("employee_id") employeeId: RequestBody,
+        @Part("company_place_id") companyPlaceId: RequestBody,
+        @Part("user_note") userNote: RequestBody,
+        @Part("is_manual") isManual: RequestBody
+    ): Response<ResponseBody>
 
     @POST("v1/android/presensi")
     suspend fun sendClockOutPresensi(@Header("Authorization") token: String, @Body requestBody: ClockOutRequest): Response<PresensiResponse>

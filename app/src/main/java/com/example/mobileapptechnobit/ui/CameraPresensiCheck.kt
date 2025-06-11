@@ -36,8 +36,12 @@ import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -55,6 +59,7 @@ fun CameraPresensiCheck(
     val coroutineScope = rememberCoroutineScope()
     var showDialog by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
 
     val repository = ProfileRepository(context)
     val viewMode: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(repository))
@@ -221,29 +226,59 @@ fun CameraPresensiCheck(
                                 coroutineScope.launch(Dispatchers.IO) {
                                     try {
                                         val savedFile = saveBitmapToPublicPictures(context, bitmap)
-                                        val photoBase64 = bitmapToBase64(bitmap)
-                                        Log.d("PhotoBase64Validation", "Base64 Length: ${photoBase64.length}, Sample: ${photoBase64.take(50)}")
+                                        Log.d("PresensiUpload", "File path: ${savedFile.absolutePath}, exists=${savedFile.exists()}, size=${savedFile.length()} bytes")
 
+                                        val fileInputStream = FileInputStream(savedFile)
+                                        val byteArray = fileInputStream.readBytes()
+                                        fileInputStream.close()
+                                        Log.d("PresensiUpload", "Byte array size: ${byteArray.size}")
 
-                                        viewModel.sendPresensiToApi(
-                                            token = token,
-                                            photoBase64 = photoBase64,
-                                            filename = savedFile.name,
-                                            companyPlaceId = profile?.company_id ?: 0,
-                                            note = "-"
+                                        val requestFile = RequestBody.create(
+                                            "image/jpeg".toMediaTypeOrNull(),
+                                            byteArray
+                                        )
+                                        val photoPart = MultipartBody.Part.createFormData(
+                                            "photo_file",
+                                            savedFile.name,
+                                            requestFile
                                         )
 
-                                        viewModel.saveClockInTime(context, System.currentTimeMillis())
+                                        Log.d("PresensiUpload", "Uploading image with filename: ${savedFile.name}")
 
+                                        val response = viewModel.sendPresensiToApi(
+                                            token = token,
+                                            photo = photoPart,
+                                            file = savedFile,
+                                            employeeId = profile?.id ?: 0,
+                                            companyPlaceId = profile?.company_id ?: 0,
+                                            userNote = "-",
+                                            isManual = false
+                                        )
+
+                                        // [2] Log response dari API
                                         withContext(Dispatchers.Main) {
                                             isLoading = false
-                                            navController.navigate(Screen.PresensiSukses.route)
+                                            Log.d("PresensiUpload", "API Response: $response")
+                                            if (response?.success == false &&
+                                                response.message?.contains("Presensi gagal karena kamu sudah presensi sebelumnya", ignoreCase = true) == true
+                                            ) {
+                                                showErrorDialog = true
+                                            } else if (response?.success == true) {
+                                                viewModel.saveClockInTime(context, System.currentTimeMillis())
+                                                navController.navigate(Screen.PresensiSukses.route)
+                                            } else {
+                                                Toast.makeText(context, response?.message ?: "Terjadi kesalahan", Toast.LENGTH_SHORT).show()
+                                            }
                                         }
                                     } catch (e: Exception) {
-                                        Log.e("CameraPresensiCheck", "Error during Clock-In", e)
+                                        Log.e("PresensiUpload", "Exception saat upload gambar", e)
                                         withContext(Dispatchers.Main) {
                                             isLoading = false
-                                            Toast.makeText(context, "Periksa internet anda dan coba lagi", Toast.LENGTH_SHORT).show()
+                                            if (e.message?.contains("Presensi gagal karena kamu sudah presensi sebelumnya", ignoreCase = true) == true) {
+                                                showErrorDialog = true
+                                            } else {
+                                                Toast.makeText(context, "Periksa internet anda dan coba lagi", Toast.LENGTH_SHORT).show()
+                                            }
                                         }
                                     }
                                 }
@@ -274,6 +309,60 @@ fun CameraPresensiCheck(
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
+    }
+    if (showErrorDialog) {
+        AlertDialog(
+            onDismissRequest = { showErrorDialog = false },
+            title = {
+                Text(
+                    text = "Presensi Gagal",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = robotoFontFamily
+                )
+            },
+            text = {
+                Text(
+                    text = "Kamu sudah melakukan presensi",
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    fontFamily = robotoFontFamily
+                )
+            },
+            confirmButton = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Button(
+                            onClick = { showErrorDialog = false },
+                            colors = ButtonDefaults.buttonColors(containerColor = primary100),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .weight(1f)
+                                .height(48.dp)
+                        ) {
+                            Text(
+                                text = "Kembali",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.White,
+                                fontFamily = robotoFontFamily
+                            )
+                        }
+                    }
+                }
+            },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.background(Color.Transparent)
+        )
     }
 }
 
@@ -320,34 +409,7 @@ fun saveBitmapToPublicPictures(context: Context, bitmap: Bitmap): File {
 
     val photoFile = File(picturesDir, photoFileName)
     FileOutputStream(photoFile).use { out ->
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
     }
     return photoFile
-}
-
-fun bitmapToBase64(bitmap: Bitmap): String {
-    val resizedBitmap = resizeBitmap(bitmap, maxWidth = 800, maxHeight = 800)
-    val outputStream = ByteArrayOutputStream()
-    resizedBitmap.compress(Bitmap.CompressFormat.PNG, 50, outputStream)
-
-    val byteArray = outputStream.toByteArray()
-    return Base64.encodeToString(byteArray, Base64.NO_WRAP)
-}
-
-fun resizeBitmap(bitmap: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
-    val width = bitmap.width
-    val height = bitmap.height
-    val aspectRatio = width.toFloat() / height.toFloat()
-    val newWidth: Int
-    val newHeight: Int
-
-    if (width > height) {
-        newWidth = maxWidth
-        newHeight = (newWidth / aspectRatio).toInt()
-    } else {
-        newHeight = maxHeight
-        newWidth = (newHeight * aspectRatio).toInt()
-    }
-
-    return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
 }

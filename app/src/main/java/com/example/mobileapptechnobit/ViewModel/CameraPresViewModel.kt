@@ -14,7 +14,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.ByteArrayOutputStream
+import java.io.File
 
 class CameraPresViewModel : ViewModel() {
 
@@ -68,31 +72,57 @@ class CameraPresViewModel : ViewModel() {
 
     suspend fun sendPresensiToApi(
         token: String,
-        photoBase64: String,
-        filename: String,
+        photo: MultipartBody.Part,
+        file: File,
+        employeeId: Int,
         companyPlaceId: Int,
-        note: String
-    ) {
-        withContext(Dispatchers.IO) {
+        userNote: String,
+        isManual: Boolean
+    ): PresensiResponse? {
+        return withContext(Dispatchers.IO) {
             try {
-                val requestBody = Presensi(
-                    status = "Present",
-                    photo_data = photoBase64,
-                    filename = filename,
-                    company_place_id = companyPlaceId,
-                    note = note
-                )
-                Log.d("PresensiRequestBody", Gson().toJson(requestBody))
-                val response = ApiClient.apiService.sendPresensi("Bearer $token", requestBody)
+                Log.d("PresensiAPI", "Preparing request for employeeId=$employeeId, companyPlaceId=$companyPlaceId, file=${file.name}, fileExists=${file.exists()}, fileSize=${file.length()} bytes")
 
+                val employeeIdBody = RequestBody.create("text/plain".toMediaTypeOrNull(), employeeId.toString())
+                val companyPlaceIdBody = RequestBody.create("text/plain".toMediaTypeOrNull(), companyPlaceId.toString())
+                val userNoteBody = RequestBody.create("text/plain".toMediaTypeOrNull(), userNote)
+                val isManualBody = RequestBody.create("text/plain".toMediaTypeOrNull(), isManual.toString())
+                val photoPathBody = RequestBody.create("text/plain".toMediaTypeOrNull(), "presensi_new/${file.name}")
+
+                Log.d("PresensiAPI", "Sending request to API...")
+                val response = ApiClient.apiService.sendPresensi(
+                    "Bearer $token",
+                    photo,
+                    photoPathBody,
+                    employeeIdBody,
+                    companyPlaceIdBody,
+                    userNoteBody,
+                    isManualBody
+                )
+
+                Log.d("PresensiAPI", "Response received. isSuccessful=${response.isSuccessful}")
                 if (response.isSuccessful) {
-                    Log.d("Presensi", "Presensi berhasil: ${response.body()}")
+                    val respString = response.body()?.string()
+                    Log.d("PresensiAPI", "API Success Response Body: $respString")
+                    respString?.let {
+                        val presensiResponse = Gson().fromJson(it, PresensiResponse::class.java)
+                        Log.d("PresensiAPI", "Parsed PresensiResponse: $presensiResponse")
+                        return@withContext presensiResponse
+                    }
                 } else {
-                    val errorBody = response.errorBody()?.string() ?: "No error body"
-                    Log.e("PresensiError", "Gagal Presensi: $errorBody")
+                    val errString = response.errorBody()?.string()
+                    Log.e("PresensiAPI", "API Error Response Body: $errString")
+                    errString?.let {
+                        val errorResponse = Gson().fromJson(it, PresensiResponse::class.java)
+                        Log.d("PresensiAPI", "Parsed Error PresensiResponse: $errorResponse")
+                        return@withContext errorResponse
+                    }
                 }
+                Log.e("PresensiAPI", "No response returned from API")
+                null
             } catch (e: Exception) {
-                Log.e("PresensiException", "Exception during Presensi", e)
+                Log.e("PresensiAPI", "Exception when sending presensi: ", e)
+                null
             }
         }
     }

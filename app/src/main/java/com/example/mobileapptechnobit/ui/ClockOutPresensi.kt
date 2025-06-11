@@ -43,14 +43,15 @@ fun ClockOutScreen(
     onClockOut: () -> Unit
 ) {
     val context = LocalContext.current
+    val clockInTime = remember { viewModel.getClockInTime(context) }
     var currentTime by remember { mutableStateOf(System.currentTimeMillis()) }
     var showDialog by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
-    val workDuration = if (clockInTime > 0) currentTime - clockInTime else 0L
-    val hours = (workDuration / (1000 * 60 * 60)).toInt()
-    val minutes = ((workDuration / (1000 * 60)) % 60).toInt()
-    val seconds = ((workDuration / 1000) % 60).toInt()
+
+    LaunchedEffect(clockInTime) {
+        Log.d("ClockOutScreen", "clockInTime = $clockInTime")
+    }
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -141,6 +142,10 @@ fun ClockOutScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
+                    val workDuration = if (clockInTime > 0) currentTime - clockInTime else 0L
+                    val hours = (workDuration / (1000 * 60 * 60)).toInt()
+                    val minutes = ((workDuration / (1000 * 60)) % 60).toInt()
+                    val seconds = ((workDuration / 1000) % 60).toInt()
 
                     Image(
                         painter = painterResource(id = R.drawable.walkthrough2),

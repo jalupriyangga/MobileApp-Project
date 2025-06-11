@@ -1,29 +1,29 @@
 package com.example.mobileapptechnobit.data.remote
 
+import java.io.File
+
 data class PresensiResponse(
+    val success: Boolean,
     val message: String,
     val data: PresensiData
 )
 
 data class Presensi(
-    val status: String,
-    val photo_data: String,
-    val filename: String,
+    val employee_id: Int,
     val company_place_id: Int,
-    val note: String
+    val photo_file: File,
+    val user_note: String,
+    val is_manual: Boolean
 )
 
 data class PresensiData(
-    val id: Int,
     val employee_id: Int,
     val company_place_id: Int,
-    val checked_in_at: String,
-    val checked_out_at: String?,
     val status: String,
+    val clock_in: String,
+    val clock_out: String?,
     val photo_path: String,
-    val note: String,
-    val updated_at: String,
-    val created_at: String
+    val user_note: String
 )
 
 data class ClockOutRequest(

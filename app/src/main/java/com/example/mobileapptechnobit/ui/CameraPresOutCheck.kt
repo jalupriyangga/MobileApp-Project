@@ -39,6 +39,7 @@ import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -260,19 +261,31 @@ fun CameraPresOutCheck(
                                 isLoading = true
                                 coroutineScope.launch(Dispatchers.IO) {
                                     try {
-                                        val photoBase64 = bitmapBase64(bitmap)
-                                        val filename = "presensi_${SimpleDateFormat("ddMMyyyy_HHmmss", Locale.getDefault()).format(Date())}.jpg"
+                                        val file = saveBitmapToTempFile(context, bitmap)
+
+                                        val requestFile = okhttp3.RequestBody.create(
+                                            "image/jpeg".toMediaTypeOrNull(),
+                                            file
+                                        )
+                                        val photoPart = okhttp3.MultipartBody.Part.createFormData(
+                                            "photo",
+                                            file.name,
+                                            requestFile
+                                        )
 
                                         viewModel.sendPresensiToApi(
                                             token = token,
-                                            photoBase64 = photoBase64,
-                                            filename = filename,
+                                            photo = photoPart,
+                                            file = file,
+                                            employeeId = profile?.id ?: 0,
                                             companyPlaceId = profile?.company_id ?: 0,
-                                            note = notes.text
+                                            userNote = notes.text,
+                                            isManual = false
                                         )
 
-                                        viewModel.saveClockInTime(context, System.currentTimeMillis())
+                                        file.delete()
 
+                                        viewModel.saveClockInTime(context, System.currentTimeMillis())
                                         withContext(Dispatchers.Main) {
                                             isLoading = false
                                             navController.navigate(Screen.ClockOutSukses.route)
@@ -347,29 +360,24 @@ fun CameraPresOutCheckTitle(modifier: Modifier = Modifier, navCtrl: NavControlle
     }
 }
 
-fun bitmapBase64(bitmap: Bitmap): String {
-    val resizedBitmap = resizeBitma(bitmap, maxWidth = 800, maxHeight = 800)
-    val outputStream = ByteArrayOutputStream()
-    resizedBitmap.compress(Bitmap.CompressFormat.PNG, 50, outputStream)
+fun saveBitmapToTempFile(context: Context, bitmap: Bitmap, maxSizeMB: Int = 5): File {
+    val tempDir = context.cacheDir
+    val file = File(tempDir, "presensi_${System.currentTimeMillis()}.jpg")
+    var quality = 90
+    val maxBytes = maxSizeMB * 1024 * 1024
+    var byteArray: ByteArray
 
-    val byteArray = outputStream.toByteArray()
-    return Base64.encodeToString(byteArray, Base64.NO_WRAP)
-}
+    do {
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream)
+        byteArray = stream.toByteArray()
+        stream.close()
+        quality -= 5
+        if (quality < 30) break
+    } while (byteArray.size > maxBytes)
 
-fun resizeBitma(bitmap: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
-    val width = bitmap.width
-    val height = bitmap.height
-    val aspectRatio = width.toFloat() / height.toFloat()
-    val newWidth: Int
-    val newHeight: Int
-
-    if (width > height) {
-        newWidth = maxWidth
-        newHeight = (newWidth / aspectRatio).toInt()
-    } else {
-        newHeight = maxHeight
-        newWidth = (newHeight * aspectRatio).toInt()
+    FileOutputStream(file).use { out ->
+        out.write(byteArray)
     }
-
-    return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
+    return file
 }
