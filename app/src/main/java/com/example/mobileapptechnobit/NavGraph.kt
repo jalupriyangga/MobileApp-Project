@@ -189,8 +189,7 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             val token = backStackEntry.arguments?.getString("token") ?: ""
             DetailInformasiPerusahaanScreen(navController = navController,token = token)
         }
-
-
+        
         composable(Screen.PermissionForm.route){
             PermitFormScreen(navCtrl = navController, token = token ?: "")
         }

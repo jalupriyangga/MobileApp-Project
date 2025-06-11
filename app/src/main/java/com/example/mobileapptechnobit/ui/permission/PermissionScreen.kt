@@ -91,7 +91,7 @@ fun PermissionScreen(modifier: Modifier = Modifier, navCtrl: NavController, toke
         bottomBar = {
             Column (
                 horizontalAlignment = Alignment.End,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 40.dp).padding(end = 30.dp)
+                modifier = Modifier.fillMaxWidth().padding(bottom = 50.dp).padding(end = 40.dp)
                     .background(color = Color.Transparent)
             ) {
                 FloatingButton(navCtrl = navCtrl)
@@ -264,10 +264,10 @@ fun FloatingButton(modifier: Modifier = Modifier, navCtrl: NavController) {
             color = primary100,
             shape = CircleShape
         )
-            .size(50.dp)
+            .size(60.dp)
     ){
         IconButton(onClick = { navCtrl.navigate("permission_form_screen")}) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = Color.White, modifier = Modifier.size(30.dp))
+            Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = Color.White, modifier = Modifier.size(35.dp))
         }
     }
 }

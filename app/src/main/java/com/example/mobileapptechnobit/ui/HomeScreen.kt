@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,8 +20,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.AlertDialog
@@ -91,7 +94,8 @@ fun HomeScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
     val error = viewModel.errorMessage
 
     LaunchedEffect(Unit) {
-        viewModel.fetchSchedules(token = token)
+//        viewModel.fetchSchedules(token = token)
+        viewModel.fetchSchedules(token = token, "2025-06-07")
     }
 
     Scaffold(
@@ -104,7 +108,6 @@ fun HomeScreen(modifier: Modifier = Modifier, navCtrl: NavController) {
                     ProfileSection()
                     ScheduleCard(navCtrl = navCtrl, schedules = schedules, isLoading = isLoading, error = error)
                     SalaryCard(navCtrl = navCtrl, token = token)
-
                 }
             }
         },
@@ -147,7 +150,7 @@ fun ProfileSection(modifier: Modifier = Modifier) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 80.dp, start = 20.dp),
+            .padding(top = 100.dp, start = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         userProfile?.data?.photo.let { photo ->
@@ -185,6 +188,7 @@ fun ScheduleCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 10.dp)
+                .clickable { navCtrl.navigate("schedule_screen") }
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(
@@ -287,7 +291,7 @@ fun SalaryCard(
     viewModel: SalaryViewModel = viewModel()
 ) {
     val salary by viewModel.salaryData.collectAsState()
-    var isVisible by remember { mutableStateOf(true) }
+    var isVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.fetchSalary(token)
@@ -372,9 +376,12 @@ fun MainMenu(modifier: Modifier = Modifier, navCtrl: NavController, viewModel: C
 
     Column(
         modifier = Modifier
+            .fillMaxSize()
             .padding(horizontal = 16.dp)
             .padding(top = 20.dp)
             .padding(bottom = 10.dp)
+            .verticalScroll(rememberScrollState())
+
     ) {
         Text("Menu Utama", fontWeight = FontWeight.Bold, fontSize = 25.sp, fontFamily = robotoFontFamily)
         Spacer(modifier = Modifier.height(8.dp))
@@ -403,7 +410,7 @@ fun MainMenu(modifier: Modifier = Modifier, navCtrl: NavController, viewModel: C
             PresentMenuDialog(
                 showDialog = showPresentDialog,
                 navCtrl = navCtrl,
-                onDismiss = { showPresentDialog = false}
+                onDismiss = { showPresentDialog = false }
             )
             MenuItem(
                 painter = painterResource(R.drawable.patroli),
@@ -418,7 +425,8 @@ fun MainMenu(modifier: Modifier = Modifier, navCtrl: NavController, viewModel: C
 fun MenuItem(modifier: Modifier = Modifier, painter: Painter, label: String, onClick: () -> Unit) {
     Card (
         modifier = Modifier
-            .size(160.dp)
+//            .size(160.dp)
+            .width(160.dp)
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),

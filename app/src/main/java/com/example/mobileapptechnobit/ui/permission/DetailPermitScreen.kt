@@ -46,9 +46,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mobileapptechnobit.R
 import com.example.mobileapptechnobit.ViewModel.PermissionViewModel
+import com.example.mobileapptechnobit.ViewModel.ScheduleViewModel
 import com.example.mobileapptechnobit.data.remote.AlternatePermissionResponseItem
 import com.example.mobileapptechnobit.data.remote.PermissionResponseItem
 import com.example.mobileapptechnobit.ui.theme.primary100
@@ -68,6 +70,14 @@ fun DetailPermitScreen(modifier: Modifier = Modifier, navCtrl: NavController, to
 
     val permissionItem = permissionItems?.find { it.id == id }
     val altPermissionItem = alternatePermissionItem?.find { it.id == id }
+
+    val scheduleViewModel: ScheduleViewModel = viewModel()
+    val schedules = scheduleViewModel.scheduleList
+
+    LaunchedEffect(Unit) {
+        scheduleViewModel.fetchSchedules(token, permissionItem?.date)
+    }
+
 //    LaunchedEffect(Unit) {
 //        viewModel.fetchPermission(authToken)
 //    }
@@ -162,7 +172,20 @@ fun DetailPermitBody(modifier: Modifier = Modifier, item: PermissionResponseItem
         if(item.alternateId != null){
 
             if(item.DetailAltSchedule.isNullOrEmpty() || item.DetailEmpSchedule.isNullOrEmpty() || item.date.isNullOrEmpty()){
-                Text("empty")
+                Text(text = "Pegawai Pengganti", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
+                Spacer(Modifier.padding(3.dp))
+                Text(text = item.alternateName, fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 15.sp)
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement =  Arrangement.Center, modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp),
+                        tint = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = "Maaf, jadwal baru belum ditentukan", fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 17.sp,color = Color.Gray, textAlign = TextAlign.Center)
+                }
             } else{
                 Text(text = "Pegawai Pengganti", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
                 Spacer(Modifier.padding(3.dp))
@@ -188,8 +211,7 @@ fun DetailPermitBody(modifier: Modifier = Modifier, item: PermissionResponseItem
                     tint = Color.Gray
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Maaf, karyawan pengganti belum ditentukan", fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 17.sp,color = Color.Gray, textAlign = TextAlign.Center)
+                Text(text = "Maaf, karyawan pengganti belum ditentukan", fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 17.sp,color = Color.Gray, textAlign = TextAlign.Center)
             }
         }
     }
