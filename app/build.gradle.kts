@@ -104,6 +104,7 @@ dependencies {
 
     implementation ("androidx.compose.ui:ui-graphics:1.3.1")
     implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("androidx.compose.ui:ui:1.6.0")
 
 
     implementation ("com.google.mlkit:barcode-scanning:17.0.3")

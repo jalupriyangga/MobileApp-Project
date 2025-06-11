@@ -1,5 +1,6 @@
 package com.example.mobileapptechnobit.ui
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -12,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -36,10 +38,15 @@ fun DetailGajiScreen(
     token: String,
     viewModel: SalaryViewModel = viewModel()
 ) {
+    val context = LocalContext.current
     val salary by viewModel.salaryData.collectAsState()
+    val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    val validToken = if (token.isNotEmpty()) token else sharedPref.getString("AUTH_TOKEN", null) ?: ""
+    val currentToken = sharedPref.getString("AUTH_TOKEN", null) ?: token
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchSalary(token) // Tanpa kirim period ID
+
+    LaunchedEffect(currentToken) {
+        viewModel.fetchSalary(currentToken) // Tanpa kirim period ID
     }
 
 

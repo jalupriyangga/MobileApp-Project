@@ -1,5 +1,7 @@
 package com.example.mobileapptechnobit.ui
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -19,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.ui.res.painterResource
@@ -28,6 +31,7 @@ import com.example.mobileapptechnobit.ViewModel.CompanyProfileViewModel
 import androidx.compose.foundation.Image
 import coil.compose.AsyncImage
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import com.example.mobileapptechnobit.R
 
 @Composable
@@ -36,12 +40,19 @@ fun DetailInformasiPerusahaanScreen(
     token: String,
     viewModel: CompanyProfileViewModel = viewModel()
 ) {
+    val context = LocalContext.current
     val companyProfile by viewModel.companyProfile.collectAsState()
     val error by viewModel.error.collectAsState()
+    val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    val validToken = if (token.isNotEmpty()) token else sharedPref.getString("AUTH_TOKEN", null) ?: ""
+    val currentToken = sharedPref.getString("AUTH_TOKEN", null) ?: token
 
-    LaunchedEffect(token) {
+
+    LaunchedEffect(currentToken) {
         if (token.isNotEmpty()) {
-            viewModel.fetchCompanyProfile(token)
+            viewModel.fetchCompanyProfile(currentToken)
+            Log.d("detailschedules", "Token yang diterima: $currentToken")
+
         }
     }
 

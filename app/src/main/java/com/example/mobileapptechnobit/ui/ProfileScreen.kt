@@ -3,8 +3,9 @@ package com.example.mobileapptechnobit.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import java.net.URLEncoder
 import android.util.Log
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -92,6 +93,7 @@ fun ProfileScreen(navController: NavController, token: String) {
     val repository = ProfileRepository(context)
     val viewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(repository))
 
+
     val authRepository = AuthRepository()
     val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(authRepository, context))
 
@@ -103,13 +105,26 @@ fun ProfileScreen(navController: NavController, token: String) {
 
     val scrollState = rememberScrollState()
     val companyProfileViewModel: CompanyProfileViewModel = viewModel()
-    val companyProfileState by companyProfileViewModel.companyProfile.collectAsState()
+    val companyProfile by companyProfileViewModel.companyProfile.collectAsState()
 
+    LaunchedEffect(currentToken) {
+        if (currentToken.isNotEmpty()) {
+            companyProfileViewModel.fetchCompanyProfile(currentToken)
+            Log.d("ProfileScreen", "Fetching company profile with token: $currentToken")
+        }
+    }
 
-    // Navigasi ke detail_informasi_perusahaan
+    val encodedToken = try {
+        URLEncoder.encode(validToken, "UTF-8")
+    } catch (e: Exception) {
+        ""
+    }
+
+    Log.d("TOKEN_DEBUG", "Navigating with token: $encodedToken")
+
     Button(onClick = {
-        if (validToken.isNotEmpty()) {
-            navController.navigate("detail_informasi_perusahaan/$validToken")
+        if (encodedToken.isNotEmpty()) {
+            navController.navigate("detail_informasi_perusahaan/$encodedToken")
         } else {
             Toast.makeText(context, "Token tidak ditemukan", Toast.LENGTH_SHORT).show()
         }
@@ -320,9 +335,9 @@ fun ProfileScreen(navController: NavController, token: String) {
                                         fontFamily = robotoFontFamily
                                     )
                                     Text(
-                                        text = companyProfileState?.phone ?: "-",
+                                        text = companyProfile?.phone ?: "-",
                                         fontSize = 14.sp,
-                                        fontWeight = FontWeight.SemiBold,
+                                        fontWeight = FontWeight.Normal,
                                         color = Color.Black,
                                         fontFamily = robotoFontFamily
                                     )
@@ -356,9 +371,9 @@ fun ProfileScreen(navController: NavController, token: String) {
                                         fontFamily = robotoFontFamily
                                     )
                                     Text(
-                                        text = companyProfileState?.email ?: "-",
+                                        text = companyProfile?.email ?: "-",
                                         fontSize = 14.sp,
-                                        fontWeight = FontWeight.SemiBold,
+                                        fontWeight = FontWeight.Normal,
                                         color = Color.Black,
                                         fontFamily = robotoFontFamily
                                     )
@@ -451,7 +466,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                             .fillMaxWidth()
                             .padding(top = 15.dp, end = 20.dp)
                             .clickable {
-                                val url = "https://drive.google.com/file/d/12pcsdKHThZyhlXdHlS8NqdZWAJA7c4MR/view?usp=sharing"
+                                val url = "https://drive.google.com/file/d/1bba9Asv1BLHHmDAqkaEIOd20Kk4Fyz9r/view?usp=sharing"
                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                                 context.startActivity(intent)
                             }
