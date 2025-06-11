@@ -61,6 +61,7 @@ import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
+import com.google.android.gms.location.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,6 +93,8 @@ fun CameraPatroli(
             Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
         }
     }
+
+    var isProcessingPhoto by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         if (ContextCompat.checkSelfPermission(
@@ -185,22 +188,28 @@ fun CameraPatroli(
                 IconButton(
                     onClick = {
                         triggerVibration(context)
-                        takePhoto(
-                            controller = cameraController,
-                            context = context,
-                            token = token,
-                            onPhotoTaken = { bitmap ->
-                                viewModel.onTakePhoto(bitmap, token)
-                                Log.d("CameraPatroli", "Navigating to FormPatroli with QR Info: $qrToken")
-                                navCtrl.navigate(Screen.FormPatroli.route.replace("{qrToken}", Uri.encode(Gson().toJson(qrInfo))))                            },
-                            navController = navCtrl
-
-                        )
+                        isProcessingPhoto = true
+                        getCurrentLocationReal(context) { location ->
+                            takePhoto(
+                                controller = cameraController,
+                                context = context,
+                                token = token,
+                                location = location,
+                                onPhotoTaken = { bitmap ->
+                                    viewModel.onTakePhoto(bitmap, token)
+                                    Log.d("CameraPatroli", "Navigating to FormPatroli with QR Info: $qrToken")
+                                    isProcessingPhoto = false // loading selesai
+                                    navCtrl.navigate(Screen.FormPatroli.route.replace("{qrToken}", Uri.encode(Gson().toJson(qrInfo))))
+                                },
+                                onProcessingDone = { isProcessingPhoto = false } // loading selesai jika error
+                            )
+                        }
                     },
                     modifier = Modifier
                         .size(72.dp)
                         .align(Alignment.Center)
-                        .background(color = androidx.compose.ui.graphics.Color.White, shape = CircleShape)
+                        .background(color = androidx.compose.ui.graphics.Color.White, shape = CircleShape),
+                    enabled = !isProcessingPhoto
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.camera),
@@ -229,6 +238,26 @@ fun CameraPatroli(
                         contentDescription = "Ganti Kamera",
                         modifier = Modifier.size(26.dp)
                     )
+                }
+            }
+
+            if (isProcessingPhoto) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(colorResource(id = R.color.black).copy(alpha = 0.5f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        CircularProgressIndicator(color = androidx.compose.ui.graphics.Color.White)
+                        Spacer(Modifier.height(16.dp))
+                        Text(
+                            text = "Foto sedang diproses...",
+                            color = androidx.compose.ui.graphics.Color.White,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 18.sp
+                        )
+                    }
                 }
             }
         }
@@ -271,8 +300,9 @@ private fun takePhoto(
     controller: LifecycleCameraController,
     context: Context,
     token: String,
+    location: Location?,
     onPhotoTaken: (Bitmap) -> Unit,
-    navController: NavController
+    onProcessingDone: (() -> Unit)? = null
 ) {
     controller.takePicture(
         ContextCompat.getMainExecutor(context),
@@ -289,7 +319,6 @@ private fun takePhoto(
                         image.toBitmap(), 0, 0, image.width, image.height, matrix, true
                     )
 
-                    val location = getCurrentLocation(context)
                     val address = getAddressFromLocation(context, location)
 
                     val bitmapWithWatermark = addWatermark(
@@ -304,6 +333,7 @@ private fun takePhoto(
                     Log.e("CameraPatroli", "Error processing photo: ${e.message}", e)
                     Toast.makeText(context, "Error processing photo: ${e.message}", Toast.LENGTH_SHORT).show()
                 } finally {
+                    onProcessingDone?.invoke()
                     image.close()
                 }
             }
@@ -311,23 +341,35 @@ private fun takePhoto(
             override fun onError(exception: ImageCaptureException) {
                 super.onError(exception)
                 Toast.makeText(context, "Gagal mengambil gambar: ${exception.message}", Toast.LENGTH_SHORT).show()
+                onProcessingDone?.invoke()
             }
         }
     )
 }
 
-@SuppressLint("MissingPermission")
-private fun getCurrentLocation(context: Context): Location? {
-    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    val providers = locationManager.getProviders(true)
-    var bestLocation: Location? = null
-    for (provider in providers) {
-        val location = locationManager.getLastKnownLocation(provider) ?: continue
-        if (bestLocation == null || location.accuracy < bestLocation.accuracy) {
-            bestLocation = location
+fun getCurrentLocationReal(context: Context, onLocationReady: (Location?) -> Unit) {
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+    if (
+        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    ) {
+        val locationRequest = LocationRequest.create().apply {
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            interval = 0
+            fastestInterval = 0
+            numUpdates = 1
         }
+        val callback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                val location = locationResult.lastLocation
+                onLocationReady(location)
+                fusedLocationClient.removeLocationUpdates(this)
+            }
+        }
+        fusedLocationClient.requestLocationUpdates(locationRequest, callback, null)
+    } else {
+        Toast.makeText(context, "Izin lokasi tidak diberikan", Toast.LENGTH_SHORT).show()
+        onLocationReady(null)
     }
-    return bestLocation
 }
 
 private fun getAddressFromLocation(context: Context, location: Location?): String {

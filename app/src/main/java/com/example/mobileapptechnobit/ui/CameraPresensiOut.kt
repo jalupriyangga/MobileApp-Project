@@ -90,6 +90,10 @@ import com.example.mobileapptechnobit.ui.CameraPatTitle
 import com.example.mobileapptechnobit.ui.RequestLocationPermissions
 import com.example.mobileapptechnobit.ui.theme.black20
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -98,7 +102,7 @@ import com.google.android.gms.location.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CameraPresensi(viewModel: CameraPresViewModel, navController: NavHostController, token: String) {
+fun CameraPresensiOut(viewModel: CameraPresViewModel, navController: NavHostController, token: String) {
 
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -154,7 +158,7 @@ fun CameraPresensi(viewModel: CameraPresViewModel, navController: NavHostControl
                     Modifier
                         .fillMaxWidth()
                 ) {
-                    CameraPresTitle(navCtrl = navController)
+                    CameraPresOutTitle(navCtrl = navController)
                 }
             }
         }
@@ -177,7 +181,7 @@ fun CameraPresensi(viewModel: CameraPresViewModel, navController: NavHostControl
                         .aspectRatio(3f / 4f),
                     contentAlignment = Alignment.Center
                 ) {
-                    CameraPreview(controller = controller, modifier = Modifier.fillMaxSize())
+                    CameraOutPreview(controller = controller, modifier = Modifier.fillMaxSize())
 
                     Image(
                         painter = painterResource(id = R.drawable.camera_frame),
@@ -220,7 +224,7 @@ fun CameraPresensi(viewModel: CameraPresViewModel, navController: NavHostControl
                         triggerVibration(context)
                         isProcessingPhoto = true
                         getCurrentLocationRealtime(context) { location ->
-                            takePhoto(
+                            takePhotoOut(
                                 controller = controller,
                                 context = context,
                                 token = token,
@@ -291,7 +295,7 @@ fun CameraPresensi(viewModel: CameraPresViewModel, navController: NavHostControl
 }
 
 @Composable
-fun CameraPresTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
+fun CameraPresOutTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -322,7 +326,7 @@ fun CameraPresTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
     }
 }
 
-private fun takePhoto(
+private fun takePhotoOut(
     controller: LifecycleCameraController,
     context: Context,
     token: String,
@@ -354,7 +358,7 @@ private fun takePhoto(
                     address = address
                 )
                 onPhotoTaken(bitmapWithWatermark)
-                navController.navigate(Screen.CameraPresensiCheck.route)
+                navController.navigate(Screen.CameraPresOutCheck.route)
                 onProcessingDone?.invoke()
                 image.close()
             }
@@ -368,7 +372,7 @@ private fun takePhoto(
     )
 }
 
-fun getCurrentLocationRealtime(context: Context, onLocationReady: (Location?) -> Unit) {
+fun getCurrentLocation(context: Context, onLocationReady: (Location?) -> Unit) {
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
     if (
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -457,7 +461,7 @@ private fun addWatermark(context: Context, bitmap: Bitmap, location: Location?, 
 }
 
 @Composable
-fun CameraPreview(controller: LifecycleCameraController, modifier: Modifier = Modifier) {
+fun CameraOutPreview(controller: LifecycleCameraController, modifier: Modifier = Modifier) {
     val lifecycleOwner = LocalLifecycleOwner.current
     AndroidView(
         factory = { context ->

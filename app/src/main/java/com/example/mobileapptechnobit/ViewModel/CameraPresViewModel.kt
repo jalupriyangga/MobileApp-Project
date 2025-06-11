@@ -9,6 +9,7 @@ import com.example.mobileapptechnobit.data.API.ApiClient
 import com.example.mobileapptechnobit.data.remote.ClockOutRequest
 import com.example.mobileapptechnobit.data.remote.Presensi
 import com.example.mobileapptechnobit.data.remote.PresensiResponse
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -65,10 +66,12 @@ class CameraPresViewModel : ViewModel() {
         Log.d("CameraPresViewModel", "Session data cleared successfully")
     }
 
-    suspend fun sendClockInToApi(
+    suspend fun sendPresensiToApi(
         token: String,
         photoBase64: String,
-        filename: String
+        filename: String,
+        companyPlaceId: Int,
+        note: String
     ) {
         withContext(Dispatchers.IO) {
             try {
@@ -76,20 +79,20 @@ class CameraPresViewModel : ViewModel() {
                     status = "Present",
                     photo_data = photoBase64,
                     filename = filename,
-                    company_place_id = 1,
-                    note = "-"
+                    company_place_id = companyPlaceId,
+                    note = note
                 )
+                Log.d("PresensiRequestBody", Gson().toJson(requestBody))
                 val response = ApiClient.apiService.sendPresensi("Bearer $token", requestBody)
 
                 if (response.isSuccessful) {
-                    _clockInResponse.value = response.body()
-                    Log.d("ClockInResponse", "Clock-In berhasil: ${response.body()}")
+                    Log.d("Presensi", "Presensi berhasil: ${response.body()}")
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "No error body"
-                    Log.e("ClockInError", "Gagal Clock-In: $errorBody")
+                    Log.e("PresensiError", "Gagal Presensi: $errorBody")
                 }
             } catch (e: Exception) {
-                Log.e("ClockInException", "Exception during Clock-In", e)
+                Log.e("PresensiException", "Exception during Presensi", e)
             }
         }
     }
@@ -102,7 +105,7 @@ class CameraPresViewModel : ViewModel() {
                     val filename = clockInData.photo_path.substringAfterLast('/')
 
                     val requestBody = ClockOutRequest(
-                        status = "Leave Early",
+                        status = "Present",
                         filename = filename,
                         company_place_id = clockInData.company_place_id,
                         note = "-"

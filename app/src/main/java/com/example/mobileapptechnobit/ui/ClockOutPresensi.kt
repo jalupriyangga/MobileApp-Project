@@ -229,18 +229,7 @@ fun ClockOutScreen(
                             onClick = {
                                 showDialog = false
                                 isLoading = true
-                                coroutineScope.launch(Dispatchers.IO) {
-                                    try {
-                                        viewModel.sendClockOutToApi(token)
-                                    } catch (e: Exception) {
-                                        Log.e("ClockOutScreen", "Error during Clock-Out", e)
-                                    } finally {
-                                        withContext(Dispatchers.Main) {
-                                            isLoading = false
-                                            navController.navigate(Screen.ClockOutSukses.route)
-                                        }
-                                    }
-                                }
+                                navController.navigate(Screen.CameraPresensiOut.route)
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = primary100),
                             shape = RoundedCornerShape(8.dp),

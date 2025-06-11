@@ -10,7 +10,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -21,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,7 +48,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CameraPresensiCheck(
+fun CameraPresOutCheck(
     viewModel: CameraPresViewModel,
     navController: NavController,
     context: Context
@@ -55,12 +58,13 @@ fun CameraPresensiCheck(
     val coroutineScope = rememberCoroutineScope()
     var showDialog by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
+    var notes by remember { mutableStateOf(TextFieldValue("")) }
 
     val repository = ProfileRepository(context)
     val viewMode: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(repository))
     val profileState = viewMode.employeesProfile.collectAsState()
     val profile = profileState.value
-
 
     Log.d("CameraPresensiCheck", "Bitmap: $bitmap, Token: $token")
 
@@ -90,7 +94,7 @@ fun CameraPresensiCheck(
                     Modifier
                         .fillMaxWidth()
                 ) {
-                    CameraPresCheckTitle(navCtrl = navController)
+                    CameraPresOutCheckTitle(navCtrl = navController)
                 }
             }
         },
@@ -152,7 +156,8 @@ fun CameraPresensiCheck(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .background(color = Color.White),
+                    .background(color = Color.White)
+                    .verticalScroll(scrollState),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
@@ -161,9 +166,44 @@ fun CameraPresensiCheck(
                     contentDescription = "Captured Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp, top = 71.dp)
-                        .aspectRatio(3f / 4f)
+                        .padding(start = 20.dp, end = 20.dp, top = 40.dp)
+                        .size(400.dp)
                 )
+                Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    text = "Keterangan",
+                    fontSize = 16.sp,
+                    fontFamily = robotoFontFamily,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp),
+                    textAlign = TextAlign.Start
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = notes.text,
+                    onValueChange = { notes = TextFieldValue(it) },
+                    placeholder = {
+                        Text(
+                            text = "Tulis catatan presensi...",
+                            fontSize = 16.sp,
+                            fontFamily = robotoFontFamily,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Gray
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .padding(start = 20.dp, end = 20.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Gray,
+                        unfocusedBorderColor = Color.Gray,
+                        cursorColor = Color.Black
+                    ),
+                    singleLine = false,
+                    maxLines = 4,
+                )
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     )
@@ -220,27 +260,25 @@ fun CameraPresensiCheck(
                                 isLoading = true
                                 coroutineScope.launch(Dispatchers.IO) {
                                     try {
-                                        val savedFile = saveBitmapToPublicPictures(context, bitmap)
-                                        val photoBase64 = bitmapToBase64(bitmap)
-                                        Log.d("PhotoBase64Validation", "Base64 Length: ${photoBase64.length}, Sample: ${photoBase64.take(50)}")
-
+                                        val photoBase64 = bitmapBase64(bitmap)
+                                        val filename = "presensi_${SimpleDateFormat("ddMMyyyy_HHmmss", Locale.getDefault()).format(Date())}.jpg"
 
                                         viewModel.sendPresensiToApi(
                                             token = token,
                                             photoBase64 = photoBase64,
-                                            filename = savedFile.name,
+                                            filename = filename,
                                             companyPlaceId = profile?.company_id ?: 0,
-                                            note = "-"
+                                            note = notes.text
                                         )
 
                                         viewModel.saveClockInTime(context, System.currentTimeMillis())
 
                                         withContext(Dispatchers.Main) {
                                             isLoading = false
-                                            navController.navigate(Screen.PresensiSukses.route)
+                                            navController.navigate(Screen.ClockOutSukses.route)
                                         }
                                     } catch (e: Exception) {
-                                        Log.e("CameraPresensiCheck", "Error during Clock-In", e)
+                                        Log.e("CameraPresensiOutCheck", "Error during Clock-Out", e)
                                         withContext(Dispatchers.Main) {
                                             isLoading = false
                                             Toast.makeText(context, "Periksa internet anda dan coba lagi", Toast.LENGTH_SHORT).show()
@@ -278,7 +316,7 @@ fun CameraPresensiCheck(
 }
 
 @Composable
-fun CameraPresCheckTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
+fun CameraPresOutCheckTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -309,24 +347,8 @@ fun CameraPresCheckTitle(modifier: Modifier = Modifier, navCtrl: NavController) 
     }
 }
 
-fun saveBitmapToPublicPictures(context: Context, bitmap: Bitmap): File {
-    val picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-    if (!picturesDir.exists()) picturesDir.mkdirs()
-
-    val currentTime = System.currentTimeMillis()
-    val dateFormat = SimpleDateFormat("ddMMyyyy_HHmmss", Locale.getDefault())
-    val formattedDate = dateFormat.format(Date(currentTime))
-    val photoFileName = "presensi_$formattedDate.jpg"
-
-    val photoFile = File(picturesDir, photoFileName)
-    FileOutputStream(photoFile).use { out ->
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-    }
-    return photoFile
-}
-
-fun bitmapToBase64(bitmap: Bitmap): String {
-    val resizedBitmap = resizeBitmap(bitmap, maxWidth = 800, maxHeight = 800)
+fun bitmapBase64(bitmap: Bitmap): String {
+    val resizedBitmap = resizeBitma(bitmap, maxWidth = 800, maxHeight = 800)
     val outputStream = ByteArrayOutputStream()
     resizedBitmap.compress(Bitmap.CompressFormat.PNG, 50, outputStream)
 
@@ -334,7 +356,7 @@ fun bitmapToBase64(bitmap: Bitmap): String {
     return Base64.encodeToString(byteArray, Base64.NO_WRAP)
 }
 
-fun resizeBitmap(bitmap: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
+fun resizeBitma(bitmap: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
     val width = bitmap.width
     val height = bitmap.height
     val aspectRatio = width.toFloat() / height.toFloat()
