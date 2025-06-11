@@ -5,13 +5,12 @@ import com.example.mobileapptechnobit.data.remote.ClockOutRequest
 import com.example.mobileapptechnobit.data.remote.CompanyProfileResponse
 import com.example.mobileapptechnobit.data.remote.EmployeeResponse
 import com.example.mobileapptechnobit.data.remote.HistoryPatroliResponse
-import com.example.mobileapptechnobit.data.remote.Presensi
-import com.example.mobileapptechnobit.data.remote.PresensiResponse
-import com.example.mobileapptechnobit.data.remote.Permission
 import com.example.mobileapptechnobit.data.remote.HistoryPresensiResponseItem
 import com.example.mobileapptechnobit.data.remote.PatrolScheduleResponse
 import com.example.mobileapptechnobit.data.remote.PatroliRequest
 import com.example.mobileapptechnobit.data.remote.PermissionResponse
+import com.example.mobileapptechnobit.data.remote.Presensi
+import com.example.mobileapptechnobit.data.remote.PresensiResponse
 import com.example.mobileapptechnobit.data.remote.SalaryDetailResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
