@@ -84,6 +84,10 @@ fun ProfileScreen(navController: NavController, token: String) {
     val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
     val validToken = if (token.isNotEmpty()) token else sharedPref.getString("AUTH_TOKEN", null) ?: ""
     val currentToken = sharedPref.getString("AUTH_TOKEN", null) ?: token
+    Log.d(
+        "ProfileScreen",
+        "Token yang digunakan: $currentToken"
+    )
 
     val repository = ProfileRepository(context)
     val viewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(repository))

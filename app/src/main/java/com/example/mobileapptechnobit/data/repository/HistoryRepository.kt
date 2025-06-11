@@ -12,18 +12,21 @@ class HistoryRepository(private val apiService: ApiService) {
         return withContext(Dispatchers.IO) {
             try {
                 val authToken = "Bearer $token"
+                Log.d("HistoryRepository", "Fetching presensi with token: Bearer ${token.take(10)}...")
+
                 val response = apiService.getHistoryPresensi(authToken)
 
                 if (response.isSuccessful) {
                     val body = response.body()
-                    Log.d("HistoryRepository", "Fetched: $body")
+                    Log.d("HistoryRepository", "Presensi response successful: ${body?.size} items")
                     return@withContext body
                 } else {
-                    Log.e("HistoryRepository", "Error response: ${response.errorBody()?.string()}")
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("HistoryRepository", "Presensi error response: Code=${response.code()}, Body=$errorBody")
                     return@withContext null
                 }
             } catch (e: Exception) {
-                Log.e("HistoryRepository", "Exception: ${e.message}", e)
+                Log.e("HistoryRepository", "Presensi exception: ${e.message}", e)
                 return@withContext null
             }
         }
@@ -33,14 +36,28 @@ class HistoryRepository(private val apiService: ApiService) {
         return withContext(Dispatchers.IO) {
             try {
                 val authToken = "Bearer $token"
+                Log.d("HistoryRepository", "Fetching patroli with token: Bearer ${token.take(10)}...")
+
                 val response = apiService.getHistoryPatroli(authToken)
-                Log.d("HistoryRepository", "Response: $response")
+                Log.d("HistoryRepository", "Patroli API response: ${response}")
+                Log.d("HistoryRepository", "Patroli message: ${response.message}")
+                Log.d("HistoryRepository", "Patroli data size: ${response.data.size}")
+
+                // Debug: Print first few items
+                response.data.take(3).forEach { item ->
+                    Log.d("HistoryRepository", "Patroli item: ID=${item.id}, Date=${item.createdAt}, Location=${item.patrolLocation}")
+                }
+
                 if (response.data.isNotEmpty()) {
+                    Log.d("HistoryRepository", "Patroli fetch successful: ${response.data.size} items")
                     Result.success(response.data)
                 } else {
-                    Result.failure(Exception("Data kosong: ${response.message}"))
+                    Log.w("HistoryRepository", "Patroli data empty: ${response.message}")
+                    // Return empty list instead of failure for empty data
+                    Result.success(emptyList())
                 }
             } catch (e: Exception) {
+                Log.e("HistoryRepository", "Patroli exception: ${e.message}", e)
                 Result.failure(e)
             }
         }

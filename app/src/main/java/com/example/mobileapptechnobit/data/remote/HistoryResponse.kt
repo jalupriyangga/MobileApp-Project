@@ -25,7 +25,7 @@ data class HistoryPresensiResponseItem(
     @SerializedName("status")
     val status: String = "",
 
-    @SerializedName("catatan")
+    @SerializedName("tanggal")
     val tanggal: String = ""
 ) : Parcelable
 

@@ -33,6 +33,9 @@ import com.example.mobileapptechnobit.ui.authentication.LoginScreen
 import com.example.mobileapptechnobit.ui.authentication.SplashScreen
 import com.example.mobileapptechnobit.ui.authentication.WalkthroughScreen
 import com.example.mobileapptechnobit.ui.component.SuccessScreen
+import com.example.mobileapptechnobit.ui.feature_history.DetailPatroliScreen
+import com.example.mobileapptechnobit.ui.feature_history.DetailPresensiScreen
+import com.example.mobileapptechnobit.ui.feature_history.HistoryScreen
 import com.example.mobileapptechnobit.ui.permission.DetailPermitScreen
 import com.example.mobileapptechnobit.ui.permission.PermissionScreen
 import com.example.mobileapptechnobit.ui.permission.PermitFormScreen
@@ -117,7 +120,7 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             DetailPresensiScreen(navCtrl = navController)
         }
         composable(Screen.DetailHistoryPatroli.route){
-            DetailPatroliScreen(navCtrl = navController)
+            DetailPatroliScreen(navCtrl = navController, token = token ?: "")
         }
         composable(Screen.Schedule.route) {
             DetailScheduleScreen(navCtrl = navController, token = token ?: "")
@@ -222,7 +225,7 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
             val token = sharedPref.getString("AUTH_TOKEN", null) ?: ""
 
-            DetailGajiScreen(navCtrl = navController, token = token) // ✅ Sudah ada `token`
+            DetailGajiScreen(navCtrl = navController, token = token) // ✅ Sudah ada token
         }
         composable(
             route = Screen.FormPatroli.route,
@@ -263,7 +266,7 @@ sealed class Screen(val route: String) {
 
     object Permission : Screen("permission_screen")
     object PermissionForm : Screen("permission_form_screen")
-//    object DetailPermission: Screen("detail_permission_screen/{id}")
+    //    object DetailPermission: Screen("detail_permission_screen/{id}")
     object DetailPermission: Screen("detail_permission_screen/{id}/{isRequester}")
     object Patroli: Screen("patroli_screen")
     object CameraPatroli : Screen("camera_patroli_screen/{qrToken}")
