@@ -10,7 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.rememberNavController
-import com.example.mobileapptechnobit.ui.HistoryScreen
+import com.example.mobileapptechnobit.ui.feature_history.HistoryScreen
 
 class DetailHistoryActivity : ComponentActivity() {
 
