@@ -101,8 +101,14 @@ fun ProfileScreen(navController: NavController, token: String) {
 
     val scrollState = rememberScrollState()
     val companyProfileViewModel: CompanyProfileViewModel = viewModel()
-    val companyProfileState by companyProfileViewModel.companyProfile.collectAsState()
+    val companyProfile by companyProfileViewModel.companyProfile.collectAsState()
 
+    LaunchedEffect(currentToken) {
+        if (currentToken.isNotEmpty()) {
+            companyProfileViewModel.fetchCompanyProfile(currentToken)
+            Log.d("ProfileScreen", "Fetching company profile with token: $currentToken")
+        }
+    }
 
     val encodedToken = try {
         URLEncoder.encode(validToken, "UTF-8")
@@ -325,7 +331,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                                         fontFamily = robotoFontFamily
                                     )
                                     Text(
-                                        text = companyProfileState?.phone ?: "-",
+                                        text = companyProfile?.phone ?: "-",
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         color = Color.Black,
@@ -361,7 +367,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                                         fontFamily = robotoFontFamily
                                     )
                                     Text(
-                                        text = companyProfileState?.email ?: "-",
+                                        text = companyProfile?.email ?: "-",
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         color = Color.Black,
@@ -456,7 +462,7 @@ fun ProfileScreen(navController: NavController, token: String) {
                             .fillMaxWidth()
                             .padding(top = 15.dp, end = 20.dp)
                             .clickable {
-                                val url = "https://drive.google.com/file/d/12pcsdKHThZyhlXdHlS8NqdZWAJA7c4MR/view?usp=sharing"
+                                val url = "https://drive.google.com/file/d/1bba9Asv1BLHHmDAqkaEIOd20Kk4Fyz9r/view?usp=sharing"
                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                                 context.startActivity(intent)
                             }
