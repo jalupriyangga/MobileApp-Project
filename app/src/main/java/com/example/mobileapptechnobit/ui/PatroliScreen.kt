@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Location
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -14,8 +15,11 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +28,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -48,6 +53,7 @@ import com.example.mobileapptechnobit.R
 import com.example.mobileapptechnobit.Screen
 import com.example.mobileapptechnobit.data.remote.PatroliQrInfo
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
+import com.google.android.gms.location.*
 import com.google.gson.Gson
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -72,6 +78,9 @@ fun PatroliScreen(
     ) { permissions ->
         hasPermissions = permissions[Manifest.permission.CAMERA] == true
     }
+    var hasScanned by remember { mutableStateOf(false) }
+    var isProcessingPhoto by remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         if (context.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -107,15 +116,99 @@ fun PatroliScreen(
                     .padding(innerPadding)
             ) {
                 CameraPreviewWithQRReaderWithFrame(
+                    hasScanned = hasScanned,
+                    isProcessingPhoto = isProcessingPhoto,
+                    setHasScanned = { hasScanned = it },
+                    setIsProcessingPhoto = { isProcessingPhoto = it },
                     onQRCodeScanned = { qrCode ->
                         try {
+                            isProcessingPhoto = true
                             val qrInfo = Gson().fromJson(qrCode, PatroliQrInfo::class.java)
-                            val encodedQrInfo = Uri.encode(Gson().toJson(qrInfo))
-                            navCtrl.navigate(Screen.CameraPatroli.route.replace("{qrToken}", encodedQrInfo))
+                            getCurrentLocationRealtime(context) { location ->
+                                if (location != null) {
+                                    val distance = FloatArray(1)
+                                    Location.distanceBetween(
+                                        location.latitude, location.longitude,
+                                        qrInfo.latitude, qrInfo.longitude,
+                                        distance
+                                    )
+                                    // logika di bawah berlaku jika qr bisa menghasilkan longitude sesuai ketinggian/lantai qr ditempatkan
+//                                    val latUser = location.latitude
+//                                    val lonUser = location.longitude
+//                                    val latQr = qrInfo.latitude
+//                                    val lonQr = qrInfo.longitude
+//
+//                                    val deltaLat = Math.abs(latUser - latQr)
+//                                    val deltaLon = Math.abs(lonUser - lonQr)
+//
+//                                    val latMeter = deltaLat * 111320.0
+//                                    val lonMeter = deltaLon * 111320.0 * Math.cos(Math.toRadians((latUser + latQr) / 2.0))
+//
+//                                    if (latMeter <= 15.0 && lonMeter <= 5.0) {
+                                    if (distance[0] <= 15.0) {
+                                        val encodedQrInfo = Uri.encode(Gson().toJson(qrInfo))
+                                        navCtrl.navigate(Screen.CameraPatroli.route.replace("{qrToken}", encodedQrInfo))
+                                    } else {
+                                        showErrorDialog = true
+                                        hasScanned = false
+                                        isProcessingPhoto = false
+                                    }
+                                } else {
+                                    Toast.makeText(activity, "Gagal mendapatkan lokasi. Coba lagi.", Toast.LENGTH_LONG).show()
+                                    hasScanned = false
+                                    isProcessingPhoto = false
+                                }
+                            }
                         } catch (e: Exception) {
                             Toast.makeText(activity, "QR tidak valid", Toast.LENGTH_LONG).show()
+                            hasScanned = false
+                            isProcessingPhoto = false
                         }
-                    }                )
+                    }
+                )
+
+                // Dialog Error
+                if (showErrorDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showErrorDialog = false },
+                        title = { Text("Scan QR Gagal", fontSize = 16.sp, fontWeight = FontWeight.Bold, fontFamily = robotoFontFamily) },
+                        text = { Text("Silakan dekati lokasi QR untuk melakukan patroli", fontSize = 14.sp, color = Color.Gray, fontFamily = robotoFontFamily) },
+                        confirmButton = {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                                    Button(
+                                        onClick = {
+                                            showErrorDialog = false
+                                            // RESET STATE scan agar bisa scan ulang
+                                            hasScanned = false
+                                            isProcessingPhoto = false
+                                        },
+                                        colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.primary100)),
+                                        shape = RoundedCornerShape(8.dp),
+                                        modifier = Modifier
+                                            .padding(horizontal = 8.dp)
+                                            .weight(1f)
+                                            .height(48.dp)
+                                    ) {
+                                        Text(
+                                            text = "Kembali",
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Medium,
+                                            color = Color.White,
+                                            fontFamily = robotoFontFamily
+                                        )
+                                    }
+                                }
+                            }
+                        },
+                        containerColor = Color.White,
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.background(Color.Transparent)
+                    )
+                }
             }
         } else {
             Box(
@@ -164,12 +257,18 @@ fun PatroliTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
 
 @androidx.annotation.OptIn(ExperimentalGetImage::class)
 @Composable
-fun CameraPreviewWithQRReaderWithFrame(onQRCodeScanned: (String) -> Unit) {
+fun CameraPreviewWithQRReaderWithFrame(
+    hasScanned: Boolean,
+    isProcessingPhoto: Boolean,
+    setHasScanned: (Boolean) -> Unit,
+    setIsProcessingPhoto: (Boolean) -> Unit,
+    onQRCodeScanned: (String) -> Unit
+) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     var isFlashOn by remember { mutableStateOf(false) }
     var cameraControl by remember { mutableStateOf<androidx.camera.core.CameraControl?>(null) }
-    var hasScanned by remember { mutableStateOf(false) }
+
 
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(
@@ -180,40 +279,31 @@ fun CameraPreviewWithQRReaderWithFrame(onQRCodeScanned: (String) -> Unit) {
                     val cameraProvider = cameraProviderFuture.get()
                     val preview = androidx.camera.core.Preview.Builder()
                         .setTargetResolution(android.util.Size(640, 480))
-                        .build().apply {
-                            setSurfaceProvider(previewView.surfaceProvider)
-                        }
-
+                        .build().apply { setSurfaceProvider(previewView.surfaceProvider) }
                     val cameraSelector = androidx.camera.core.CameraSelector.DEFAULT_BACK_CAMERA
                     val imageAnalysis = androidx.camera.core.ImageAnalysis.Builder()
                         .setTargetResolution(android.util.Size(640, 480))
                         .setBackpressureStrategy(androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                         .build()
-
                     val executor = Executors.newSingleThreadExecutor()
                     imageAnalysis.setAnalyzer(executor) { imageProxy ->
                         if (hasScanned) {
                             imageProxy.close()
                             return@setAnalyzer
                         }
-
                         val mediaImage = imageProxy.image
                         if (mediaImage != null) {
                             try {
-                                val inputImage = InputImage.fromMediaImage(
-                                    mediaImage,
-                                    imageProxy.imageInfo.rotationDegrees
-                                )
+                                val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
                                 val scanner = BarcodeScanning.getClient()
                                 scanner.process(inputImage)
                                     .addOnSuccessListener { barcodes ->
                                         for (barcode in barcodes) {
                                             val raw = barcode.rawValue
-                                            Log.d("QRScanner", "Isi QR code: $raw")
                                             if (raw != null && !hasScanned) {
-                                                hasScanned = true
+                                                setIsProcessingPhoto(true)
+                                                setHasScanned(true)
                                                 onQRCodeScanned(barcode.rawValue ?: "")
-                                                cameraProvider.unbindAll()
                                                 imageProxy.close()
                                                 return@addOnSuccessListener
                                             }
@@ -230,17 +320,9 @@ fun CameraPreviewWithQRReaderWithFrame(onQRCodeScanned: (String) -> Unit) {
                             imageProxy.close()
                         }
                     }
-
-                    val camera = cameraProvider.bindToLifecycle(
-                        lifecycleOwner,
-                        cameraSelector,
-                        preview,
-                        imageAnalysis
-                    )
-
-                    cameraControl = camera.cameraControl
+                    cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageAnalysis)
+                        .also { camera -> cameraControl = camera.cameraControl }
                 }, ContextCompat.getMainExecutor(ctx))
-
                 previewView
             },
             modifier = Modifier.fillMaxSize()
@@ -301,10 +383,57 @@ fun CameraPreviewWithQRReaderWithFrame(onQRCodeScanned: (String) -> Unit) {
                 )
             }
         }
+
+        if (isProcessingPhoto) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(colorResource(id = R.color.black).copy(alpha = 0.5f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    CircularProgressIndicator(color = Color.White)
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        text = "Scan sedang diproses...",
+                        color = Color.White,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 18.sp
+                    )
+                }
+            }
+        }
     }
 
     LaunchedEffect(isFlashOn) {
         cameraControl?.enableTorch(isFlashOn)
+    }
+}
+
+fun getCurrentLocationRealtime(context: Context, onLocationReady: (Location?) -> Unit) {
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+    if (
+        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    ) {
+        val locationRequest = LocationRequest.create().apply {
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            interval = 0
+            fastestInterval = 0
+            numUpdates = 1
+        }
+
+        val callback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                val location = locationResult.lastLocation
+                onLocationReady(location)
+                fusedLocationClient.removeLocationUpdates(this)
+            }
+        }
+
+        fusedLocationClient.requestLocationUpdates(locationRequest, callback, null)
+    } else {
+        Toast.makeText(context, "Izin lokasi tidak diberikan", Toast.LENGTH_SHORT).show()
+        onLocationReady(null)
     }
 }
 
