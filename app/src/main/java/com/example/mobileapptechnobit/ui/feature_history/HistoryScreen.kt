@@ -22,9 +22,11 @@ import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -194,7 +196,7 @@ fun HistoryScreen(
     Scaffold(
         topBar = {
             HistoryTopBar(index = { index -> viewModel.setSelectedTab(index) },
-                          selectedTab = selectedTab.value)
+                selectedTab = selectedTab.value)
         },
         bottomBar = {
             BottomNavigationBar(index = 1, navCtrl = navCtrl)
@@ -302,17 +304,24 @@ fun HistoryScreen(
                         contentPadding = PaddingValues(bottom = 16.dp)
                     ) {
                         items(historyPresensiItems.value) { presensiItem ->
-                            val formattedDate = formatDateForDisplay(presensiItem.tanggal)
-                            Log.d("HistoryPresensiScreen", "Rendering presensi item: ${presensiItem.tanggal}, ${presensiItem.status}")
-                            HistoryPresensiCard(
-                                historyItem = presensiItem,
-                                navController = navCtrl,
-                                formattedDate = formattedDate
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
+                            // Validasi data sebelum render
+                            if (presensiItem != null && !presensiItem.tanggal.isNullOrBlank()) {
+                                val formattedDate = formatDateForDisplay(presensiItem.tanggal)
+                                Log.d("HistoryPresensiScreen", "Rendering presensi item: ${presensiItem.tanggal}, ${presensiItem.status}")
+                                HistoryPresensiCard(
+                                    historyItem = presensiItem,
+                                    navController = navCtrl,
+                                    formattedDate = formattedDate
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                            } else {
+                                Log.w("HistoryScreen", "Skipping null or invalid presensi item")
+                            }
                         }
                     }
                 }
+                // Replace this section in your HistoryScreen composable:
+
                 selectedTab.value == 1 && historyPatroliItems.value.isNotEmpty() -> {
                     Log.d(
                         "HistoryPatroliScreen",
@@ -323,15 +332,34 @@ fun HistoryScreen(
                         contentPadding = PaddingValues(bottom = 16.dp)
                     ) {
                         items(items = historyPatroliItems.value) { patroliItem: HistoryPatroliResponseItem ->
-                            Column {
-                                val formattedDate = formatDateTimeForDisplay(patroliItem.createdAt)
-                                Log.d("HistoryScreen", "Rendering patroli item: ${patroliItem.createdAt}, ${patroliItem.status}")
-                                HistoryPatroliCard(
-                                    historyItem = patroliItem,
-                                    navController = navCtrl,
-                                    formattedDate = formattedDate
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
+                            // Pre-validate data before passing to Composable
+                            val isValidItem = patroliItem != null && !patroliItem.createdAt.isNullOrBlank()
+
+                            if (isValidItem) {
+                                // Do all the processing and validation BEFORE the Composable call
+                                val safeCreatedAt = patroliItem.createdAt ?: ""
+                                val formattedDate = try {
+                                    formatDateTimeForDisplay(safeCreatedAt)
+                                } catch (e: Exception) {
+                                    Log.e("HistoryScreen", "Error formatting date: $safeCreatedAt", e)
+                                    "Tanggal tidak valid"
+                                }
+
+                                Log.d("HistoryScreen", "Rendering patroli item: ${patroliItem.createdAt}, ${patroliItem.status ?: "unknown"}")
+
+                                // Now call the Composable with validated data
+                                Column {
+                                    HistoryPatroliCard(
+                                        historyItem = patroliItem,
+                                        navController = navCtrl,
+                                        formattedDate = formattedDate
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                }
+                            } else {
+                                // Render error state as a separate Composable
+                                Log.w("HistoryScreen", "Skipping null or invalid patroli item: $patroliItem")
+                                InvalidItemCard()
                             }
                         }
                     }
@@ -341,9 +369,33 @@ fun HistoryScreen(
     }
 }
 
-// Helper function to format date from "2025-05-05" to "Senin 05 Mei 2025"
-fun formatDateForDisplay(dateString: String): String {
+@Composable
+fun InvalidItemCard() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = "Data tidak dapat ditampilkan",
+                color = Color.Gray,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
+// Helper function to format date from "2025-05-05" to "Senin 05 Mei 2025" - DENGAN NULL SAFETY
+fun formatDateForDisplay(dateString: String?): String {
     return try {
+        // Tambahkan null check
+        if (dateString.isNullOrBlank()) {
+            return "Tanggal tidak tersedia"
+        }
+
         val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale("id", "ID")).apply {
             isLenient = false
         }
@@ -352,12 +404,18 @@ fun formatDateForDisplay(dateString: String): String {
         date?.let { outputFormat.format(it) } ?: dateString
     } catch (e: Exception) {
         Log.e("HistoryScreen", "Error formatting date: $dateString", e)
-        dateString
+        dateString ?: "Tanggal tidak valid"
     }
 }
 
-fun formatDateTimeForDisplay(dateTimeString: String): String {
-    try {
+// PERBAIKAN FUNGSI DENGAN NULL SAFETY
+fun formatDateTimeForDisplay(dateTimeString: String?): String {
+    return try {
+        // Tambahkan null check di awal
+        if (dateTimeString.isNullOrBlank()) {
+            return "Tanggal tidak tersedia"
+        }
+
         // Handle different possible datetime formats
         val possibleFormats = listOf(
             SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale("id", "ID")),
@@ -381,7 +439,7 @@ fun formatDateTimeForDisplay(dateTimeString: String): String {
         return dateTimeString
     } catch (e: Exception) {
         Log.e("HistoryScreen", "Error formatting datetime: $dateTimeString", e)
-        return dateTimeString
+        return dateTimeString ?: "Tanggal tidak valid"
     }
 }
 

@@ -69,19 +69,19 @@ class PdfGenerator {
 
         var y = 50f
 
-        // Title
+        // Title - sama seperti UI: "Detail Presensi"
         canvas.drawText("Detail Presensi", pageWidth / 2f, y, titlePaint)
         y += 60f
 
-        // Nama Karyawan
-        canvas.drawText(nama, pageWidth / 2f, y, subtitlePaint)
+        // Nama Karyawan - format seperti UI: "Nama Karyawan : [nama]"
+        canvas.drawText("Nama Karyawan : $nama", pageWidth / 2f, y, subtitlePaint)
         y += 30f
 
         // Format date for PDF
         val formattedDate = formatDateForPDF(tanggal)
 
-        // Tanggal
-        canvas.drawText(formattedDate, pageWidth / 2f, y, subtitlePaint)
+        // Tanggal - format seperti UI: "Tanggal : [tanggal]"
+        canvas.drawText("Tanggal : $formattedDate", pageWidth / 2f, y, subtitlePaint)
         y += 40f
 
         // Divider
@@ -106,13 +106,10 @@ class PdfGenerator {
         canvas.drawText("Shift", 56f, y, labelPaint)
         y += 20f
         canvas.drawText(shift, 56f, y, sectionPaint)
-        y += 60f // Increased space before image
+        y += 60f // Increased space before image sesuai UI
 
-        // Image section
+        // Image section - sesuai dengan UI DetailPresensiScreen
         if (!foto.isNullOrEmpty()) {
-            canvas.drawText("Foto Presensi", 56f, y, labelPaint)
-            y += 20f
-
             // Clear logging for debugging
             Log.d("PDFUtils", "Attempting to load image from URL: $foto")
 
@@ -241,7 +238,7 @@ class PdfGenerator {
         pdfDocument.close()
         return uri
     }
-    suspend fun generatePresensiPDFPatroli(context: Context, nama: String?, tanggal: String, status: String, lokasi: String, shift: String, catatan:String, foto: String?): Uri? {
+    suspend fun generatePresensiPDFPatroli(context: Context, nama: String?, tanggal: String, status: String, lokasi: String, shift: String, catatan: String, foto: String?): Uri? {
         if (nama == null) {
             Toast.makeText(context, "Nama tidak tersedia", Toast.LENGTH_SHORT).show()
             return null
@@ -283,19 +280,19 @@ class PdfGenerator {
 
         var y = 50f
 
-        // Title
+        // Title - sama seperti UI: "Detail Presensi"
         canvas.drawText("Detail Presensi", pageWidth / 2f, y, titlePaint)
         y += 60f
 
-        // Nama Karyawan
-        canvas.drawText(nama, pageWidth / 2f, y, subtitlePaint)
+        // Nama Karyawan - format seperti UI: "Nama Karyawan : [nama]"
+        canvas.drawText("Nama Karyawan : $nama", pageWidth / 2f, y, subtitlePaint)
         y += 30f
 
         // Format date for PDF
         val formattedDate = formatDateForPDF(tanggal)
 
-        // Tanggal
-        canvas.drawText(formattedDate, pageWidth / 2f, y, subtitlePaint)
+        // Tanggal - format seperti UI: "Tanggal : [tanggal]"
+        canvas.drawText("Tanggal : $formattedDate", pageWidth / 2f, y, subtitlePaint)
         y += 40f
 
         // Divider
@@ -320,15 +317,42 @@ class PdfGenerator {
         canvas.drawText("Shift", 56f, y, labelPaint)
         y += 20f
         canvas.drawText(shift, 56f, y, sectionPaint)
-        y += 60f // Increased space before image
+        y += 40f
 
-        // Catatan
+        // Catatan - ditambahkan sesuai urutan di UI
         canvas.drawText("Catatan", 56f, y, labelPaint)
         y += 20f
-        canvas.drawText(catatan, 56f, y, sectionPaint)
-        y += 60f // Increased space before image
 
-        // Image section
+        // Handle multi-line catatan jika terlalu panjang
+        val catatanText = catatan
+        val maxWidth = pageWidth - 112f // 56px margin on each side
+        val words = catatanText.split(" ")
+        var currentLine = ""
+
+        for (word in words) {
+            val testLine = if (currentLine.isEmpty()) word else "$currentLine $word"
+            val textWidth = sectionPaint.measureText(testLine)
+
+            if (textWidth <= maxWidth) {
+                currentLine = testLine
+            } else {
+                if (currentLine.isNotEmpty()) {
+                    canvas.drawText(currentLine, 56f, y, sectionPaint)
+                    y += 20f
+                }
+                currentLine = word
+            }
+        }
+
+        // Draw remaining text
+        if (currentLine.isNotEmpty()) {
+            canvas.drawText(currentLine, 56f, y, sectionPaint)
+            y += 40f
+        } else {
+            y += 20f // Adjust spacing if no remaining text
+        }
+
+        // Image section - label "Foto Presensi" sesuai UI
         if (!foto.isNullOrEmpty()) {
             canvas.drawText("Foto Presensi", 56f, y, labelPaint)
             y += 20f
@@ -388,13 +412,16 @@ class PdfGenerator {
                 y += 40f
             }
         } else {
+            canvas.drawText("Foto Presensi", 56f, y, labelPaint)
+            y += 20f
             canvas.drawText("Foto tidak tersedia", 56f, y, sectionPaint)
             y += 40f
         }
 
         pdfDocument.finishPage(page)
 
-        val fileName = "Presensi_${nama.replace(" ", "_")}_${
+        // Filename disesuaikan untuk Patroli
+        val fileName = "Patroli_${nama.replace(" ", "_")}_${
             tanggal.replace("-", "_").replace(" ", "_").replace(":", "_")
         }.pdf"
 

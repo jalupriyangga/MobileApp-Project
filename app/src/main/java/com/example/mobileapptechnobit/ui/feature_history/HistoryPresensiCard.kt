@@ -92,42 +92,43 @@ fun HistoryPresensiCard(
                 Text(historyItem.lokasi, fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 15.sp)
             }
             Spacer(modifier = Modifier.height(10.dp))
-            Row(
-                Modifier.padding(horizontal = 25.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Icon(painter = painterResource(R.drawable.frame_27),
-                    contentDescription = null,
-                    modifier = Modifier.size(40.dp),
-                    tint = Color.Unspecified
-                )
-                Column (
-                    Modifier.padding(start = 8.dp)
-                ){
-                    Text(text = "Mulai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
-                    Text(text = "08.00 WIB", fontFamily = robotoFontFamily)
-                }
-
-                Spacer(Modifier.weight(1f))
-                VerticalDivider(
-                    thickness = 1.dp,
-                    color = Color.LightGray,
-                    modifier = Modifier.height(50.dp)
-                )
-                Spacer(Modifier.weight(1f))
-
-                Icon(painter = painterResource(R.drawable.frame_28),
-                    contentDescription = null,
-                    modifier = Modifier.size(40.dp),
-                    tint = Color.Unspecified
-                )
-                Column (
-                    Modifier.padding(start = 8.dp)
-                ){
-                    Text(text = "Selesai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
-                    Text(text = "16.00 WIB", fontFamily = robotoFontFamily)
-                }
-            }
+            // Masih Belom Fix
+//            Row(
+//                Modifier.padding(horizontal = 25.dp),
+//                verticalAlignment = Alignment.CenterVertically
+//            ){
+//                Icon(painter = painterResource(R.drawable.frame_27),
+//                    contentDescription = null,
+//                    modifier = Modifier.size(40.dp),
+//                    tint = Color.Unspecified
+//                )
+//                Column (
+//                    Modifier.padding(start = 8.dp)
+//                ){
+//                    Text(text = "Mulai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
+//                    Text(text = "08.00 WIB", fontFamily = robotoFontFamily)
+//                }
+//
+//                Spacer(Modifier.weight(1f))
+//                VerticalDivider(
+//                    thickness = 1.dp,
+//                    color = Color.LightGray,
+//                    modifier = Modifier.height(50.dp)
+//                )
+//                Spacer(Modifier.weight(1f))
+//
+//                Icon(painter = painterResource(R.drawable.frame_28),
+//                    contentDescription = null,
+//                    modifier = Modifier.size(40.dp),
+//                    tint = Color.Unspecified
+//                )
+//                Column (
+//                    Modifier.padding(start = 8.dp)
+//                ){
+//                    Text(text = "Selesai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
+//                    Text(text = "16.00 WIB", fontFamily = robotoFontFamily)
+//                }
+//            }
             Spacer(Modifier.height(10.dp))
             Column (
                 Modifier

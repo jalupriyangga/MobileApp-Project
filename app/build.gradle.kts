@@ -31,11 +31,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -70,13 +70,20 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.core.ktx)
+    implementation(libs.androidx.junit.ktx)
+    implementation(libs.core)
     testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Testing
+    implementation(libs.truth)
+
     implementation("androidx.navigation:navigation-compose:2.7.5") // Update ke versi terbaru
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
@@ -107,6 +114,63 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("androidx.compose.ui:ui:1.6.0")
 
+    // Unit Testing
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.8.10")
+    testImplementation("org.robolectric:robolectric:4.10.3")
+    testImplementation("androidx.test:core:1.5.0")
+    testImplementation("androidx.test.ext:junit:1.1.5")
+    testImplementation("io.mockk:mockk:1.13.5")
+    testImplementation("io.mockk:mockk-android:1.13.5")
+    testImplementation("androidx.arch.core:core-testing:2.2.0") // For LiveData testing
+
+    // Integration Testing
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
+
+    // Compose Testing (matching your compose version)
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.1")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.1")
+
+    // Permission Testing
+    androidTestImplementation("androidx.test:rules:1.5.0")
+
+    // Activity Testing
+    androidTestImplementation("androidx.test.ext:junit-ktx:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
+
+    // Navigation Testing
+    androidTestImplementation("androidx.navigation:navigation-testing:2.7.5")
+
+    // Camera Testing
+//    androidTestImplementation(libs.androidx.camera.testing)
+
+    // Network Testing
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.9.3")
+    testImplementation("com.squareup.retrofit2:retrofit-mock:2.9.0")
+
+    // Additional Testing Utilities
+    testImplementation("org.mockito:mockito-core:5.3.1")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
+    androidTestImplementation("org.mockito:mockito-android:5.3.1")
+
+    // For testing coroutines
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
+
+    // Lifecycle Testing
+    testImplementation("androidx.lifecycle:lifecycle-runtime-testing:2.7.0")
+
+    // Image Loading Testing (for Coil)
+    testImplementation("io.coil-kt.coil3:coil:3.0.0")
+
+    // Truth assertions (you already have this as implementation, move to test)
+    // Remove from main implementation and add as test dependency
+    testImplementation(libs.truth)
+    androidTestImplementation(libs.truth)
 
     implementation ("com.google.mlkit:barcode-scanning:17.0.3")
 

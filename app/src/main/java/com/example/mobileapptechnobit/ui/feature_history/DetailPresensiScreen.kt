@@ -31,11 +31,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -46,9 +49,13 @@ import com.example.mobileapptechnobit.ui.theme.primary100
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 import kotlinx.coroutines.launch
 
+// DetailPresensiScreen.kt - Responsive Design
 @Composable
 fun DetailPresensiScreen(navCtrl: NavController) {
     var hasShownToast by remember { mutableStateOf(false) }
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val screenHeight = configuration.screenHeightDp.dp
 
     val presenceItem = navCtrl.previousBackStackEntry!!
         ?.savedStateHandle?.get<HistoryPresensiResponseItem>("presenceItem")
@@ -69,11 +76,15 @@ fun DetailPresensiScreen(navCtrl: NavController) {
         topBar = {
             Box {
                 Column(Modifier.fillMaxWidth()) {
-                    val linkfoto = "https://app.arunikaprawira.com$foto"
+                    val linkfoto = "https://app.arunikaprawira.com/storage/$foto"
+                    Log.d(
+                        "DetailPresensiScreen",
+                        "Link foto: $linkfoto, Nama: $nama, Tanggal: $tanggal, Status: $status, Lokasi: $lokasi, Shift: $shift"
+                    )
                     HistoryPresensiTitle(modifier = Modifier, navCtrl)
-                    Column(Modifier.background(Color.White)) {
-                        HistoryPresensi(nama, tanggal, status, lokasi, shift, linkfoto)
-                        ActionButtonPresensi(nama, tanggal, status, lokasi, shift, linkfoto, linkfoto)
+                    Column(Modifier.background(Color.White).padding(horizontal = 24.dp)) {
+                        HistoryPresensi(nama, tanggal, status, lokasi, shift, linkfoto, screenWidth, screenHeight)
+                        ActionButtonPresensi(nama, tanggal, status, lokasi, shift, linkfoto, linkfoto, screenWidth)
                     }
                 }
             }
@@ -83,32 +94,43 @@ fun DetailPresensiScreen(navCtrl: NavController) {
     }
 }
 
-
 @Composable
 fun HistoryPresensiTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 30.dp)
+            .padding(vertical = (screenWidth * 0.076f)) // Responsive padding
     ) {
         IconButton(
             onClick = {
                 navCtrl.popBackStack()
             },
-            Modifier.padding(start = 10.dp)
+            Modifier.padding(start = (screenWidth * 0.013f)) // Responsive padding
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "back button",
                 tint = Color.Black,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size((screenWidth * 0.035f)) // Responsive icon size
             )
         }
     }
 }
 
 @Composable
-fun HistoryPresensi(nama: String, tanggal: String, status: String, lokasi: String, shift: String, foto: String?) {
+fun HistoryPresensi(
+    nama: String,
+    tanggal: String,
+    status: String,
+    lokasi: String,
+    shift: String,
+    foto: String?,
+    screenWidth: Dp,
+    screenHeight: Dp
+) {
     Column {
         Column(
             modifier = Modifier
@@ -116,38 +138,38 @@ fun HistoryPresensi(nama: String, tanggal: String, status: String, lokasi: Strin
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.076f)) // Responsive spacing
             Text(
                 text = "Detail Presensi",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Medium,
-                fontSize = 25.sp
+                fontSize = (screenWidth.value *  0.064f).sp // Responsive font size
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.02f))
             Text(
-                text = "Nama Karyawan \t:\t$nama",
+                text = "Nama Karyawan \t:\t $nama",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Light,
-                fontSize = 18.sp
+                fontSize = (screenWidth.value * 0.046f).sp // Responsive font size
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.02f))
             Text(
                 text = "Tanggal \t :\t$tanggal",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Light,
-                fontSize = 12.sp
+                fontSize = (screenWidth.value *  0.025f).sp // Responsive font size
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.02f))
             HorizontalDivider(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                modifier = Modifier.padding(start = screenWidth * 0.02f, end = screenWidth * 0.02f),
                 thickness = 1.dp
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.02f))
         }
 
         Column(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = screenWidth * 0.02f)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.Start
         ) {
@@ -155,56 +177,55 @@ fun HistoryPresensi(nama: String, tanggal: String, status: String, lokasi: Strin
                 text = "Status",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Light,
-                fontSize = 12.sp
+                fontSize = (screenWidth.value *  0.030f).sp
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.01f))
             Text(
                 text = "$status",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Medium,
-                fontSize = 14.sp
+                fontSize = (screenWidth.value *  0.030f).sp
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.02f))
             Text(
                 text = "Lokasi",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Light,
-                fontSize = 12.sp
+                fontSize = (screenWidth.value *  0.030f).sp
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.01f))
             Text(
                 text = "$lokasi",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Medium,
-                fontSize = 14.sp
+                fontSize = (screenWidth.value *  0.030f).sp
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.02f))
             Text(
                 text ="Shift",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Light,
-                fontSize = 12.sp
+                fontSize = (screenWidth.value *  0.030f).sp
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.01f))
             Text(
                 text = "$shift",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Medium,
-                fontSize = 14.sp
+                fontSize = (screenWidth.value *  0.030f).sp
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.02f))
             AsyncImage(
                 model = foto,
                 contentDescription = "Foto Presensi",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(screenHeight * 0.25f) // Responsive image height
             )
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.04f))
         }
     }
 }
-
 
 @Composable
 fun ActionButtonPatroli(
@@ -263,15 +284,18 @@ fun ActionButtonPatroli(
     }
 }
 
+// Responsive Action Buttons
 @Composable
-fun ActionButtonPresensi(
+fun ActionButtonPatroli(
     nama: String?,
     tanggal: String,
     status: String,
     lokasi: String,
     shift: String,
+    catatan : String,
     foto: String?,
-    linkfoto: String
+    linkfoto: String,
+    screenWidth: Dp
 ) {
     var pdfUri by remember { mutableStateOf<Uri?>(null) }
 
@@ -282,20 +306,20 @@ fun ActionButtonPresensi(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 20.dp),
+            .padding(horizontal = screenWidth * 0.02f, vertical = screenWidth * 0.025f),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        androidx.compose.material3. Button(
+        androidx.compose.material3.Button(
             onClick = {
                 scope.launch {
-                    val uri = pdfGenerator.generatePresensiPDFPresensi(context, nama, tanggal, status, lokasi, shift, foto)
+                    val uri = pdfGenerator.generatePresensiPDFPatroli(context, nama, tanggal, status, lokasi, shift, catatan, foto)
                     if (uri != null) pdfUri = uri
                 }
             },
             shape = CircleShape,
             contentPadding = PaddingValues(0.dp),
-            modifier = Modifier.size(64.dp),
+            modifier = Modifier.size(screenWidth * 0.08f),
             colors = ButtonDefaults.buttonColors(containerColor = primary100)
         ){
             Icon(Icons.Default.SaveAlt, contentDescription = "Download", tint = Color.White)
@@ -311,260 +335,70 @@ fun ActionButtonPresensi(
             },
             shape = CircleShape,
             contentPadding = PaddingValues(0.dp),
-            modifier = Modifier.size(64.dp),
+            modifier = Modifier.size(screenWidth * 0.08f),
             colors = ButtonDefaults.buttonColors(containerColor = primary100)
         ) {
             Icon(Icons.Default.Share, contentDescription = "Share", tint = Color.White)
         }
     }
 }
-//
-//suspend fun generatePresensiPDF(context: Context, nama: String?, tanggal: String, status: String, lokasi: String, shift: String, foto: String?): Uri? {
-//    if (nama == null) {
-//        Toast.makeText(context, "Nama tidak tersedia", Toast.LENGTH_SHORT).show()
-//        return null
-//    }
-//    val pageHeight = 1120
-//    val pageWidth = 792
-//    val pdfDocument = PdfDocument()
-//    val paint = Paint()
-//
-//    val titlePaint = Paint().apply {
-//        typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
-//        textSize = 25f
-//        color = Color.Black.toArgb()
-//        textAlign = Paint.Align.CENTER
-//    }
-//
-//    val subtitlePaint = Paint().apply {
-//        typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
-//        textSize = 18f
-//        color = Color.DarkGray.toArgb()
-//        textAlign = Paint.Align.CENTER
-//    }
-//
-//    val labelPaint = Paint().apply {
-//        typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
-//        textSize = 12f
-//        color = Color.Gray.toArgb()
-//    }
-//
-//    val sectionPaint = Paint().apply {
-//        typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
-//        textSize = 14f
-//        color = Color.Black.toArgb()
-//    }
-//
-//    val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create()
-//    val page = pdfDocument.startPage(pageInfo)
-//    val canvas = page.canvas
-//
-//    var y = 50f
-//
-//    // Title
-//    canvas.drawText("Detail Presensi", pageWidth / 2f, y, titlePaint)
-//    y += 60f
-//
-//    // Nama Karyawan
-//    canvas.drawText(nama, pageWidth / 2f, y, subtitlePaint)
-//    y += 30f
-//
-//    // Format date for PDF
-//    val formattedDate = formatDateForPDF(tanggal)
-//
-//    // Tanggal
-//    canvas.drawText(formattedDate, pageWidth / 2f, y, subtitlePaint)
-//    y += 40f
-//
-//    // Divider
-//    paint.color = Color.LightGray.toArgb()
-//    canvas.drawLine(56f, y, pageWidth - 56f, y, paint)
-//    y += 40f
-//
-//    // Status
-//    labelPaint.textAlign = Paint.Align.LEFT
-//    canvas.drawText("Status", 56f, y, labelPaint)
-//    y += 20f
-//    canvas.drawText(status, 56f, y, sectionPaint)
-//    y += 40f
-//
-//    // Lokasi
-//    canvas.drawText("Lokasi", 56f, y, labelPaint)
-//    y += 20f
-//    canvas.drawText(lokasi, 56f, y, sectionPaint)
-//    y += 40f
-//
-//    // Shift
-//    canvas.drawText("Shift", 56f, y, labelPaint)
-//    y += 20f
-//    canvas.drawText(shift, 56f, y, sectionPaint)
-//    y += 60f // Increased space before image
-//
-//    // Image section
-//    if (!foto.isNullOrEmpty()) {
-//        canvas.drawText("Foto Presensi", 56f, y, labelPaint)
-//        y += 20f
-//
-//        // Clear logging for debugging
-//        Log.d("PDFUtils", "Attempting to load image from URL: $foto")
-//
-//        try {
-//            val request = ImageRequest.Builder(context)
-//                .data(foto)
-//                .allowHardware(false) // Important for bitmap decoding
-//                .size(400, 400) // Request appropriate size
-//                .build()
-//
-//            val result = context.imageLoader.execute(request)
-//
-//            if (result is SuccessResult) {
-//                Log.d("PDFUtils", "Image loaded successfully")
-//                val bitmap = (result.drawable as BitmapDrawable).bitmap
-//
-//                // Calculate maximum available space for image
-//                val availableHeight = pageHeight - y - 50f // 50px margin at bottom
-//
-//                // Calculate image dimensions while maintaining aspect ratio
-//                val maxImageWidth = pageWidth - 112f // 56px margin on each side
-//                val aspectRatio = bitmap.height.toFloat() / bitmap.width.toFloat()
-//
-//                // Calculate image dimensions ensuring it fits within available space
-//                var imageWidth = maxImageWidth
-//                var imageHeight = imageWidth * aspectRatio
-//
-//                // If the image height exceeds available height, scale it down
-//                if (imageHeight > availableHeight) {
-//                    imageHeight = availableHeight
-//                    imageWidth = imageHeight / aspectRatio
-//                }
-//
-//                // Center the image horizontally
-//                val imageX = (pageWidth - imageWidth) / 2
-//
-//                // Draw image with proper dimensions
-//                val destRect = RectF(imageX, y, imageX + imageWidth, y + imageHeight)
-//                canvas.drawBitmap(bitmap, null, destRect, null)
-//
-//                // Update y position after drawing image
-//                y += imageHeight + 40f
-//
-//                Log.d("PDFUtils", "Image drawn to PDF at x=$imageX, y=$y with width=$imageWidth, height=$imageHeight")
-//            } else {
-//                Log.e("PDFUtils", "Failed to load image from URL: $foto")
-//                canvas.drawText("Foto tidak dapat dimuat", 56f, y, sectionPaint)
-//                y += 40f
-//            }
-//        } catch (e: Exception) {
-//            Log.e("PDFUtils", "Error drawing image from URL", e)
-//            canvas.drawText("Gagal memuat foto: ${e.message}", 56f, y, sectionPaint)
-//            y += 40f
-//        }
-//    } else {
-//        canvas.drawText("Foto tidak tersedia", 56f, y, sectionPaint)
-//        y += 40f
-//    }
-//
-//    pdfDocument.finishPage(page)
-//
-//    val fileName = "Presensi_${nama.replace(" ", "_")}_${
-//        tanggal.replace("-", "_").replace(" ", "_").replace(":", "_")
-//    }.pdf"
-//
-//    val file: File
-//    var uri: Uri?
-//
-//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//        // Android 10+
-//        val contentValues = ContentValues().apply {
-//            put(MediaStore.Downloads.DISPLAY_NAME, fileName)
-//            put(MediaStore.Downloads.MIME_TYPE, "application/pdf")
-//            put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
-//            put(MediaStore.Downloads.IS_PENDING, 1)
-//        }
-//
-//        val resolver = context.contentResolver
-//        val collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-//        val insertedUri = resolver.insert(collection, contentValues)
-//
-//        if (insertedUri != null) {
-//            resolver.openOutputStream(insertedUri)?.use { outputStream ->
-//                pdfDocument.writeTo(outputStream)
-//            }
-//            contentValues.clear()
-//            contentValues.put(MediaStore.Downloads.IS_PENDING, 0)
-//            resolver.update(insertedUri, contentValues, null, null)
-//
-//            Toast.makeText(context, "PDF disimpan di folder Download", Toast.LENGTH_SHORT).show()
-//            uri = insertedUri
-//        } else {
-//            Toast.makeText(context, "Gagal menyimpan file", Toast.LENGTH_SHORT).show()
-//            uri = null
-//        }
-//    } else {
-//        // Android 9 ke bawah
-//        val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-//        if (!downloadsDir.exists()) downloadsDir.mkdirs()
-//        file = File(downloadsDir, fileName)
-//
-//        try {
-//            val outputStream = FileOutputStream(file)
-//            pdfDocument.writeTo(outputStream)
-//            outputStream.close()
-//            Toast.makeText(context, "PDF disimpan di ${file.absolutePath}", Toast.LENGTH_SHORT).show()
-//            uri = Uri.fromFile(file)
-//        } catch (e: IOException) {
-//            e.printStackTrace()
-//            Toast.makeText(context, "Gagal menyimpan PDF", Toast.LENGTH_SHORT).show()
-//            uri = null
-//        }
-//    }
-//
-//    // Try to open the PDF
-//    try {
-//        val intent = Intent(Intent.ACTION_VIEW).apply {
-//            setDataAndType(uri, "application/pdf")
-//            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-//        }
-//        context.startActivity(Intent.createChooser(intent, "Buka dengan"))
-//    } catch (e: ActivityNotFoundException) {
-//        Toast.makeText(context, "Tidak ada aplikasi untuk membuka PDF", Toast.LENGTH_SHORT).show()
-//    }
-//
-//    pdfDocument.close()
-//    return uri
-//}
-//
-//fun sharePdf(context: Context, pdfUri: Uri) {
-//    if (pdfUri == null) {
-//        Toast.makeText(context, "File tidak ditemukan", Toast.LENGTH_SHORT).show()
-//        return
-//    } else {
-//        val shareIntent = Intent().apply {
-//            action = Intent.ACTION_SEND
-//            putExtra(Intent.EXTRA_STREAM, pdfUri)
-//            type = "application/pdf"
-//            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-//        }
-//        context.startActivity(Intent.createChooser(shareIntent, "Share PDF using"))
-//    }
-//}
-//
-//private fun formatDateForPDF(dateString: String): String {
-//    return try {
-//        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale("id", "ID"))
-//        val outputFormat = SimpleDateFormat("EEEE, dd MMMM yyyy - HH:mm:ss a", Locale("id", "ID"))
-//
-//        val date = inputFormat.parse(dateString)
-//        if (date != null) {
-//            outputFormat.format(date)
-//        } else {
-//            dateString
-//        }
-//    } catch (e: Exception) {
-//        dateString
-//    }
-//}
 
+@Composable
+fun ActionButtonPresensi(
+    nama: String?,
+    tanggal: String,
+    status: String,
+    lokasi: String,
+    shift: String,
+    foto: String?,
+    linkfoto: String,
+    screenWidth: Dp
+) {
+    var pdfUri by remember { mutableStateOf<Uri?>(null) }
+
+    val pdfGenerator = PdfGenerator()
+
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = screenWidth * 0.02f, vertical = screenWidth * 0.025f),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        androidx.compose.material3.Button(
+            onClick = {
+                scope.launch {
+                    val uri = pdfGenerator.generatePresensiPDFPresensi(context, nama, tanggal, status, lokasi, shift, foto)
+                    if (uri != null) pdfUri = uri
+                }
+            },
+            shape = CircleShape,
+            contentPadding = PaddingValues(0.dp),
+            modifier = Modifier.size(screenWidth * 0.08f),
+            colors = ButtonDefaults.buttonColors(containerColor = primary100)
+        ){
+            Icon(Icons.Default.SaveAlt, contentDescription = "Download", tint = Color.White)
+        }
+
+        androidx.compose.material3.Button(
+            onClick = {
+                if (pdfUri != null) {
+                    pdfGenerator.sharePdf(context, pdfUri!!)
+                } else {
+                    Toast.makeText(context, "PDF belum dibuat", Toast.LENGTH_SHORT).show()
+                }
+            },
+            shape = CircleShape,
+            contentPadding = PaddingValues(0.dp),
+            modifier = Modifier.size(screenWidth * 0.08f),
+            colors = ButtonDefaults.buttonColors(containerColor = primary100)
+        ) {
+            Icon(Icons.Default.Share, contentDescription = "Share", tint = Color.White)
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
