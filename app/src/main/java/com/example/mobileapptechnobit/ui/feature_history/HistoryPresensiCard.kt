@@ -106,7 +106,7 @@ fun HistoryPresensiCard(
                     Modifier.padding(start = 8.dp)
                 ){
                     Text(text = "Mulai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
-                    Text(text = historyItem.masuk_shift.substring(0, 5), fontFamily = robotoFontFamily)
+                    Text(text = historyItem.masuk_shift.substring(0, 5)+ " WIB", fontFamily = robotoFontFamily)
                 }
 
                 Spacer(Modifier.weight(1f))
@@ -126,7 +126,7 @@ fun HistoryPresensiCard(
                     Modifier.padding(start = 8.dp)
                 ){
                     Text(text = "Selesai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
-                    Text(text = historyItem.keluar_shift.substring(0, 5), fontFamily = robotoFontFamily)
+                    Text(text = historyItem.keluar_shift.substring(0, 5) + " WIB", fontFamily = robotoFontFamily)
                 }
             }
             Spacer(Modifier.height(10.dp))
