@@ -4,15 +4,22 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Base64
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.mobileapptechnobit.data.API.ApiClient
 import com.example.mobileapptechnobit.data.remote.ClockOutRequest
+import com.example.mobileapptechnobit.data.remote.CompanyLocation
 import com.example.mobileapptechnobit.data.remote.Presensi
 import com.example.mobileapptechnobit.data.remote.PresensiResponse
+import com.example.mobileapptechnobit.data.repository.LocationRepository
+import com.example.mobileapptechnobit.data.repository.PermissionRepository
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -21,6 +28,8 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 
 class CameraPresViewModel : ViewModel() {
+
+    val repository = LocationRepository()
 
     private val _capturedBitmap = MutableStateFlow<Bitmap?>(null)
     val capturedBitmap: StateFlow<Bitmap?> get() = _capturedBitmap

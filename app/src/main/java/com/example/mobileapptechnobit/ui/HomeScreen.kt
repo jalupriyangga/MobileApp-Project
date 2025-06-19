@@ -44,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -136,6 +137,8 @@ fun ProfileSection(modifier: Modifier = Modifier) {
 
     var userProfile by remember { mutableStateOf<UserProfileResponse?>(null) }
 
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+
     LaunchedEffect(token) {
         viewModel.fetchEmployeesProfile(token)
         Log.d("PS", "Token yang diterima: $token")
@@ -145,7 +148,7 @@ fun ProfileSection(modifier: Modifier = Modifier) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 100.dp, start = 20.dp),
+            .padding(top = screenHeight * 0.08f, start = 20.dp, bottom = screenHeight * 0.008f),
         verticalAlignment = Alignment.CenterVertically
     ) {
         userProfile?.data?.photo.let { photo ->
@@ -374,7 +377,6 @@ fun MainMenu(modifier: Modifier = Modifier, navCtrl: NavController, viewModel: C
             .padding(top = 20.dp)
             .padding(bottom = 10.dp)
             .verticalScroll(rememberScrollState())
-
     ) {
         Text("Menu Utama", fontWeight = FontWeight.Bold, fontSize = 25.sp, fontFamily = robotoFontFamily)
         Spacer(modifier = Modifier.height(8.dp))
@@ -420,6 +422,7 @@ fun MenuItem(modifier: Modifier = Modifier, painter: Painter, label: String, onC
         modifier = Modifier
 //            .size(160.dp)
             .width(160.dp)
+            .padding(bottom = 20.dp)
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(12.dp),
@@ -510,30 +513,6 @@ fun PresentMenuDialog(modifier: Modifier = Modifier, showDialog: Boolean, navCtr
                 }
             },
         )
-
-//        AlertDialog(
-//            onDismissRequest = { onDismiss() },
-//            title = {
-//                Text(
-//                    text = "Pilih aksi",
-//                    fontSize = 16.sp,
-//                    fontWeight = FontWeight.Bold,
-//                    fontFamily = robotoFontFamily
-//                )
-//            },
-//
-//            confirmButton = {
-//                Button(
-//                    onClick = { onDismiss() }
-//                ) {
-//                    Text(text = "Tutup")
-//                }
-//            },
-//            containerColor = Color.White,
-//            shape = RoundedCornerShape(16.dp),
-//            modifier = Modifier.background(Color.Transparent)
-//        )
-
     }
 }
 

@@ -2,6 +2,7 @@ package com.example.mobileapptechnobit.data.API
 
 import com.example.mobileapptechnobit.data.remote.AlternatePermissionResponse
 import com.example.mobileapptechnobit.data.remote.ClockOutRequest
+import com.example.mobileapptechnobit.data.remote.CompanyLocation
 import com.example.mobileapptechnobit.data.remote.CompanyProfileResponse
 import com.example.mobileapptechnobit.data.remote.EmployeeResponse
 import com.example.mobileapptechnobit.data.remote.HistoryPatroliResponse
@@ -9,7 +10,6 @@ import com.example.mobileapptechnobit.data.remote.HistoryPresensiResponseItem
 import com.example.mobileapptechnobit.data.remote.PatrolScheduleResponse
 import com.example.mobileapptechnobit.data.remote.PatroliRequest
 import com.example.mobileapptechnobit.data.remote.PermissionResponse
-import com.example.mobileapptechnobit.data.remote.Presensi
 import com.example.mobileapptechnobit.data.remote.PresensiResponse
 import com.example.mobileapptechnobit.data.remote.SalaryDetailResponse
 import okhttp3.MultipartBody
@@ -59,9 +59,6 @@ interface ApiService{
 
 
     // API Presensi
-//    @POST("v1/android/presensi")
-//    suspend fun sendPresensi(@Header("Authorization") token: String, @Body requestBody: Presensi): Response<PresensiResponse>
-
     @Headers("Accept: application/json")
     @Multipart
     @POST("v1/android/presensi")
@@ -77,6 +74,12 @@ interface ApiService{
 
     @POST("v1/android/presensi")
     suspend fun sendClockOutPresensi(@Header("Authorization") token: String, @Body requestBody: ClockOutRequest): Response<PresensiResponse>
+
+    @GET("v1/android/company-location")
+    suspend fun getCompanyLocation(@Header("Authorization") token: String): Response<CompanyLocation>
+
+    //    @POST("v1/android/presensi")
+//    suspend fun sendPresensi(@Header("Authorization") token: String, @Body requestBody: Presensi): Response<PresensiResponse>
 
 
     // API Perizinan

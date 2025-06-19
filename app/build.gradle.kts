@@ -99,7 +99,7 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.3.0-rc01")
     implementation("androidx.camera:camera-view:1.3.0-rc01")
     implementation("androidx.camera:camera-extensions:1.3.0-rc01")
-    implementation ("com.google.android.gms:play-services-location:21.0.1")
+    implementation ("com.google.android.gms:play-services-location:21.3.0")
 
     implementation ("com.google.accompanist:accompanist-permissions:0.20.3")
 

@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,12 +55,15 @@ import com.example.mobileapptechnobit.data.remote.AlternatePermissionResponseIte
 import com.example.mobileapptechnobit.data.remote.PermissionResponseItem
 import com.example.mobileapptechnobit.ui.theme.primary100
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
+import com.google.android.gms.location.LocationServices
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedBoxWithConstraintsScope")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedBoxWithConstraintsScope",
+    "MissingPermission"
+)
 @Composable
 fun PermissionScreen(modifier: Modifier = Modifier, navCtrl: NavController, token: String, viewModel: PermissionViewModel) {
 
@@ -76,6 +80,14 @@ fun PermissionScreen(modifier: Modifier = Modifier, navCtrl: NavController, toke
     LaunchedEffect(Unit) {
         viewModel.fetchPermission(authToken)
         viewModel.fetchAlternatePermission(authToken)
+    }
+
+    var userLatitude by remember { mutableDoubleStateOf(0.0) }
+    var userLongitude by remember { mutableDoubleStateOf(0.0) }
+    val currentUserLocation = remember { LocationServices.getFusedLocationProviderClient(context) }
+    currentUserLocation.lastLocation.addOnSuccessListener { loc ->
+        userLatitude = loc.latitude
+        userLongitude = loc.longitude
     }
 
     Scaffold (
@@ -347,8 +359,12 @@ fun PermissionCard(modifier: Modifier = Modifier, permissionItem: PermissionResp
              Column {
                  Text(text = "Jenis Izin: ${permissionItem.permission}", fontSize = 13.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight(400))
                  Spacer(Modifier.padding(vertical = 3.dp))
-                 val createdDate = createdDateFormatter(permissionItem.created_at)
-                 Text(text = "Tanggal pengajuan: $createdDate", fontSize = 13.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight(400))
+                 if(permissionItem.created_at.isNullOrEmpty()){
+                     Text(text = "Tanggal pengajuan: - ", fontSize = 13.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight(400))
+                 } else{
+                     val createdDate = createdDateFormatter(permissionItem.created_at)
+                     Text(text = "Tanggal pengajuan: $createdDate", fontSize = 13.sp, fontFamily = robotoFontFamily, fontWeight = FontWeight(400))
+                 }
              }
              Column (horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                  Text(

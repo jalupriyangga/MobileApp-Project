@@ -52,6 +52,7 @@ import com.example.mobileapptechnobit.R
 import com.example.mobileapptechnobit.ViewModel.PermissionViewModel
 import com.example.mobileapptechnobit.ViewModel.ScheduleViewModel
 import com.example.mobileapptechnobit.data.remote.AlternatePermissionResponseItem
+import com.example.mobileapptechnobit.data.remote.PatrolScheduleResponse
 import com.example.mobileapptechnobit.data.remote.PermissionResponseItem
 import com.example.mobileapptechnobit.ui.theme.primary100
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
@@ -61,8 +62,6 @@ import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 fun DetailPermitScreen(modifier: Modifier = Modifier, navCtrl: NavController, token: String, id: Int, viewModel: PermissionViewModel, isRequester: Boolean) {
 
     val context = LocalContext.current
-//    val repository = remember { PermissionRepository() }
-//    val viewModel: PermissionViewModel = viewModel(factory = PermissionViewModelFactory(repository = repository, context = context))
     val permissionItems by viewModel.permissionItems.observeAsState()
     val alternatePermissionItem by viewModel.altPermissionItems.observeAsState()
     val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
@@ -73,15 +72,12 @@ fun DetailPermitScreen(modifier: Modifier = Modifier, navCtrl: NavController, to
 
     val scheduleViewModel: ScheduleViewModel = viewModel()
     val schedules = scheduleViewModel.scheduleList
+    val empSchedule = schedules.find { it.tanggal == permissionItem?.date }
+    val altSchedule = schedules.find { it.tanggal == altPermissionItem?.date }
 
     LaunchedEffect(Unit) {
-        scheduleViewModel.fetchSchedules(token, permissionItem?.date)
+        scheduleViewModel.fetchSchedules(token)
     }
-
-//    LaunchedEffect(Unit) {
-//        viewModel.fetchPermission(authToken)
-//    }
-//    val permissionItem = item
 
     Scaffold (
         topBar = {
@@ -139,9 +135,9 @@ fun DetailPermitScreen(modifier: Modifier = Modifier, navCtrl: NavController, to
             .padding(padding)
             .padding(top = 50.dp)) {
             if (isRequester){
-                DetailPermitBody(item = permissionItem!!)
+                DetailPermitBody(item = permissionItem!!, schedules = schedules)
             } else{
-                DetailPermitBody(item = altPermissionItem!!)
+                DetailPermitBody(item = altPermissionItem!!, schedules = schedules)
             }
         }
     }
@@ -167,24 +163,47 @@ fun DetailPermitTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
 }
 
 @Composable
-fun DetailPermitBody(modifier: Modifier = Modifier, item: PermissionResponseItem) {
+fun DetailPermitBody(modifier: Modifier = Modifier, item: PermissionResponseItem, schedules: List<PatrolScheduleResponse>) {
+
+    val schedule = schedules.find { it.tanggal == item.date }
+
     Column (Modifier.padding(horizontal = 30.dp)){
         if(item.alternateId != null){
 
-            if(item.DetailAltSchedule.isNullOrEmpty() || item.DetailEmpSchedule.isNullOrEmpty() || item.date.isNullOrEmpty()){
-                Text(text = "Pegawai Pengganti", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
-                Spacer(Modifier.padding(3.dp))
-                Text(text = item.alternateName, fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 15.sp)
+            Text(text = "Pegawai Pengganti", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
+            Spacer(Modifier.padding(3.dp))
+            Text(text = item.alternateName, fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 15.sp)
 
-                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement =  Arrangement.Center, modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
-                    Icon(
-                        imageVector = Icons.Default.Info,
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = Color.Gray
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Maaf, jadwal baru belum ditentukan", fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 17.sp,color = Color.Gray, textAlign = TextAlign.Center)
+            if(item.DetailAltSchedule.isNullOrEmpty() || item.DetailEmpSchedule.isNullOrEmpty() || item.date.isNullOrEmpty()){
+
+                if(schedule != null && item.DetailEmpSchedule.isNullOrEmpty()){
+                    Spacer(Modifier.padding(10.dp))
+                    Text(text = "Jadwal Lama", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
+                    Spacer(Modifier.padding(5.dp))
+//                    PermissionScheduleCard(time = item.DetailEmpSchedule, date = item.date)
+                    PermissionScheduleCardBySchedule(schedule = schedule)
+
+                    Spacer(Modifier.padding(10.dp))
+                    Text(text = "Jadwal Baru", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
+                    Spacer(Modifier.padding(5.dp))
+                    PermissionScheduleCard(time = item.DetailAltSchedule, date = item.date)
+
+                } else if(item.DetailAltSchedule != null){
+                    Spacer(Modifier.padding(10.dp))
+                    Text(text = "Jadwal Baru", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
+                    Spacer(Modifier.padding(5.dp))
+                    PermissionScheduleCard(time = item.DetailAltSchedule, date = item.date)
+                } else{
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement =  Arrangement.Center, modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = null,
+                            modifier = Modifier.size(48.dp),
+                            tint = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(text = "Maaf, jadwal baru belum ditentukan", fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 17.sp,color = Color.Gray, textAlign = TextAlign.Center)
+                    }
                 }
             } else{
                 Text(text = "Pegawai Pengganti", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
@@ -218,15 +237,46 @@ fun DetailPermitBody(modifier: Modifier = Modifier, item: PermissionResponseItem
 }
 
 @Composable
-fun DetailPermitBody(modifier: Modifier = Modifier, item: AlternatePermissionResponseItem) {
+fun DetailPermitBody(modifier: Modifier = Modifier, item: AlternatePermissionResponseItem, schedules: List<PatrolScheduleResponse>) {
+
+    val schedule = schedules.find { it.tanggal == item.date }
+
     Column (Modifier.padding(horizontal = 30.dp)){
         if(item.alternateId != null){
 
-            // Test tipis tipis if - else dihapus
+            Text(text = "Pegawai Pengganti", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
+            Spacer(Modifier.padding(3.dp))
+            Text(text = item.requesterName, fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 15.sp)
+
             if(item.DetailAltSchedule.isNullOrEmpty() || item.DetailEmpSchedule.isNullOrEmpty() || item.date.isNullOrEmpty()){
-                Text("empty")
+
+                if(schedule!!.tanggal.isNotEmpty() && item.DetailEmpSchedule.isNullOrEmpty()){
+                    Spacer(Modifier.padding(10.dp))
+                    Text(text = "Jadwal Lama", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
+                    Spacer(Modifier.padding(5.dp))
+//                    PermissionScheduleCard(time = item.DetailEmpSchedule, date = item.date)
+                    PermissionScheduleCardBySchedule(schedule = schedule)
+
+                    Spacer(Modifier.padding(10.dp))
+                    Text(text = "Jadwal Baru", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
+                    Spacer(Modifier.padding(5.dp))
+                    PermissionScheduleCard(time = item.DetailAltSchedule, date = item.date)
+
+                } else{
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement =  Arrangement.Center, modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = null,
+                            modifier = Modifier.size(48.dp),
+                            tint = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(text = "Maaf, jadwal baru belum ditentukan", fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 17.sp,color = Color.Gray, textAlign = TextAlign.Center)
+                    }
+                }
+
             } else{
-                Text(text = "Pegawai Pengaju Izin", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
+                Text(text = "Pegawai Pengganti", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
                 Spacer(Modifier.padding(3.dp))
                 Text(text = item.requesterName, fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 15.sp)
 
@@ -240,6 +290,7 @@ fun DetailPermitBody(modifier: Modifier = Modifier, item: AlternatePermissionRes
                 Spacer(Modifier.padding(5.dp))
                 PermissionScheduleCard(time = item.DetailAltSchedule, date = item.date)
             }
+
         } else{
             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement =  Arrangement.Center, modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
                 Icon(
@@ -249,8 +300,7 @@ fun DetailPermitBody(modifier: Modifier = Modifier, item: AlternatePermissionRes
                     tint = Color.Gray
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Maaf, karyawan pengganti belum ditentukan", fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 17.sp,color = Color.Gray, textAlign = TextAlign.Center)
+                Text(text = "Maaf, karyawan pengganti belum ditentukan", fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 17.sp,color = Color.Gray, textAlign = TextAlign.Center)
             }
         }
     }
@@ -342,6 +392,87 @@ fun PermissionScheduleCard(modifier: Modifier = Modifier, time: String, date: St
     }
 }
 
+@Composable
+fun PermissionScheduleCardBySchedule(modifier: Modifier = Modifier, schedule: PatrolScheduleResponse) {
+
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+
+            // Shift dan Tanggal
+            Row(verticalAlignment = Alignment.CenterVertically) {
+//                Box(
+//                    modifier = Modifier
+//                        .background(
+//                            color = when (waktu.lowercase()) {
+//                                "pagi" -> Color(0xFFFFFF00)
+//                                "siang" -> Color(0xFFFFB800)
+//                                "malam" -> Color(0xFF7EC8E3)
+//                                else -> Color.Gray
+//                            },
+//                            shape = RoundedCornerShape(4.dp)
+//                        ).padding(horizontal = 12.dp, vertical = 8.dp)
+//                ) {
+//                    Text(
+//                        text = waktu.replaceFirstChar { it.uppercase() }, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+//                }
+
+//                Spacer(modifier = Modifier.width(8.dp))
+
+                Icon(imageVector = Icons.Default.AccessTime, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(22.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = schedule.tanggal, fontSize = 16.sp, color = Color.Black)
+            }
+            Divider(color = Color.LightGray, thickness = 1.dp, modifier = Modifier.padding(vertical = 8.dp))
+
+//            Spacer(modifier = Modifier.height(2.dp))
+//
+//            // Lokasi patrol
+//            Text(
+//                text = "Lokasi: ${schedule.}",
+//                fontWeight = FontWeight.SemiBold,
+//                fontSize = 18.sp
+//            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Baris Jam Mulai - Selesai
+            Row(Modifier.padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                Icon(painter = painterResource(R.drawable.frame_27), contentDescription = null, modifier = Modifier.size(45.dp), tint = Color.Unspecified)
+                Column(modifier = Modifier.padding(start = 8.dp)) {
+                    Text(text = "Mulai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
+                    Text(text = schedule.jam_mulai, fontFamily = robotoFontFamily)
+                }
+
+                Spacer(Modifier.weight(1f))
+
+                VerticalDivider(thickness = 1.dp, color = Color.LightGray, modifier = Modifier.height(50.dp))
+
+                Spacer(Modifier.weight(1f))
+
+                Icon(painter = painterResource(R.drawable.frame_28), contentDescription = null, modifier = Modifier.size(45.dp), tint = Color.Unspecified)
+                Column(modifier = Modifier.padding(start = 8.dp)) {
+                    Text(text = "Selesai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
+                    Text(text = schedule.jam_selesai, fontFamily = robotoFontFamily)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Info lokasi & rekan
+
+//            Text(
+//                "Rekan tugas: ${schedule.rekan_tugas.joinToString(", ")}",
+//                fontSize = 14.sp,
+//                fontFamily = robotoFontFamily
+//            )
+        }
+    }
+}
+
 
 
 @Composable
@@ -386,21 +517,7 @@ fun BottomButton(modifier: Modifier = Modifier, viewModel: PermissionViewModel, 
         ) {
             Text(text = "Setuju", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
         }
-        var isEmployeeApproved = isEmpApproved
-        var isAlternateApproved = isAltApproved
 
-//        LaunchedEffect(isEmployeeApproved) {
-//            if(isEmployeeApproved == true){
-//                navCtrl.navigate("success_screen/Anda telah menyetujui perizinan!/permission_screen")
-//                isEmployeeApproved = false
-//            }
-//        }
-//        LaunchedEffect(isAlternateApproved) {
-//            if(isAlternateApproved == true){
-//                navCtrl.navigate("success_screen/Anda telah menyetujui perizinan!/permission_screen")
-//                isAlternateApproved = false
-//            }
-//        }
         LaunchedEffect(isEmpApproved) {
             if(isEmpApproved == true){
                 navCtrl.navigate("success_screen/Anda telah menyetujui perizinan!/permission_screen")

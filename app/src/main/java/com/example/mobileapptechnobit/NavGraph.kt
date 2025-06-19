@@ -6,6 +6,9 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.example.mobileapptechnobit.ui.DetailScheduleScreen
@@ -23,15 +26,19 @@ import com.example.mobileapptechnobit.ui.authentication.ResetPasswordScreen
 import com.example.mobileapptechnobit.ViewModel.AuthViewModel
 import com.example.mobileapptechnobit.ViewModel.AuthViewModelFactory
 import com.example.mobileapptechnobit.ViewModel.CameraPresViewModel
+import com.example.mobileapptechnobit.ViewModel.LocationViewModel
+import com.example.mobileapptechnobit.ViewModel.LocationViewModelFactory
 import com.example.mobileapptechnobit.ViewModel.PermissionViewModel
 import com.example.mobileapptechnobit.ViewModel.PermissionViewModelFactory
 import com.example.mobileapptechnobit.ViewModel.PatroliViewModel
 import com.example.mobileapptechnobit.data.repository.AuthRepository
+import com.example.mobileapptechnobit.data.repository.LocationRepository
 import com.example.mobileapptechnobit.data.repository.PermissionRepository
 import com.example.mobileapptechnobit.ui.authentication.ChangePasswordScreen
 import com.example.mobileapptechnobit.ui.authentication.LoginScreen
 import com.example.mobileapptechnobit.ui.authentication.SplashScreen
 import com.example.mobileapptechnobit.ui.authentication.WalkthroughScreen
+import com.example.mobileapptechnobit.ui.component.FailedScreen
 import com.example.mobileapptechnobit.ui.component.SuccessScreen
 import com.example.mobileapptechnobit.ui.feature_history.DetailPatroliScreen
 import com.example.mobileapptechnobit.ui.feature_history.DetailPresensiScreen
@@ -67,6 +74,16 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val viewModel: CameraPresViewModel = viewModel()
     val patroliViewModel: PatroliViewModel = viewModel()
+
+    //Location view model
+    val locationRepository = remember { LocationRepository() }
+    val locationViewModel: LocationViewModel = viewModel(factory = LocationViewModelFactory(locationRepository, context))
+    val companyLocation by locationViewModel.companyLocation.observeAsState()
+    LaunchedEffect(Unit) {
+        if (token != null) {
+            locationViewModel.getCompanyLocation(token)
+        }
+    }
 
 
     NavHost(
@@ -108,10 +125,15 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
                 message = backStackEntry.arguments?.getString("message") ?: "",
                 route = backStackEntry.arguments?.getString("route") ?: ""
             )
-
+        }
+        composable(Screen.Failed.route){ backStackEntry ->
+            FailedScreen(
+                navCtrl = navController,
+                route = backStackEntry.arguments?.getString("route") ?: ""
+            )
         }
         composable(Screen.Home.route){
-            com.example.mobileapptechnobit.ui.HomeScreen(navCtrl = navController)
+            HomeScreen(navCtrl = navController)
         }
         composable(Screen.History.route){
             HistoryScreen(navCtrl = navController, token = token ?: "")
@@ -152,7 +174,7 @@ fun NavGraph(navController: NavHostController, authViewModel: AuthViewModel) {
             }
         }
         composable(Screen.CameraPresensiCheck.route) {
-            CameraPresensiCheck(viewModel, navController, context)
+            CameraPresensiCheck(viewModel, locationViewModel, navController, context)
         }
         composable(Screen.PresensiSukses.route) {
             PresensiSuksesScreen(navController)
@@ -259,6 +281,7 @@ sealed class Screen(val route: String) {
     object EditSukses : Screen("edit_sukses_screen")
     object InfoPerusahaan : Screen("info_perusahaan_screen")
     object Success : Screen("success_screen/{message}/{route}")
+    object Failed : Screen("failed_screen/{route}")
     object Schedule: Screen("schedule_screen")
     object History : Screen("history_screen")
     object DetailHistoryPresensi : Screen("detail_history_presensi_screen")
