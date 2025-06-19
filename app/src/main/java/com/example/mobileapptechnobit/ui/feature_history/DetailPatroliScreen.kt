@@ -27,9 +27,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -42,9 +44,13 @@ import com.example.mobileapptechnobit.data.remote.HistoryPatroliResponseItem
 import com.example.mobileapptechnobit.data.repository.ProfileRepository
 import com.example.mobileapptechnobit.ui.theme.robotoFontFamily
 
+// DetailPatroliScreen.kt - Responsive Design
 @Composable
 fun DetailPatroliScreen(navCtrl: NavController, token: String) {
     var hasShownToast by remember { mutableStateOf(false) }
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val screenHeight = configuration.screenHeightDp.dp
 
     val context = LocalContext.current
     val repository = ProfileRepository(context)
@@ -88,7 +94,7 @@ fun DetailPatroliScreen(navCtrl: NavController, token: String) {
                     val linkfoto = "$foto"
                     Log.d("DetailPatroliScreen", "Link Foto: $linkfoto")
                     HistoryPatroliTitle(modifier = Modifier, navCtrl)
-                    Column(Modifier.background(Color.White)) {
+                    Column(Modifier.background(Color.White).padding(horizontal = 24.dp)) {
                         when(shift){
                             "1" -> {
                                 artiKodeShift = "Pagi"
@@ -98,8 +104,8 @@ fun DetailPatroliScreen(navCtrl: NavController, token: String) {
                             }
                             else -> {artiKodeShift = "Malam"}
                         }
-                        HistoryPatroli(nama, tanggal, status, lokasi, artiKodeShift, catatan, linkfoto)
-                        ActionButtonPatroli(nama, tanggal, status, lokasi, artiKodeShift, catatan, catatan, linkfoto)
+                        HistoryPatroli(nama, tanggal, status, lokasi, artiKodeShift, catatan, linkfoto, screenWidth, screenHeight)
+                        ActionButtonPatroli(nama, tanggal, status, lokasi, artiKodeShift, catatan, foto, linkfoto, screenWidth)
                     }
                 }
             }
@@ -109,32 +115,44 @@ fun DetailPatroliScreen(navCtrl: NavController, token: String) {
     }
 }
 
-
 @Composable
 fun HistoryPatroliTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 30.dp)
+            .padding(vertical = (screenWidth * 0.076f))
     ) {
         IconButton(
             onClick = {
                 navCtrl.popBackStack()
             },
-            Modifier.padding(start = 10.dp)
+            Modifier.padding(start = (screenWidth * 0.013f))
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "back button",
                 tint = Color.Black,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size((screenWidth * 0.035f))
             )
         }
     }
 }
 
 @Composable
-fun HistoryPatroli(nama: String?, tanggal: String, status: String, lokasi: String, shift: String, catatan: String, foto: String?) {
+fun HistoryPatroli(
+    nama: String?,
+    tanggal: String,
+    status: String,
+    lokasi: String,
+    shift: String,
+    catatan: String,
+    foto: String?,
+    screenWidth: Dp,
+    screenHeight: Dp
+) {
     Column {
         Column(
             modifier = Modifier
@@ -142,38 +160,38 @@ fun HistoryPatroli(nama: String?, tanggal: String, status: String, lokasi: Strin
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.076f))
             Text(
-                text = "Detail Presensi",
+                text = "Detail Patroli",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Medium,
-                fontSize = 25.sp
+                fontSize = (screenWidth.value * 0.064f).sp
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.02f))
             Text(
                 text = "Nama Karyawan \t:\t $nama",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Light,
-                fontSize = 18.sp
+                fontSize = (screenWidth.value * 0.046f).sp
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.02f))
             Text(
                 text = "Tanggal \t :\t$tanggal",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Light,
-                fontSize = 12.sp
+                fontSize = (screenWidth.value * 0.025f).sp
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.02f))
             HorizontalDivider(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                modifier = Modifier.padding(start = screenWidth * 0.02f, end = screenWidth * 0.02f),
                 thickness = 1.dp
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.02f))
         }
 
         Column(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = screenWidth * 0.02f)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.Start
         ) {
@@ -181,66 +199,66 @@ fun HistoryPatroli(nama: String?, tanggal: String, status: String, lokasi: Strin
                 text = "Status",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Light,
-                fontSize = 12.sp
+                fontSize = (screenWidth.value * 0.030f).sp
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.01f))
             Text(
                 text = "$status",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Medium,
-                fontSize = 14.sp
+                fontSize = (screenWidth.value * 0.030f).sp
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.02f))
             Text(
                 text = "Lokasi",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Light,
-                fontSize = 12.sp
+                fontSize = (screenWidth.value * 0.030f).sp
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.01f))
             Text(
                 text = "$lokasi",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Medium,
-                fontSize = 14.sp
+                fontSize = (screenWidth.value * 0.030f).sp
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.02f))
             Text(
                 text ="Shift",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Light,
-                fontSize = 12.sp
+                fontSize = (screenWidth.value * 0.030f).sp
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.01f))
             Text(
                 text = shift,
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Medium,
-                fontSize = 14.sp
+                fontSize = (screenWidth.value * 0.030f).sp
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.02f))
             Text(
                 text ="Catatan",
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Light,
-                fontSize = 12.sp
+                fontSize = (screenWidth.value * 0.030f).sp
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.01f))
             Text(
                 text = catatan,
                 fontFamily = robotoFontFamily,
                 fontWeight = FontWeight.Medium,
-                fontSize = 14.sp
+                fontSize = (screenWidth.value * 0.030f).sp
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.02f))
             AsyncImage(
                 model = foto,
-                contentDescription = "Foto Presensi",
+                contentDescription = "Foto Patroli",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(screenHeight * 0.25f)
             )
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(screenWidth * 0.04f))
         }
     }
 }

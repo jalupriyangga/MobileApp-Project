@@ -1,5 +1,6 @@
 package com.example.mobileapptechnobit.ui.feature_history
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -52,74 +53,112 @@ fun HistoryPatroliCard(
             navController.navigate(Screen.DetailHistoryPatroli.route)
         }
     ) {
-        Column(modifier = Modifier.padding(20.dp))
-        {
+        Column(modifier = Modifier.padding(20.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                // Safe shift handling
+                val shiftId = historyItem.shiftId?.toString() ?: "0"
+                val shiftText = when(shiftId) {
+                    "1" -> "Pagi"
+                    "2" -> "Siang"
+                    "3" -> "Malam"
+                    else -> "Tidak Diketahui"
+                }
+
+                val shiftColor = when(shiftId) {
+                    "1" -> Color(0xffFFF700)
+                    "2" -> Color(0xffFFB834)
+                    "3" -> Color(0xff89CDFF)
+                    else -> Color.LightGray
+                }
+
                 Text(
-                    text =
-                    when(historyItem.shiftId.toString()){
-                        "1" -> "Pagi"
-                        "2" -> "Siang"
-                        else -> {"Malam"}
-                    },
+                    text = shiftText,
                     fontFamily = robotoFontFamily,
                     fontWeight = FontWeight(500),
                     fontSize = 15.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .background(
-                            color = when (historyItem.shiftId.toString().lowercase()) {
-                                "1" -> Color(0xffFFF700)
-                                "2" -> Color(0xffFFB834)
-                                else -> Color(0xff89CDFF) // malam or default
-                            },
+                            color = shiftColor,
                             shape = RoundedCornerShape(5.dp)
                         )
                         .padding(vertical = 5.dp)
                         .width(70.dp),
                 )
                 Spacer(Modifier.padding(horizontal = 5.dp))
-                Text(historyItem.patrolLocation, fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
+
+                Text(
+                    text = historyItem.patrolLocation ?: "Lokasi tidak tersedia",
+                    fontFamily = robotoFontFamily,
+                    fontWeight = FontWeight(500),
+                    fontSize = 17.sp
+                )
             }
+
             Spacer(modifier = Modifier.height(10.dp))
             HorizontalDivider(
                 thickness = 1.dp,
                 color = Color.LightGray
             )
             Spacer(Modifier.height(10.dp))
-            Row (modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Absolute.SpaceBetween) {
+
+            Row (
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Column {
-                    Text(formattedDate, fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
-                    if (historyItem.patrolLocation.isNotEmpty()) {
-//                Text(historyItem.status, fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 15.sp)
-                        Text(text = historyItem.createdAt.substring(startIndex = 11) + " WIB", fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 15.sp, modifier = Modifier.padding(top = 5.dp))
-                    }
+                    Text(
+                        text = formattedDate,
+                        fontFamily = robotoFontFamily,
+                        fontWeight = FontWeight(500),
+                        fontSize = 17.sp
+                    )
+
+                    // Safe time extraction
+                    val timeText = extractTimeFromDateTime(historyItem.createdAt)
+                    Text(
+                        text = timeText,
+                        fontFamily = robotoFontFamily,
+                        fontWeight = FontWeight(400),
+                        fontSize = 15.sp,
+                        modifier = Modifier.padding(top = 5.dp),
+                        color = if (timeText == "Waktu tidak tersedia") Color.Gray else Color.Unspecified
+                    )
                 }
-//                Text(
-//                    text = historyItem.shiftId.toString(),
-//                    fontFamily = robotoFontFamily,
-//                    fontWeight = FontWeight(500),
-//                    fontSize = 12.sp,
-//                    textAlign = TextAlign.Center,
-//                    modifier = Modifier
-//                        .background(
-//                            color = when (historyItem.shiftId.toString().lowercase()) {
-//                                "Aman" -> success100
-//                                "Tidak Aman" -> error100
-//                                else -> Color(0xff89CDFF) // malam or default
-//                            },
-//                            shape = RoundedCornerShape(5.dp)
-//                        )
-//                        .padding(vertical = 5.dp)
-//                        .width(40.dp),
-//                )
             }
-            Text(text = "Catatan : ", fontFamily = robotoFontFamily, modifier = Modifier.padding(vertical = 8.dp))
-            Text(text = historyItem.catatan, fontFamily = robotoFontFamily)
+
+            Text(
+                text = "Catatan : ",
+                fontFamily = robotoFontFamily,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            val catatanText = historyItem.catatan?.takeIf { it.isNotBlank() } ?: "Tidak ada catatan"
+            Text(
+                text = catatanText,
+                fontFamily = robotoFontFamily,
+                color = if (historyItem.catatan.isNullOrBlank()) Color.Gray else Color.Unspecified
+            )
         }
+    }
+}
+
+// Helper function to safely extract time
+fun extractTimeFromDateTime(createdAt: String?): String {
+    return try {
+        if (createdAt.isNullOrBlank() || createdAt.length <= 11) {
+            "Waktu tidak tersedia"
+        } else {
+            val timeString = createdAt.substring(11)
+            "$timeString WIB"
+        }
+    } catch (e: Exception) {
+        Log.e("HistoryPatroliCard", "Error extracting time from: $createdAt", e)
+        "Waktu tidak tersedia"
     }
 }
 

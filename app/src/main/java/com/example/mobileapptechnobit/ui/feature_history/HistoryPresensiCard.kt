@@ -92,6 +92,7 @@ fun HistoryPresensiCard(
                 Text(historyItem.lokasi, fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 15.sp)
             }
             Spacer(modifier = Modifier.height(10.dp))
+            // Masih Belom Fix
             Row(
                 Modifier.padding(horizontal = 25.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -105,7 +106,7 @@ fun HistoryPresensiCard(
                     Modifier.padding(start = 8.dp)
                 ){
                     Text(text = "Mulai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
-                    Text(text = "08.00 WIB", fontFamily = robotoFontFamily)
+                    Text(text = historyItem.masuk_shift.substring(0, 5)+ " WIB", fontFamily = robotoFontFamily)
                 }
 
                 Spacer(Modifier.weight(1f))
@@ -125,7 +126,7 @@ fun HistoryPresensiCard(
                     Modifier.padding(start = 8.dp)
                 ){
                     Text(text = "Selesai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
-                    Text(text = "16.00 WIB", fontFamily = robotoFontFamily)
+                    Text(text = historyItem.keluar_shift.substring(0, 5) + " WIB", fontFamily = robotoFontFamily)
                 }
             }
             Spacer(Modifier.height(10.dp))

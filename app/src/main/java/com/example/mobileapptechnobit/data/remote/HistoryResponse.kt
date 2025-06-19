@@ -26,7 +26,13 @@ data class HistoryPresensiResponseItem(
     val status: String = "",
 
     @SerializedName("tanggal")
-    val tanggal: String = ""
+    val tanggal: String = "",
+
+    @SerializedName("masuk_shift")
+    val masuk_shift: String = "",
+
+    @SerializedName("keluar_shift")
+    val keluar_shift: String = "",
 ) : Parcelable
 
 @Parcelize
