@@ -268,7 +268,7 @@ fun CameraPresOutCheck(
                                             file
                                         )
                                         val photoPart = okhttp3.MultipartBody.Part.createFormData(
-                                            "photo",
+                                            "photo_file",
                                             file.name,
                                             requestFile
                                         )

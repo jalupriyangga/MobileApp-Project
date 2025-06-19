@@ -64,8 +64,7 @@ interface ApiService{
     @POST("v1/android/presensi")
     suspend fun sendPresensi(
         @Header("Authorization") token: String,
-        @Part photo: MultipartBody.Part,
-        @Part("photo_file") photoFile: RequestBody,
+        @Part photo_file: MultipartBody.Part, // HANYA INI untuk file!
         @Part("employee_id") employeeId: RequestBody,
         @Part("company_place_id") companyPlaceId: RequestBody,
         @Part("user_note") userNote: RequestBody,

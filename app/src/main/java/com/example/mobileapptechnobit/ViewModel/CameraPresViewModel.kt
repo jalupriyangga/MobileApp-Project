@@ -102,7 +102,6 @@ class CameraPresViewModel : ViewModel() {
                 val response = ApiClient.apiService.sendPresensi(
                     "Bearer $token",
                     photo,
-                    photoPathBody,
                     employeeIdBody,
                     companyPlaceIdBody,
                     userNoteBody,
