@@ -154,8 +154,8 @@ fun FormPatroli(
                 notes = notes,
                 onNotesChange = { notes = it },
                 onSubmit = {
-                    if (fullname.isBlank() || notes.text.trim().isEmpty()) {
-                        Toast.makeText(context, "Wajib mengisi seluruh kolom", Toast.LENGTH_SHORT).show()
+                    if (selectedCondition == "Tidak aman" && notes.text.trim().isEmpty()) {
+                        Toast.makeText(context, "Wajib mengisi kolom catatan", Toast.LENGTH_SHORT).show()
                     } else {
                         showDialog = true
                     }

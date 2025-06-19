@@ -62,6 +62,10 @@ import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
 import com.google.android.gms.location.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -340,7 +344,7 @@ private fun takePhoto(
 
             override fun onError(exception: ImageCaptureException) {
                 super.onError(exception)
-                Toast.makeText(context, "Gagal mengambil gambar: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Ulangi mengambil gambar: ${exception.message}", Toast.LENGTH_SHORT).show()
                 onProcessingDone?.invoke()
             }
         }
@@ -358,14 +362,43 @@ fun getCurrentLocationReal(context: Context, onLocationReady: (Location?) -> Uni
             fastestInterval = 0
             numUpdates = 1
         }
+        var called = false
         val callback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
-                val location = locationResult.lastLocation
-                onLocationReady(location)
-                fusedLocationClient.removeLocationUpdates(this)
+                if (!called) {
+                    called = true
+                    fusedLocationClient.removeLocationUpdates(this)
+                    onLocationReady(locationResult.lastLocation)
+                }
             }
         }
         fusedLocationClient.requestLocationUpdates(locationRequest, callback, null)
+
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(15000)
+            if (!called) {
+                fusedLocationClient.removeLocationUpdates(callback)
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { lastLocation ->
+                        if (!called) {
+                            called = true
+                            if (lastLocation != null) {
+                                onLocationReady(lastLocation)
+                            } else {
+                                Toast.makeText(context, "Lokasi tidak ditemukan", Toast.LENGTH_SHORT).show()
+                                onLocationReady(null)
+                            }
+                        }
+                    }
+                    .addOnFailureListener {
+                        if (!called) {
+                            called = true
+                            Toast.makeText(context, "Lokasi tidak ditemukan", Toast.LENGTH_SHORT).show()
+                            onLocationReady(null)
+                        }
+                    }
+            }
+        }
     } else {
         Toast.makeText(context, "Izin lokasi tidak diberikan", Toast.LENGTH_SHORT).show()
         onLocationReady(null)
