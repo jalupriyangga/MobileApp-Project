@@ -206,9 +206,9 @@ fun DetailPermitBody(modifier: Modifier = Modifier, item: PermissionResponseItem
                     }
                 }
             } else{
-                Text(text = "Pegawai Pengganti", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
-                Spacer(Modifier.padding(3.dp))
-                Text(text = item.alternateName, fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 15.sp)
+//                Text(text = "Pegawai Pengganti", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
+//                Spacer(Modifier.padding(3.dp))
+//                Text(text = item.alternateName, fontFamily = robotoFontFamily, fontWeight = FontWeight(400), fontSize = 15.sp)
 
                 Spacer(Modifier.padding(10.dp))
                 Text(text = "Jadwal Lama", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 17.sp)
