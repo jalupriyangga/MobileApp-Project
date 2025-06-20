@@ -135,7 +135,7 @@ fun HistoryPatroliTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "back button",
                 tint = Color.Black,
-                modifier = Modifier.size((screenWidth * 0.035f))
+                modifier = Modifier.size((screenWidth * 0.060f))
             )
         }
     }

@@ -5,7 +5,8 @@ import java.io.File
 data class PresensiResponse(
     val success: Boolean,
     val message: String,
-    val data: PresensiData
+    val data: PresensiData,
+    val errors: Map<String, List<String>>?
 )
 
 data class Presensi(
