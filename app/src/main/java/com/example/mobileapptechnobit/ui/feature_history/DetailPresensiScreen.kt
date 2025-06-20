@@ -114,7 +114,7 @@ fun HistoryPresensiTitle(modifier: Modifier = Modifier, navCtrl: NavController) 
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "back button",
                 tint = Color.Black,
-                modifier = Modifier.size((screenWidth * 0.035f)) // Responsive icon size
+                modifier = Modifier.size((screenWidth * 0.060f)) // Responsive icon size
             )
         }
     }
