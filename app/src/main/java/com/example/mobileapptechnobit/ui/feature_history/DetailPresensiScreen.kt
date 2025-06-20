@@ -227,63 +227,6 @@ fun HistoryPresensi(
     }
 }
 
-@Composable
-fun ActionButtonPatroli(
-    nama: String?,
-    tanggal: String,
-    status: String,
-    lokasi: String,
-    shift: String,
-    catatan : String,
-    foto: String?,
-    linkfoto: String
-) {
-    var pdfUri by remember { mutableStateOf<Uri?>(null) }
-
-    val pdfGenerator = PdfGenerator()
-
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 20.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        androidx.compose.material3. Button(
-            onClick = {
-                scope.launch {
-                    val uri = pdfGenerator.generatePresensiPDFPatroli(context, nama, tanggal, status, lokasi, shift, catatan, foto)
-                    if (uri != null) pdfUri = uri
-                }
-            },
-            shape = CircleShape,
-            contentPadding = PaddingValues(0.dp),
-            modifier = Modifier.size(64.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = primary100)
-        ){
-            Icon(Icons.Default.SaveAlt, contentDescription = "Download", tint = Color.White)
-        }
-
-        androidx.compose.material3.Button(
-            onClick = {
-                if (pdfUri != null) {
-                    pdfGenerator.sharePdf(context, pdfUri!!)
-                } else {
-                    Toast.makeText(context, "PDF belum dibuat", Toast.LENGTH_SHORT).show()
-                }
-            },
-            shape = CircleShape,
-            contentPadding = PaddingValues(0.dp),
-            modifier = Modifier.size(64.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = primary100)
-        ) {
-            Icon(Icons.Default.Share, contentDescription = "Share", tint = Color.White)
-        }
-    }
-}
-
 // Responsive Action Buttons
 @Composable
 fun ActionButtonPatroli(
@@ -319,27 +262,12 @@ fun ActionButtonPatroli(
             },
             shape = CircleShape,
             contentPadding = PaddingValues(0.dp),
-            modifier = Modifier.size(screenWidth * 0.08f),
+            modifier = Modifier.size(screenWidth * 0.15f),
             colors = ButtonDefaults.buttonColors(containerColor = primary100)
         ){
-            Icon(Icons.Default.SaveAlt, contentDescription = "Download", tint = Color.White)
+            Icon(Icons.Default.SaveAlt, contentDescription = "Download", tint = Color.White, modifier = Modifier.size(screenWidth * 0.08f))
         }
 
-        androidx.compose.material3.Button(
-            onClick = {
-                if (pdfUri != null) {
-                    pdfGenerator.sharePdf(context, pdfUri!!)
-                } else {
-                    Toast.makeText(context, "PDF belum dibuat", Toast.LENGTH_SHORT).show()
-                }
-            },
-            shape = CircleShape,
-            contentPadding = PaddingValues(0.dp),
-            modifier = Modifier.size(screenWidth * 0.08f),
-            colors = ButtonDefaults.buttonColors(containerColor = primary100)
-        ) {
-            Icon(Icons.Default.Share, contentDescription = "Share", tint = Color.White)
-        }
     }
 }
 
@@ -376,26 +304,10 @@ fun ActionButtonPresensi(
             },
             shape = CircleShape,
             contentPadding = PaddingValues(0.dp),
-            modifier = Modifier.size(screenWidth * 0.08f),
+            modifier = Modifier.size(screenWidth * 0.15f),
             colors = ButtonDefaults.buttonColors(containerColor = primary100)
         ){
-            Icon(Icons.Default.SaveAlt, contentDescription = "Download", tint = Color.White)
-        }
-
-        androidx.compose.material3.Button(
-            onClick = {
-                if (pdfUri != null) {
-                    pdfGenerator.sharePdf(context, pdfUri!!)
-                } else {
-                    Toast.makeText(context, "PDF belum dibuat", Toast.LENGTH_SHORT).show()
-                }
-            },
-            shape = CircleShape,
-            contentPadding = PaddingValues(0.dp),
-            modifier = Modifier.size(screenWidth * 0.08f),
-            colors = ButtonDefaults.buttonColors(containerColor = primary100)
-        ) {
-            Icon(Icons.Default.Share, contentDescription = "Share", tint = Color.White)
+            Icon(Icons.Default.SaveAlt, contentDescription = "Download", tint = Color.White, modifier = Modifier.size(screenWidth * 0.08f), )
         }
     }
 }
