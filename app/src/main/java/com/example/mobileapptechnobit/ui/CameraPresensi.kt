@@ -298,7 +298,9 @@ fun CameraPresTitle(modifier: Modifier = Modifier, navCtrl: NavController) {
             .padding(vertical = 30.dp)
     ) {
         IconButton(
-            onClick = { navCtrl.popBackStack() },
+            onClick = {
+                navCtrl.navigate("home_screen")
+            },
             Modifier.padding(start = 10.dp)
         ) {
             Icon(

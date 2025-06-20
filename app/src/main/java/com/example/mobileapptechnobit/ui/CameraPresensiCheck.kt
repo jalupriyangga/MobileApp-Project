@@ -137,7 +137,7 @@ fun CameraPresensiCheck(
 //        userLongitude = -122.084,
 //        targetLatitude = -7.9532978,
 //        targetLongitude = 112.6137203,
-        maxRadius = 10f
+        maxRadius = 50f
     )
 
     Scaffold(
@@ -495,7 +495,10 @@ fun CameraPresCheckTitle(modifier: Modifier = Modifier, navCtrl: NavController) 
             .padding(vertical = 30.dp)
     ) {
         IconButton(
-            onClick = { navCtrl.popBackStack() },
+            onClick = {
+//                navCtrl.popBackStack()
+                navCtrl.navigate("camera_presensi_screen")
+            },
             Modifier.padding(start = 10.dp)
         ) {
             Icon(
