@@ -145,7 +145,7 @@ fun PatroliScreen(
 //                                    val lonMeter = deltaLon * 111320.0 * Math.cos(Math.toRadians((latUser + latQr) / 2.0))
 //
 //                                    if (latMeter <= 15.0 && lonMeter <= 5.0) {
-                                    if (distance[0] <= 15.0) {
+                                    if (distance[0] <= 25.0) {
                                         val encodedQrInfo = Uri.encode(Gson().toJson(qrInfo))
                                         navCtrl.navigate(Screen.CameraPatroli.route.replace("{qrToken}", encodedQrInfo))
                                     } else {
@@ -167,7 +167,6 @@ fun PatroliScreen(
                     }
                 )
 
-                // Dialog Error
                 if (showErrorDialog) {
                     AlertDialog(
                         onDismissRequest = { showErrorDialog = false },
@@ -182,7 +181,6 @@ fun PatroliScreen(
                                     Button(
                                         onClick = {
                                             showErrorDialog = false
-                                            // RESET STATE scan agar bisa scan ulang
                                             hasScanned = false
                                             isProcessingPhoto = false
                                         },

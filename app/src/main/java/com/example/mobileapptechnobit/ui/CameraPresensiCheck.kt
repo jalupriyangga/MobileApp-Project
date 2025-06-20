@@ -92,6 +92,7 @@ fun CameraPresensiCheck(
     var showDialog by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
+    var showNoScheduleDialog by remember { mutableStateOf(false) }
 
     val repository = ProfileRepository(context)
     val viewMode: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(repository))
@@ -320,11 +321,15 @@ fun CameraPresensiCheck(
                                             isManual = false
                                         )
 
-                                        // [2] Log response dari API
                                         withContext(Dispatchers.Main) {
                                             isLoading = false
                                             Log.d("PresensiUpload", "API Response: $response")
-                                            if (response?.success == false &&
+
+                                            if (response?.message?.contains("Validation Error", ignoreCase = true) == true &&
+                                                response.errors?.containsKey("photo_file") == true
+                                            ) {
+                                                showNoScheduleDialog = true
+                                            } else if (response?.success == false &&
                                                 response.message?.contains("Presensi gagal karena kamu sudah presensi sebelumnya", ignoreCase = true) == true
                                             ) {
                                                 showErrorDialog = true
@@ -332,14 +337,18 @@ fun CameraPresensiCheck(
                                                 viewModel.saveClockInTime(context, System.currentTimeMillis())
                                                 navController.navigate(Screen.PresensiSukses.route)
                                             } else {
-                                                Toast.makeText(context, response?.message ?: "Terjadi kesalahan", Toast.LENGTH_SHORT).show()
+                                                Toast.makeText(context, response?.message ?: "Pastikan kamu terjadwal dan coba lagi", Toast.LENGTH_LONG).show()
                                             }
                                         }
                                     } catch (e: Exception) {
                                         Log.e("PresensiUpload", "Exception saat upload gambar", e)
                                         withContext(Dispatchers.Main) {
                                             isLoading = false
-                                            if (e.message?.contains("Presensi gagal karena kamu sudah presensi sebelumnya", ignoreCase = true) == true) {
+                                            if (e.message?.contains("Validation Error", ignoreCase = true) == true &&
+                                                e.message?.contains("photo_file") == true
+                                            ) {
+                                                showNoScheduleDialog = true
+                                            } else if (e.message?.contains("Presensi gagal karena kamu sudah presensi sebelumnya", ignoreCase = true) == true) {
                                                 showErrorDialog = true
                                             } else {
                                                 Toast.makeText(context, "Periksa internet anda dan coba lagi", Toast.LENGTH_SHORT).show()
@@ -406,6 +415,60 @@ fun CameraPresensiCheck(
                     ) {
                         Button(
                             onClick = { showErrorDialog = false },
+                            colors = ButtonDefaults.buttonColors(containerColor = primary100),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .weight(1f)
+                                .height(48.dp)
+                        ) {
+                            Text(
+                                text = "Kembali",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.White,
+                                fontFamily = robotoFontFamily
+                            )
+                        }
+                    }
+                }
+            },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.background(Color.Transparent)
+        )
+    }
+    if (showNoScheduleDialog) {
+        AlertDialog(
+            onDismissRequest = { showNoScheduleDialog = false },
+            title = {
+                Text(
+                    text = "Jadwal Tidak Ada",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = robotoFontFamily
+                )
+            },
+            text = {
+                Text(
+                    text = "Pastikan anda memiliki jadwal/shift untuk melakukan presensi",
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    fontFamily = robotoFontFamily
+                )
+            },
+            confirmButton = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Button(
+                            onClick = { showNoScheduleDialog = false },
                             colors = ButtonDefaults.buttonColors(containerColor = primary100),
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier
