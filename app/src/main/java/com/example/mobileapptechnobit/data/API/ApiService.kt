@@ -119,7 +119,7 @@ interface ApiService{
     @GET("v1/android/company-profile")
     suspend fun getCompanyProfile(@Header("Authorization") token: String): Response<CompanyProfileResponse>
 
-    @GET("v1/android/schedules")
+    @GET("v1/android/jadwal-employee")
     suspend fun getPatrolSchedules(
         @Header("Authorization") token: String,
         @Query("date") date: String? = null,
