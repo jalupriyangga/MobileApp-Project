@@ -444,7 +444,7 @@ fun PermissionScheduleCardBySchedule(modifier: Modifier = Modifier, schedule: Pa
                 Icon(painter = painterResource(R.drawable.frame_27), contentDescription = null, modifier = Modifier.size(45.dp), tint = Color.Unspecified)
                 Column(modifier = Modifier.padding(start = 8.dp)) {
                     Text(text = "Mulai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
-                    Text(text = schedule.jam_mulai, fontFamily = robotoFontFamily)
+                    Text(text = schedule.jam_mulai!!, fontFamily = robotoFontFamily)
                 }
 
                 Spacer(Modifier.weight(1f))
@@ -456,7 +456,7 @@ fun PermissionScheduleCardBySchedule(modifier: Modifier = Modifier, schedule: Pa
                 Icon(painter = painterResource(R.drawable.frame_28), contentDescription = null, modifier = Modifier.size(45.dp), tint = Color.Unspecified)
                 Column(modifier = Modifier.padding(start = 8.dp)) {
                     Text(text = "Selesai", fontFamily = robotoFontFamily, fontWeight = FontWeight(500), fontSize = 16.sp)
-                    Text(text = schedule.jam_selesai, fontFamily = robotoFontFamily)
+                    Text(text = schedule.jam_selesai!!, fontFamily = robotoFontFamily)
                 }
             }
 
